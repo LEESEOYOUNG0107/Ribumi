@@ -1,0 +1,458 @@
+/* Home Component Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+.main-container {
+  width: 100%;
+  background-color: #050505;
+  color: #ffffff;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+}
+
+/* Background Decorations */
+.bg-decoration {
+  position: absolute;
+  pointer-events: none;
+}
+
+.bg-decoration-1 {
+  height: 918.338px;
+  left: -38px;
+  top: 1656.66px;
+  width: 1574px;
+}
+
+.bg-decoration-1 img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bg-decoration-2 {
+  height: 662px;
+  left: -38px;
+  top: 418px;
+  width: 2036px;
+}
+
+.bg-decoration-2 img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Header */
+.header {
+  position: absolute;
+  top: 39px;
+  left: 70px;
+  right: 70px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
+
+.logo-header {
+  height: 66px;
+  width: 123px;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.logo-header-inner {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.logo-header-inner img {
+  position: absolute;
+  height: 113.64%;
+  left: -0.13%;
+  max-width: none;
+  top: -13.64%;
+  width: 100.26%;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-left: 180px;
+  flex: 1;
+}
+
+.nav-item {
+  padding: 10px;
+  border-bottom: 2px solid transparent;
+  color: #c0c0c0;
+  font-size: 15px;
+  font-weight: 400;
+  font-family: 'Paperlogy';
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+}
+
+.nav-item:hover {
+  color: #ffffff;
+}
+
+.nav-active {
+  color: #ffffff;
+  border-bottom: 2px solid #ffffff;
+  font-weight: 500;
+}
+
+.search-box {
+  background-color: #ededed;
+  display: flex;
+  gap: 177px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  width: 424px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-box:hover {
+  background-color: #d8d8d8;
+}
+
+.search-placeholder {
+  font-size: 15px;
+  color: #797979;
+  font-family: 'Paperlogy';
+  margin: 0;
+  font-weight: 400;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.search-icon-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.search-icon-inner img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Description Text */
+.description-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 664px;
+  text-align: center;
+  z-index: 1;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.3125;
+  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+  white-space: nowrap;
+  color: #ffffff;
+}
+
+.description-text p {
+  margin: 0;
+}
+
+/* Logo Main */
+.logo-main-wrapper {
+  position: absolute;
+  left: 604px;
+  top: 272px;
+  width: 677px;
+  height: 392px;
+  overflow: clip;
+  z-index: 1;
+}
+
+.logo-main {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.logo-main img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* ─────────────────────────────────────────────
+   Popular Works Section (replaces static grid)
+───────────────────────────────────────────── */
+.popular-works-section {
+  position: relative;
+  z-index: 2;
+  margin-top: 1194px;
+  padding: 0 70px 120px;
+}
+
+.works-title-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 56px;
+  max-width: 625px;
+}
+
+.works-title-heading {
+  font-size: 40px;
+  font-weight: 500;
+  color: #ffffff;
+  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+  line-height: 1.3125;
+}
+
+.works-title-heading p {
+  margin: 0;
+}
+
+.works-title-heading .highlight {
+  color: #1645ff;
+  font-weight: 500;
+}
+
+.works-title-subtitle {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.3125;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+}
+
+.works-title-subtitle p {
+  margin: 0;
+}
+
+/* Loading */
+.works-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #1645ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Poster Grid */
+.works-poster-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Every 2nd card in each row is taller */
+.poster-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  animation: fadeInUp 0.5s ease both;
+  aspect-ratio: 2 / 3;
+}
+
+.poster-card--tall {
+  aspect-ratio: 2 / 3.6;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.poster-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.poster-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.poster-card:hover .poster-img-wrap img {
+  transform: scale(1.06);
+}
+
+.poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.poster-card:hover .poster-overlay {
+  opacity: 1;
+}
+
+.poster-type-badge {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(22, 69, 255, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+  padding: 3px 8px;
+  width: fit-content;
+  margin-bottom: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.poster-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px;
+  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+  line-height: 1.3;
+}
+
+.poster-rating {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* Subtle border glow on hover */
+.poster-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.3s ease;
+  pointer-events: none;
+}
+
+.poster-card:hover::after {
+  border-color: rgba(22, 69, 255, 0.5);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1200px) {
+  .popular-works-section {
+    padding: 0 50px 100px;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    left: 30px;
+    right: 30px;
+    flex-wrap: wrap;
+  }
+
+  .logo-header {
+    width: 100px;
+    height: 50px;
+  }
+
+  .nav-menu {
+    margin-left: 30px;
+    flex: 1;
+  }
+
+  .search-box {
+    width: 100%;
+    order: 3;
+    margin-top: 10px;
+    gap: 0;
+    justify-content: space-between;
+  }
+
+  .works-title-heading {
+    font-size: 28px;
+  }
+
+  .works-poster-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    left: 15px;
+    right: 15px;
+  }
+
+  .popular-works-section {
+    padding: 0 15px 80px;
+  }
+
+  .works-poster-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .description-text {
+    font-size: 13px;
+    white-space: normal;
+    width: 90%;
+    text-align: center;
+  }
+}
