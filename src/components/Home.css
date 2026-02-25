@@ -1,5 +1,3 @@
-/* Home Component Styles */
-
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 .main-container {
@@ -12,39 +10,7 @@
   font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
 }
 
-/* Background Decorations */
-.bg-decoration {
-  position: absolute;
-  pointer-events: none;
-}
-
-.bg-decoration-1 {
-  height: 918.338px;
-  left: -38px;
-  top: 1656.66px;
-  width: 1574px;
-}
-
-.bg-decoration-1 img {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.bg-decoration-2 {
-  height: 662px;
-  left: -38px;
-  top: 418px;
-  width: 2036px;
-}
-
-.bg-decoration-2 img {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* Header */
+/* ─── Header ─── */
 .header {
   position: absolute;
   top: 39px;
@@ -61,7 +27,6 @@
   height: 66px;
   width: 123px;
   flex-shrink: 0;
-  overflow: hidden;
   position: absolute;
 }
 
@@ -75,12 +40,12 @@
 .logo-header-inner img {
   position: absolute;
   height: 113.64%;
-  left: -0.13%;
-  max-width: none;
-  top: -13.64%;
   width: 100.26%;
+  left: -0.13%;
+  top: -13.64%;
 }
 
+/* ─── Navigation ─── */
 .nav-menu {
   display: flex;
   gap: 16px;
@@ -91,169 +56,156 @@
 
 .nav-item {
   padding: 10px;
-  border-bottom: 2px solid transparent;
   color: #c0c0c0;
   font-size: 15px;
   font-weight: 400;
-  font-family: 'Paperlogy';
+  font-family: 'Paperlogy', sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
   background: none;
   border: none;
+  border-bottom: 2px solid transparent;
 }
 
-.nav-item:hover {
+.nav-item:hover,
+.nav-active {
   color: #ffffff;
 }
 
 .nav-active {
-  color: #ffffff;
   border-bottom: 2px solid #ffffff;
   font-weight: 500;
 }
 
-.search-box {
-  background-color: #ededed;
-  display: flex;
-  gap: 177px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  width: 424px;
-  flex-shrink: 0;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.search-box:hover {
-  background-color: #d8d8d8;
-}
-
-.search-placeholder {
-  font-size: 15px;
-  color: #797979;
-  font-family: 'Paperlogy';
-  margin: 0;
-  font-weight: 400;
-}
-
-.search-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.search-icon-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.search-icon-inner img {
-  width: 100%;
-  height: 100%;
-}
-
-/* Description Text */
+/* ─── Description Text ─── */
 .description-text {
   position: absolute;
   left: 50%;
+  top:524px;
   transform: translateX(-50%);
-  top: 664px;
   text-align: center;
   z-index: 1;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 300;
+  font-family: "Paperlogy";
   line-height: 1.3125;
-  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
   white-space: nowrap;
-  color: #ffffff;
 }
 
 .description-text p {
   margin: 0;
 }
 
-/* Logo Main */
+/* ─── Logo Main (Background Logo) ─── */
 .logo-main-wrapper {
   position: absolute;
-  left: 604px;
+  left: 420px;
   top: 272px;
-  width: 677px;
-  height: 392px;
-  overflow: clip;
-  z-index: 1;
-}
-
-.logo-main {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
 }
 
 .logo-main img {
   width: 100%;
   height: 100%;
-  display: block;
-  object-fit: contain;
+  /* object-fit: contain; */
 }
 
-/* ─────────────────────────────────────────────
-   Popular Works Section (replaces static grid)
-───────────────────────────────────────────── */
+/* ─── Popular Works Section ─── */
+/* 섹션 전체 레이아웃 */
 .popular-works-section {
   position: relative;
   z-index: 2;
-  margin-top: 1194px;
-  padding: 0 70px 120px;
+  margin-top: 1000px; /* 로고 섹션과의 간격 조절 */
+  padding: 0 100px 150px;
 }
 
-.works-title-text {
+.popular-works-container {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 56px;
-  max-width: 625px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 60px;
+}
+
+/* 왼쪽 텍스트 영역 */
+.works-title-text {
+  flex: 0 0 600px; /* 너비 고정 */
+  position: sticky;
+  top: 100px;
 }
 
 .works-title-heading {
-  font-size: 40px;
+  font-size: 33px;
   font-weight: 500;
-  color: #ffffff;
-  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
-  line-height: 1.3125;
-}
-
-.works-title-heading p {
-  margin: 0;
-}
-
-.works-title-heading .highlight {
-  color: #1645ff;
-  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 24px;
 }
 
 .works-title-subtitle {
-  font-size: 20px;
-  font-weight: 300;
-  line-height: 1.3125;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
 }
 
-.works-title-subtitle p {
-  margin: 0;
+.highlight {
+  color: #1645FF;
+  font-weight: 500;
+}
+/* 오른쪽 포스터 그리드 영역 (Masonry 스타일) */
+.works-grid-wrapper {
+  flex: 5;
 }
 
-/* Loading */
+.works-poster-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3열로 배치 */
+  grid-auto-rows: 150px; /* 기본 높이 단위 */
+  gap: 20px;
+}
+
+.poster-card {
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 사진처럼 들쑥날쑥하게 배치하기 위해 높이 다양화 */
+.card-type-0 { grid-row: span 3; } /* 기본 */
+.card-type-1 { grid-row: span 4; margin-top: -30px; } /* 길게 & 위로 살짝 */
+.card-type-2 { grid-row: span 2; } /* 짧게 */
+.card-type-3 { grid-row: span 4; } /* 길게 */
+
+.poster-img-wrap {
+  width: 100%;
+  height: 100%;
+}
+
+.poster-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.poster-card:hover img {
+  transform: scale(1.05);
+}
+
+/* 반응형 처리 */
+@media (max-width: 1100px) {
+  .popular-works-container {
+    flex-direction: column;
+  }
+  .works-title-text {
+    flex: none;
+    width: 100%;
+    position: static;
+    margin-bottom: 40px;
+  }
+  .works-poster-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ─── Loading ─── */
 .works-loading {
   display: flex;
   flex-direction: column;
@@ -261,7 +213,6 @@
   gap: 16px;
   padding: 60px;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 16px;
 }
 
 .loading-spinner {
@@ -277,14 +228,13 @@
   to { transform: rotate(360deg); }
 }
 
-/* Poster Grid */
+/* ─── Poster Grid ─── */
 .works-poster-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
-/* Every 2nd card in each row is taller */
 .poster-card {
   position: relative;
   border-radius: 12px;
@@ -310,7 +260,6 @@
 }
 
 .poster-img-wrap {
-  position: relative;
   width: 100%;
   height: 100%;
 }
@@ -319,7 +268,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
   transition: transform 0.4s ease;
 }
 
@@ -334,7 +282,7 @@
     to top,
     rgba(0, 0, 0, 0.88) 0%,
     rgba(0, 0, 0, 0.3) 45%,
-    rgba(0, 0, 0, 0) 70%
+    transparent 70%
   );
   display: flex;
   flex-direction: column;
@@ -358,15 +306,12 @@
   padding: 3px 8px;
   width: fit-content;
   margin-bottom: 8px;
-  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .poster-title {
   font-size: 18px;
   font-weight: 600;
-  color: #ffffff;
   margin: 0 0 6px;
-  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
   line-height: 1.3;
 }
 
@@ -374,7 +319,6 @@
   font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
-  font-family: 'Noto Sans KR', sans-serif;
 }
 
 /* Subtle border glow on hover */
@@ -413,15 +357,6 @@
 
   .nav-menu {
     margin-left: 30px;
-    flex: 1;
-  }
-
-  .search-box {
-    width: 100%;
-    order: 3;
-    margin-top: 10px;
-    gap: 0;
-    justify-content: space-between;
   }
 
   .works-title-heading {
@@ -453,6 +388,5 @@
     font-size: 13px;
     white-space: normal;
     width: 90%;
-    text-align: center;
   }
 }
