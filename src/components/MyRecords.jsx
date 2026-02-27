@@ -11,7 +11,6 @@ export default function MyRecords({ records }) {
               <div className="card h-100">
                 <div className="row g-0">
                   <div className="col-4">
-                    {/* item.thumbnail이 저장되어 있어야 여기서 보입니다! */}
                     <img 
                       src={item.thumbnail || "https://via.placeholder.com/150"} 
                       className="img-fluid rounded-start"

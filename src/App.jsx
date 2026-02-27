@@ -5,9 +5,9 @@ import Search from "./components/Search"; // 새로 만든 통합 검색 컴포�
 import BookRecord from "./components/BookRecord"; 
 import MyRecords from "./components/MyRecords";
 import Home from "./components/Home";
+import Main from "./components/Main";
 // import Login from "./components/Login";
 import Detail from "./components/Detail";
-// import { AuthProvider } from "./components/AuthProvider";
 // import "./App.css";
 
 export default function App() {
@@ -42,12 +42,9 @@ export default function App() {
         {!isHome && <Navi />} {/* 홈페이지가 아닐 때만 상단 메뉴바 표시 */}
         
         <Routes>
-          {/* 기본 홈: 인기 영화/드라마 목록을 보여줌 */}
           <Route path="/" element={<Home />} />
-          
-          {/* 로그인 페이지 */}
           {/* <Route path="/login" element={<Login />} /> */}
-          
+          <Route path="/main" element={<Main />} /> {/* 통합 장르 페이지 */}  
           {/* 통합 검색 페이지: 여기서 도서, 미디어, 공연을 한꺼번에 검색함 */}
           <Route path="/search" element={<Search />} />
           

@@ -7,10 +7,12 @@ import main_logo from "../imgs/logo.png";
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 
 function Nav({ className }) {
+  const navigate = useNavigate();
+  
   return (
     <div className={className}>
       <div className="nav-item nav-active">홈</div>
-      <div className="nav-item">통합장르</div>
+      <div className="nav-item" onClick={() => navigate("/main")}>통합장르</div>
       <div className="nav-item">도서장르</div>
       <div className="nav-item">내 페이지</div>
     </div>
