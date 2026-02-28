@@ -168,12 +168,12 @@
   z-index: 2;
 }
 
-.section-title {
+.sectionTitle {
   font-size: 32px;
   font-weight: 500;
   color: #ffffff;
-  margin-bottom: 30px;
-  font-family: 'Paperlogy', sans-serif;
+  margin-bottom: 20px;
+  font-family: 'Paperlogy';
 }
 
 /* ─── Horizontal Scroll ─── */
@@ -306,61 +306,98 @@
   font-size: 16px;
 }
 
-/* ─── Footer ───
-.footer {
-  background-color: #050505;
-  border-top: 1px solid #353535;
-  padding: 48px 66px;
-  font-size: 16px;
-  font-weight: 300;
-  color: #dbd7d7;
+.scrollSection{
+  margin-right: 70px;
+  margin-left: 80px;
 }
-
-.footer-logo {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1645FF;
-  margin-bottom: 16px;
-  font-family: 'Paperlogy', sans-serif;
-}
-
-.footer-links {
+/* ─── 1. 가로 스크롤 설정 (스크롤바 숨김) ─── */
+.platformScroll {
   display: flex;
-  gap: 16px;
-  margin: 20px 0;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory; /* 🌟 멈출 때 자석처럼 딱 맞게 붙여주는 역할 */
+  
+  /* 스크롤바 숨기기 */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.platformScroll::-webkit-scrollbar {
+  display: none; 
+}
+
+/* ─── 2. 각각의 카드 크기 고정 ─── */
+.platformCard {
+  /* 🌟 핵심 계산식: 
+     (전체 100% 너비) - (카드 간격 20px * 5개 = 100px) 을 
+     6으로 나눈 값이 카드 1개의 너비가 됩니다! */
+  flex: 0 0 calc((100% - 400px) / 6); 
+  scroll-snap-align: start; /* 스크롤이 끝날 때 카드의 시작점(왼쪽)에 맞춰서 멈춤 */
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+/* ─── 3. 포스터 이미지 ─── */
+.cardImage {
+  width: 180px;
+  height: 250px;
+  border-radius: 8px;
+  background-color: #222;
+  margin-bottom: 12px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ─── 4. 카드 하단 텍스트 정보 디자인 ─── */
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTitleSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
   font-size: 16px;
-}
-
-.footer-links a {
-  text-decoration: none;
-  color: #dbd7d7;
-  transition: color 0.3s ease;
-}
-
-.footer-links a:hover {
+  font-weight: 500;
   color: #ffffff;
+  margin: 0;
 }
 
-.divider {
-  color: #4a4a4a;
+.cardGenre {
+  font-size: 10px;
+  color: #797979;
+  white-space: nowrap;
 }
 
-.footer-contact {
+.cardRatingGroup {
   display: flex;
-  gap: 12px;
-  margin: 12px 0;
-  font-size: 16px;
+  justify-content: space-between;
+  align-items: center;
+  color: #797979;
+  font-size: 14px;
 }
 
-.footer-contact span {
-  color: #dbd7d7;
+.cardRating {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-.footer-address {
-  margin-top: 12px;
-  font-size: 16px;
-  color: #b9b7b7;
-} */
+.star {
+  color: #ffd700;
+}
+
+.heart {
+  color: #ff4d4d;
+}
 
 /* ─── Responsive ─── */
 @media (max-width: 1200px) {

@@ -3,6 +3,36 @@ import "./Main.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
+const genreMap = {
+  28: "액션",
+  12: "어드벤처",
+  16: "애니메이션",
+  35: "코미디",
+  80: "범죄",
+  99: "다큐멘터리",
+  18: "드라마",
+  10751: "가족",
+  14: "판타지",
+  36: "역사",
+  27: "공포",
+  10402: "음악",
+  9648: "미스터리",
+  10749: "로맨스",
+  878: "SF",
+  10770: "TV 영화",
+  53: "스릴러",
+  10752: "전쟁",
+  37: "서부",
+  // TV 전용 장르
+  10759: "액션·모험",
+  10762: "키즈",
+  10763: "뉴스",
+  10764: "리얼리티",
+  10765: "SF·판타지",
+  10766: "연속극",
+  10767: "토크쇼",
+  10768: "전쟁·정치"
+};
 
 export default function Main() {
   // 현재 선택된 탭을 기억하는 변수 (기본값을 'movie'로 설정)
@@ -29,10 +59,10 @@ export default function Main() {
 
   // 가로 스크롤 컨트롤
   const handlePrev = () => {
-    if (scrollRef.current) scrollRef.current.scrollBy({ left: -600, behavior: "smooth" });
+    if (scrollRef.current) scrollRef.current.scrollBy({ left: -scrollRef.current.clientWidth, behavior: "smooth" });
   };
   const handleNext = () => {
-    if (scrollRef.current) scrollRef.current.scrollBy({ left: 600, behavior: "smooth" });
+    if (scrollRef.current) scrollRef.current.scrollBy({ left: scrollRef.current.clientWidth, behavior: "smooth" });
   };
 
   const PlatformCard = ({ work, id }) => {
@@ -54,35 +84,41 @@ export default function Main() {
     const year = (work.release_date || work.first_air_date || "").substring(0, 4);
 
     let genreText = "기타";
-    if (work.media_type === "movie") {
-      genreText = work.genre_ids?.includes(16) ? "애니메이션" : "영화";
-    } else if (work.media_type === "tv") {
-      genreText = work.genre_ids?.includes(16) ? "애니메이션" : "드라마";
+    // 작품에 장르 번호들이 들어있다면?
+    if (work.genre_ids && work.genre_ids.length > 0) {
+      // 1. 번호들을 우리가 만든 사전(genreMap)을 보고 한글 이름으로 바꿉니다.
+      const genreNames = work.genre_ids.map(id => genreMap[id]).filter(Boolean);
+      
+      // 2. 장르가 너무 많으면 지저분하니, 앞에서부터 최대 2개만 잘라서(|) 기호로 묶어줍니다.
+      genreText = genreNames.slice(0, 2).join(' | ');
+      
+      // 만약 배열이 비어있으면 다시 "기타"로 설정
+      if (!genreText) genreText = "기타";
     }
 
-    return (
-      <div className="platformCard">
+  return (
+    <div className="platformCard">
       <div className="cardImage" style={{ backgroundImage: `url(${posterUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
-        <h4 className="cardTitle">{work.title}</h4>
-        <span className="cardGenre">{genreText}</span>
-      </div>
-        <div className="cardRatingGroup">
-          <span className="cardYear">{year}</span>
-           <div className="cardRating">
-            <span className="heart">♡</span>
-            <span className="star">★</span>
-            <span className="ratingScore">{work.vote_average?.toFixed(1) || "0.0"}</span>
-          </div>
+          <h4 className="cardTitle">{work.title || work.name}</h4>
+          <span className="cardGenre">{genreText}</span>
+        </div>
+      </div>    
+      <div className="cardRatingGroup">
+        <span className="cardYear">{year}</span>
+        <div className="cardRating">
+          <span className="heart">♡</span>
+          <span className="star">★</span>
+          <span className="ratingScore">{work.vote_average?.toFixed(1) || "0.0"}</span>
         </div>
       </div>
-    </div>  
+    </div>
   );  
 } 
 
 return (
-  <div className="frame main-wrapper">
+  <div className="frame mainWrapper">
     <Nav/>
     <input type="text" placeholder="제목, 장르, 지은이 검색 🔍" className="search-box"/>
 
@@ -98,7 +134,7 @@ return (
 
     {/* 실시간 인기 작품 */}
     <section className="scrollSection">
-      <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 40px', marginBottom: '20px' }}>
+      <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
         <h3 className="sectionTitle">실시간 인기 작품</h3>
         
         <div className="carouselControls">
@@ -107,7 +143,7 @@ return (
         </div>
       </div>
       
-      <div className="platform-row" ref={scrollRef}>
+      <div className="platformScroll" ref={scrollRef}>
         {/* 배열에서 현재 인덱스부터 6개를 잘라서 렌더링 */}
         {trendingWorks.map((work) => (
           <PlatformCard key={work.id} work={work} />
@@ -115,10 +151,10 @@ return (
       </div>
     </section>
 
-     {/* Section 2: Recent Popular Books */}
-    <section className="content-section section-offset">
-      <h3 className="section-title">최근인기 도서</h3>
-      <div className="platform-scroll">
+    {/* Section 2: Recent Popular Books */}
+    <section className="content-section">
+      <h3 className="sectionTitle">최근인기 도서</h3>
+      <div className="platformScroll">
         {[1, 2, 3, 4, 5, 6, 7].map((id) => <PlatformCard key={`row1-${id}`} id={`row1-${id}`} />)}
       </div>
     </section>
@@ -126,7 +162,7 @@ return (
     {/* Section 3: Famous Story Universe */}
     <section className="content-section">
       <h3 className="section-title">유명한 스토리 유니버스</h3>
-      <div className="platform-scroll">
+      <div className="platformScroll">
         {[1, 2, 3, 4, 5, 6, 7].map((id) => <PlatformCard key={`row2-${id}`} id={`row2-${id}`} />)}
       </div>
     </section>
