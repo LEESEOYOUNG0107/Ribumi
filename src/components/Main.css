@@ -306,7 +306,7 @@
   font-size: 16px;
 }
 
-/* ─── Footer ─── */
+/* ─── Footer ───
 .footer {
   background-color: #050505;
   border-top: 1px solid #353535;
@@ -360,7 +360,7 @@
   margin-top: 12px;
   font-size: 16px;
   color: #b9b7b7;
-}
+} */
 
 /* ─── Responsive ─── */
 @media (max-width: 1200px) {
