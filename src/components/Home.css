@@ -10,73 +10,6 @@
   font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
 }
 
-/* ─── Header ─── */
-.header {
-  position: absolute;
-  top: 39px;
-  left: 70px;
-  right: 70px;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 100;
-}
-
-.logo-header {
-  height: 66px;
-  width: 123px;
-  flex-shrink: 0;
-  position: absolute;
-}
-
-.logo-header-inner {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.logo-header-inner img {
-  position: absolute;
-  height: 113.64%;
-  width: 100.26%;
-  left: -0.13%;
-  top: -13.64%;
-}
-
-/* ─── Navigation ─── */
-.nav-menu {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  margin-left: 180px;
-  flex: 1;
-}
-
-.nav-item {
-  padding: 10px;
-  color: #c0c0c0;
-  font-size: 15px;
-  font-weight: 400;
-  font-family: 'Paperlogy', sans-serif;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-}
-
-.nav-item:hover,
-.nav-active {
-  color: #ffffff;
-}
-
-.nav-active {
-  border-bottom: 2px solid #ffffff;
-  font-weight: 500;
-}
-
 /* ─── Description Text ─── */
 .description-text {
   position: absolute;
@@ -422,29 +355,4 @@
     white-space: normal;
     width: 90%;
   }
-}
-
-.footer-container { 
-  padding: 40px;
-  font-size: 14px;
-  font-weight: 300;
-  color: #DBD7D7;
-  
-}
-
-.footer-links {
-  display: flex;
-  gap: 16px;
-  margin-top: 16px;
-}
-.footer-links a{
-  text-decoration: none;
-  color: #DBD7D7;
-}
-
-.footer-contact{
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-  margin-bottom: 8px;
 }

@@ -1,23 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Nav from "./Navi";
+import Footer from "./Footer";
 import "./Home.css";
-import ribumi_logo from "../imgs/ribumi_logo.svg";
 import main_logo from "../imgs/logo.png";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
-
-function Nav({ className }) {
-  const navigate = useNavigate();
-  
-  return (
-    <div className={className}>
-      <div className="nav-item nav-active">홈</div>
-      <div className="nav-item" onClick={() => navigate("/main")}>통합장르</div>
-      <div className="nav-item">도서장르</div>
-      <div className="nav-item">내 페이지</div>
-    </div>
-  );
-}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -89,16 +77,8 @@ export default function Home() {
           </defs>
         </svg>
       </div>
-      {/* Header */}
-      <div className="header">
-        <div className="logo-header">
-          <div className="logo-header-inner">
-            <img alt="Ribumi Logo" src={ribumi_logo} />
-          </div>
-        </div>
-        <Nav className="nav-menu" />
-      </div>
 
+      <Nav/>
       {/* Description Text */}
       <div className="description-text">
         <p>Ribumi는 리뷰(Review)와 미디어(Media)를 결합한 단어로,</p>
@@ -118,17 +98,17 @@ export default function Home() {
         <div className="popular-works-bg">
           <svg xmlns="http://www.w3.org/2000/svg" width="1619" height="1084" viewBox="0 0 1619 1084" fill="none">
               <g filter="url(#filter0_f_206_2166)">
-                <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" fill="url(#paint0_linear_206_2166)" fill-opacity="0.82"/>
+                <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" fill="url(#paint0_linear_206_2166)" fillOpacity="0.82"/>
                 <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" stroke="black"/>
               </g>
             <defs>
-              <filter id="filter0_f_206_2166" x="-120.5" y="0" width="1739" height="1083.34" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <filter id="filter0_f_206_2166" x="-120.5" y="0" width="1739" height="1083.34" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
                 <feGaussianBlur stdDeviation="41" result="effect1_foregroundBlur_206_2166"/>
               </filter>
               <linearGradient id="paint0_linear_206_2166" x1="749" y1="-24.1615" x2="749" y2="1000.84" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#1E2A78"/>
+                <stop stopColor="#1E2A78"/>
                 <stop offset="1"/>
               </linearGradient>
             </defs>
@@ -180,25 +160,7 @@ export default function Home() {
           </div>
         </div>    
       </div>
-      <hr/>
-      {/* footer */}
-      <div className="footer-container">
-        <img src={ribumi_logo} alt="Ribumi Logo" />
-        <div className="footer-links">
-          <a href="https://www.e-mirim.hs.kr/main.do">학교정보공개</a>|
-          <a href="">작성자저작권정보</a>|
-          <a href="">개인정보처리방침</a>
-        </div>
-
-        <div className="footer-contact">
-          <span>개발자: 이서영 E-mail: s2446@e-mirim.hs.kr</span> | <span>디자이너: 김설애 E-mail: d2402@e-mirim.hs.kr</span>
-        </div>
-        
-        <div className="footer-address">
-          서울특별시 관악구 호암로 546 미림마이스터고등학교
-        </div>
-        
-      </div>  
+      <Footer />  
     </div>    
   );
 }

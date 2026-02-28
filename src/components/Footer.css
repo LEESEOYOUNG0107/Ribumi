@@ -1,0 +1,33 @@
+.footer-container { 
+  padding: 40px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #DBD7D7;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+.footer-links a{
+  text-decoration: none;
+  color: #DBD7D7;
+}
+
+.footer-contact{
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.footer-contact span {
+  color: #dbd7d7;
+}
+
+.footer-address {
+  margin-top: 12px;
+  font-size: 16px;
+  color: #b9b7b7;
+}

@@ -1,7 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useRef } from "react"; 
 import Navi from "./components/Navi";
-import Search from "./components/Search"; // 새로 만든 통합 검색 컴포넌트
+//import Search from "./components/Search"; // 새로 만든 통합 검색 컴포넌트
 import BookRecord from "./components/BookRecord"; 
 import MyRecords from "./components/MyRecords";
 import Home from "./components/Home";
@@ -45,17 +45,17 @@ export default function App() {
           <Route path="/" element={<Home />} />
           {/* <Route path="/login" element={<Login />} /> */}
           <Route path="/main" element={<Main />} /> {/* 통합 장르 페이지 */}  
-          {/* 통합 검색 페이지: 여기서 도서, 미디어, 공연을 한꺼번에 검색함 */}
+          {/* 통합 검색 페이지: 여기서 도서, 미디어, 공연을 한꺼번에 검색함
           <Route path="/search" element={<Search />} />
           
           {/* 영화/드라마 상세 정보 페이지 */}
-          <Route path="/detail/:type/:id" element={<Detail />} />
+          {/*<Route path="/detail/:type/:id" element={<Detail />} />
           
           {/* 기록 작성 페이지: Search에서 넘어온 정보로 리뷰 작성 */}
-          <Route path="/bookrecord" element={<BookRecord onCreateRecord={onCreateRecord}/>} />
+          {/*<Route path="/bookrecord" element={<BookRecord onCreateRecord={onCreateRecord}/>} />
           
           {/* 내가 쓴 모든 기록(도서+영상+공연) 리스트 */}
-          <Route path="/myrecords" element={<MyRecords records={records} />} />
+          {/*<Route path="/myrecords" element={<MyRecords records={records} />} /> */}
         </Routes>
       </div>
     //</AuthProvider>
