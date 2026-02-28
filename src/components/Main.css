@@ -4,14 +4,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #050505;
-  color: #ffffff;
 }
-
-.main-wrapper {
+.mainWrapper {
   width: 100%;
-  color: #ffffff;
-  font-family: 'Paperlogy', 'Noto Sans KR', sans-serif;
+  font-family: 'Paperlogy';
+  background-color: #050505;
 }
 
 .search-box {
@@ -350,7 +347,10 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-
+cardImage:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
 /* ─── 4. 카드 하단 텍스트 정보 디자인 ─── */
 .cardMeta {
   display: flex;
