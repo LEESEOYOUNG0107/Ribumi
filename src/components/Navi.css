@@ -16,21 +16,18 @@
   width: 123px;
   flex-shrink: 0;
   position: absolute;
-}
-
-.logo-header-inner {
-  position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  cursor: pointer;
 }
 
-.logo-header-inner img {
+.logo-header img {
   position: absolute;
   height: 113.64%;
   width: 100.26%;
   left: -0.13%;
-  top: -13.64%;
+  top: -25.64%;
 }
 
 /* ─── Navigation ─── */
@@ -49,7 +46,7 @@
   font-weight: 400;
   font-family: 'Paperlogy', sans-serif;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.2s ease-in-out;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;

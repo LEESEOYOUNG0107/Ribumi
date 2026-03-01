@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import "./Main.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
+import search_icon from "../imgs/search_icon.svg";
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const genreMap = {
   28: "액션",
@@ -120,8 +121,10 @@ export default function Main() {
 return (
   <div className="frame mainWrapper">
     <Nav/>
-    <input type="text" placeholder="제목, 장르, 지은이 검색 🔍" className="search-box"/>
-
+    <div className="searchContainer">
+      <img src={search_icon} className="search-icon"/>
+      <input type="text" placeholder="  제목, 장르, 지은이 검색" className="search-box"/>
+    </div>
     {/* Banner Section */}
     <div className="banner-section">
       <div className="banner-content">배너 내용</div>
@@ -136,46 +139,32 @@ return (
     <section className="scrollSection">
       <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
         <h3 className="sectionTitle">실시간 인기 작품</h3>
+      </div>
+
+      <div className="sliderWrapper">
+        <div className="sliderBtn leftBtn" onClick={handlePrev}> &lt; </div>
         
-        <div className="carouselControls">
-          <button className="arrowBtn" onClick={handlePrev}> &lt; </button>
-          <button className="arrowBtn" onClick={handleNext}> &gt; </button>
+        <div className="platformScroll" ref={scrollRef}>
+          {/* 배열에서 현재 인덱스부터 6개를 잘라서 렌더링 */}
+          {trendingWorks.map((work) => (
+            <PlatformCard key={work.id} work={work} />
+          ))}
         </div>
-      </div>
-      
-      <div className="platformScroll" ref={scrollRef}>
-        {/* 배열에서 현재 인덱스부터 6개를 잘라서 렌더링 */}
-        {trendingWorks.map((work) => (
-          <PlatformCard key={work.id} work={work} />
-        ))}
-      </div>
+        <div className="sliderBtn rightBtn" onClick={handleNext}> &gt; </div>
+      </div>  
     </section>
 
-    {/* Section 2: Recent Popular Books */}
-    <section className="content-section">
-      <h3 className="sectionTitle">최근인기 도서</h3>
-      <div className="platformScroll">
-        {[1, 2, 3, 4, 5, 6, 7].map((id) => <PlatformCard key={`row1-${id}`} id={`row1-${id}`} />)}
-      </div>
-    </section>
-
-    {/* Section 3: Famous Story Universe */}
-    <section className="content-section">
-      <h3 className="section-title">유명한 스토리 유니버스</h3>
-      <div className="platformScroll">
-        {[1, 2, 3, 4, 5, 6, 7].map((id) => <PlatformCard key={`row2-${id}`} id={`row2-${id}`} />)}
-      </div>
-    </section>
+    
 
     {/* Indicator Dots */}
-    <div className="indicator-section">
+    {/* <div className="indicator-section">
       <span className="indicator-dot active"></span>
       <span className="indicator-dot"></span>
       <span className="indicator-dot"></span>
-    </div>
+    </div> */}
 
     {/* Tab Section */}
-    <section className="tab-section">
+    {/* <section className="tab-section">
       <div className="tab-buttons">
         {["영화", "소설", "웹툰", "드라마", "뮤지컬", "애니메이션"].map((tab) => (
           <button 
@@ -198,12 +187,9 @@ return (
           {[15, 16, 17, 18, 19, 20, 21].map((id) => <PlatformCard key={`row3-${id}`} id={`row3-${id}`} />)}
         </div>
       </div>
-    </section>
+    </section> */}
 
-    {/* Navigation Arrows */}
-    <div className="nav-arrow arrow-left">◀</div>
-      <div className="nav-arrow arrow-right">▶</div>
-      <Footer />
-    </div>
+    <Footer />
+  </div>  
   );
 }

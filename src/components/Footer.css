@@ -1,8 +1,12 @@
 .footer-container { 
+  margin-top: 100px;
   padding: 40px;
   font-size: 14px;
   font-weight: 300;
   color: #DBD7D7;
+}
+.footer-container img{
+  margin: 20px 0;
 }
 
 .footer-links {
@@ -22,12 +26,7 @@
   margin-bottom: 8px;
 }
 
-.footer-contact span {
-  color: #dbd7d7;
-}
-
 .footer-address {
   margin-top: 12px;
   font-size: 16px;
-  color: #b9b7b7;
 }

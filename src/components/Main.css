@@ -11,24 +11,35 @@
   background-color: #050505;
 }
 
+.searchContainer{
+  position: relative;
+  z-index: 1;
+}
+
+.search-icon{
+  z-index: 3;
+  position: absolute;
+  left: 92%;
+  top: 55%; 
+  pointer-events: none; /* 마우스 클릭이 아이콘을 통과해 input에 닿게 함 */
+}
 .search-box {
-  display: flex;
   align-items: center;
-  background-color: #ededed;
   padding: 10px 5px;
   border-radius: 4px;
-  width: 300px;
+  width: 370px;
   margin-left: 70%;
   border: none;
-
+  margin-top: 33px;
+  position: relative; /* 위치를 조정하고 앞으로 빼내기 위해 필요 */
+  z-index: 2;
 }
 
 .search-box input {
   flex: 1;
-  background: transparent;
   font-size: 20px;
   color: #333;
-  font-family: 'Paperlogy', sans-serif;
+  font-family: 'Paperlogy'
 }
 
 .search-box input::placeholder {
@@ -307,7 +318,7 @@
   margin-right: 70px;
   margin-left: 80px;
 }
-/* ─── 1. 가로 스크롤 설정 (스크롤바 숨김) ─── */
+/* ─── 1. 가로 스크롤 설정 ─── */
 .platformScroll {
   display: flex;
   gap: 20px;
@@ -316,8 +327,40 @@
   scroll-snap-type: x mandatory; /* 🌟 멈출 때 자석처럼 딱 맞게 붙여주는 역할 */
   
   /* 스크롤바 숨기기 */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  /* -ms-overflow-style: none;
+  scrollbar-width: none; */
+}
+
+.sliderWrapper {
+  position: relative; /* 이 껍데기를 기준으로 버튼들이 둥둥 뜹니다 */
+  width: 100%;
+}
+
+.sliderBtn {
+  position: absolute;
+  top: 37%; /* 위에서부터 절반 내려옴 */
+  transform: translateY(-50%); /* 정확한 세로 중앙 맞춤 */
+  z-index: 4;
+  width: 50px;
+  height: 300px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.sliderBtn:hover {
+  background-color: rgba(0, 0, 0, 0.242);
+  transform: translateY(-50%) scale(1.1); /* 살짝 커지는 효과 */
+}
+
+.rightBtn {
+  right: 0px; 
 }
 
 .platformScroll::-webkit-scrollbar {

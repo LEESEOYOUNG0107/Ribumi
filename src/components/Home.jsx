@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Nav from "./Navi";
 import Footer from "./Footer";
 import "./Home.css";
-import main_logo from "../imgs/logo.png";
+import main_logo from "../imgs/logo2.png";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 

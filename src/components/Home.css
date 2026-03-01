@@ -33,6 +33,8 @@
   position: absolute;
   left: 420px;
   top: 272px;
+  position: absolute;
+  z-index: 1;
 }
 
 .logo-main img {
