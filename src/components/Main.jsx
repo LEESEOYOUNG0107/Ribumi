@@ -40,7 +40,6 @@ function PlatformCard({ work }) {
         <span className="cardYear">{year}</span>
         <div className="cardRating">
           <span className="heart">♡</span>
-          <span className="star">★</span>
           <span className="ratingScore">{work.vote_average?.toFixed(1) || "0.0"}</span>
         </div>
       </div>
@@ -58,22 +57,16 @@ export default function Main() {
   const scrollRef2 = useRef(null);
 
   useEffect(() => {
-    // 첫 번째 줄: 실시간 인기 작품 (기존과 동일)
+    // 실시간 인기 작품
+    // KOBIS API 키 발급받기!!!!!!!!!!!!
     const fetchTrendingWorks = async () => {
       setLoading(true);
       try {
-        const [movieRes, tvRes] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&region=KR&sort_by=popularity.desc`),
-          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&sort_by=popularity.desc`)
-        ]);
-
-        const movieData = await movieRes.json();
-        const tvData = await tvRes.json();
-
-        const combinedTrending = [...(movieData.results || []), ...(tvData.results || [])]
-          .sort((a, b) => b.popularity - a.popularity);
-
-        setTrendingWorks(combinedTrending);
+        // 🌟 1. 한국에서 현재 인기 있는 영화 (region=KR 추가)
+        const res = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_KEY}&language=ko-KR&region=KR`);
+        ;
+        const data = await res.json();
+        setTrendingWorks(data.results || []);
       } catch (error) {
         console.error("인기 데이터를 불러오는데 실패했습니다.", error);
       } finally {
