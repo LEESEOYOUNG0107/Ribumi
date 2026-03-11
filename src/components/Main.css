@@ -1,28 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@font-face {
+    font-family: 'Cafe24Surround';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 .mainWrapper {
   width: 100%;
   font-family: 'Paperlogy';
   background-color: #050505;
 }
 
-.searchContainer{
+/* ─── Search Section ─── */
+.searchContainer {
   position: relative;
   z-index: 1;
 }
 
-.search-icon{
+.search-icon {
   z-index: 3;
   position: absolute;
   left: 92%;
   top: 55%; 
-  pointer-events: none; /* 마우스 클릭이 아이콘을 통과해 input에 닿게 함 */
+  pointer-events: none; 
+  width: 24px;
+  height: 24px;
+  color: #666;
+  flex-shrink: 0;
 }
+
 .search-box {
   align-items: center;
   padding: 10px 5px;
@@ -31,7 +44,7 @@
   margin-left: 70%;
   border: none;
   margin-top: 33px;
-  position: relative; /* 위치를 조정하고 앞으로 빼내기 위해 필요 */
+  position: relative; 
   z-index: 2;
 }
 
@@ -39,64 +52,52 @@
   flex: 1;
   font-size: 20px;
   color: #333;
-  font-family: 'Paperlogy'
+  font-family: 'Paperlogy';
 }
 
 .search-box input::placeholder {
   color: #797979;
 }
 
-.search-icon {
-  width: 24px;
-  height: 24px;
-  color: #666;
-  flex-shrink: 0;
-}
-
 /* ─── Banner Section ─── */
-.banner-section {
+.bannerSection {
   position: relative;
   width: 100%;
-  height: 950px;
-  margin-top: 120px;
+  height: 650px;
+  margin-top: 90px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding-left: 72px;
 }
 
-.banner-image {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #1E2A78 0%, #0a0a0a 100%);
-  z-index: -1;
-}
-
-.banner-overlay {
+.bannerOverlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(to right, rgba(5, 5, 5, 0.6), rgba(5, 5, 5, 0.2));
   z-index: 1;
 }
 
-.banner-content {
+.bannerContent {
+  margin-top: 350px;
   position: relative;
   z-index: 2;
   max-width: 629px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 10px;
 }
 
-.banner-title h2 {
-  font-size: 80px;
-  font-weight: 400;
+.bannerTitle {
+  font-size: 50px;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
-  font-family: 'Paperlogy', sans-serif;
+  font-family: 'Cafe24Surround';
 }
 
-.banner-description {
+.bannerDescrip {
+  font-family: 'Paperlogy';
   font-size: 20px;
   font-weight: 300;
   color: #ffffff;
@@ -104,14 +105,13 @@
   max-width: 550px;
 }
 
-.banner-buttons {
+.bannerBtn {
   display: flex;
   gap: 24px;
-  margin-top: 10px;
 }
 
 .btn {
-  padding: 14px 30px;
+  /* padding: 14px 30px; */
   border: none;
   font-size: 24px;
   font-weight: 500;
@@ -120,62 +120,23 @@
   font-family: 'Paperlogy', sans-serif;
 }
 
-.btn-primary {
+.btnDetail {
   background-color: #ffffff;
-  color: #000000;
+  color: #ffffff !important;
 }
-
-.btn-primary:hover {
+.btnDetail:hover {
   background-color: #f0f0f0;
 }
 
-.btn-secondary {
+.btnInfo {
   background-color: #666;
-  color: #ffffff;
+  color: #ffffff !important;
 }
-
-.btn-secondary:hover {
+.btnInfo:hover {
   background-color: #777;
 }
 
-/* ─── Indicator Section ─── */
-.indicator-section {
-  position: relative;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  padding: 0 72px;
-  background-color: #050505;
-  z-index: 2;
-}
-
-.indicator-dots {
-  display: flex;
-  gap: 12px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.dot.active {
-  background-color: #ffffff;
-  width: 40px;
-  border-radius: 6px;
-}
-
-/* ─── Content Section ─── */
-.content-section {
-  padding: 60px 73px;
-  position: relative;
-  z-index: 2;
-}
-
+/* ─── Common Section Elements ─── */
 .sectionTitle {
   font-size: 32px;
   font-weight: 500;
@@ -184,127 +145,6 @@
   font-family: 'Paperlogy';
 }
 
-/* ─── Horizontal Scroll ─── */
-.horizontal-scroll {
-  display: flex;
-  gap: 24px;
-  overflow-x: auto;
-  padding: 10px 0;
-  scroll-behavior: smooth;
-}
-
-.horizontal-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-
-.horizontal-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.scroll-item {
-  flex: 0 0 233px;
-  height: 375px;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-}
-
-.scroll-item:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(22, 69, 255, 0.3);
-}
-
-.scroll-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ─── Tabbed Section ─── */
-.tabbed-section {
-  padding: 60px 73px;
-  position: relative;
-  z-index: 2;
-}
-
-.tabs {
-  display: flex;
-  gap: 11px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0;
-}
-
-.tab {
-  padding: 10px 40px;
-  border-bottom: 3px solid transparent;
-  background: none;
-  border: none;
-  color: #c0c0c0;
-  font-size: 20px;
-  font-weight: 400;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Paperlogy', sans-serif;
-}
-
-.tab:hover {
-  color: #ffffff;
-}
-
-.tab.active {
-  color: #ffffff;
-  border-bottom-color: #ffffff;
-  font-weight: 500;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* ─── Grid Container ─── */
-.tab-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(233px, 1fr));
-  gap: 24px;
-  min-height: 400px;
-}
-
-.grid-item {
-  aspect-ratio: 2 / 3;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  grid-row: span 1;
-}
-
-.grid-item.row-2 {
-  grid-row: span 2;
-}
-
-.grid-item:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(22, 69, 255, 0.3);
-}
-
-.grid-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ─── Loading ─── */
 .loading {
   display: flex;
   align-items: center;
@@ -314,21 +154,25 @@
   font-size: 16px;
 }
 
-.scrollSection{
+.scrollSection {
   margin-right: 70px;
   margin-left: 80px;
 }
-/* ─── 1. 가로 스크롤 설정 ─── */
+
+/* ─── Horizontal Scroll Slider ─── */
 .platformScroll {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  scroll-snap-type: x mandatory; /* 멈출 때 자석처럼 딱 맞게 붙여주는 역할 */
+  scroll-snap-type: x mandatory; 
+}
+.platformScroll::-webkit-scrollbar {
+  display: none; 
 }
 
 .sliderWrapper {
-  position: relative; /* 이 껍데기를 기준으로 버튼들이 둥둥 뜹니다 */
+  position: relative; 
   width: 100%;
 }
 
@@ -353,13 +197,13 @@
 
 .sliderBtn:hover {
   background-color: rgba(0, 0, 0, 0.242);
-  transform: translateY(-50%) scale(1.15); /* 살짝 커지는 효과 */
+  transform: translateY(-50%) scale(1.15); 
 }
 .sliderBtn:active {
   transform: translateY(-50%) scale(0.95);
 }
 
-.leftBtn{
+.leftBtn {
   margin-top: 2px;
   left: 0px; 
 }
@@ -367,23 +211,15 @@
   right: 0px; 
 }
 
-.platformScroll::-webkit-scrollbar {
-  display: none; 
-}
-
-/* ─── 2. 각각의 카드 크기 고정 ─── */
+/* ─── Cards ─── */
 .platformCard {
-  /* 🌟 핵심 계산식: 
-     (전체 100% 너비) - (카드 간격 20px * 5개 = 100px) 을 
-     6으로 나눈 값이 카드 1개의 너비가 됩니다! */
   flex: 0 0 calc((100% - 400px) / 6); 
-  scroll-snap-align: start; /* 스크롤이 끝날 때 카드의 시작점(왼쪽)에 맞춰서 멈춤 */
+  scroll-snap-align: start; 
   display: flex;
   flex-direction: column;
   cursor: pointer;
 }
 
-/* ─── 3. 포스터 이미지 ─── */
 .cardImage {
   width: 180px;
   height: 250px;
@@ -393,12 +229,12 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transition: transform 0.3s ease;
 }
 .cardImage:hover {
   transform: scale(1.05);
-  transition: transform 0.3s ease;
 }
-/* ─── 4. 카드 하단 텍스트 정보 디자인 ─── */
+
 .cardMeta {
   display: flex;
   flex-direction: column;
@@ -438,124 +274,32 @@
   align-items: center;
 }
 
-.star {
-  color: #ffd700;
-}
-
 .heart {
   color: #ff4d4d;
 }
+.ratingScore{
+  color: rgba(255, 230, 0, 0.942);
+}
 
-/* ─── Responsive ─── */
+/* ─── Responsive (사용하지 않는 클래스 제거됨) ─── */
 @media (max-width: 1200px) {
-  .header-nav {
-    padding: 20px 40px;
-    height: auto;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .nav-left {
-    width: 100%;
-    gap: 30px;
-  }
-
-  .nav-menu {
-    gap: 20px;
-  }
-
-  .search-box {
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .section-title {
-    font-size: 24px;
-  }
-
-  .banner-section {
-    height: 600px;
-    padding-left: 40px;
-  }
-
-  .banner-title h2 {
-    font-size: 48px;
-  }
-
-  .content-section,
-  .tabbed-section {
-    padding: 40px 40px;
-  }
-
-  .scroll-item {
-    flex: 0 0 180px;
-    height: 290px;
-  }
-
-  .tab-content {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
+  .header-nav { padding: 20px 40px; height: auto; flex-direction: column; gap: 20px; }
+  .nav-left { width: 100%; gap: 30px; }
+  .nav-menu { gap: 20px; }
+  .search-box { width: 100%; max-width: 400px; }
+  .sectionTitle { font-size: 24px; }
+  .bannerSection { height: 600px; padding-left: 40px; }
+  .bannerTitle { font-size: 48px; }
 }
 
 @media (max-width: 768px) {
-  .header-nav {
-    padding: 15px 20px;
-    height: auto;
-  }
-
-  .logo h1 {
-    font-size: 20px;
-  }
-
-  .nav-menu {
-    display: none;
-  }
-
-  .search-box {
-    width: 100%;
-    padding: 10px;
-  }
-
-  .banner-section {
-    height: 400px;
-    padding-left: 20px;
-    margin-top: 100px;
-  }
-
-  .banner-title h2 {
-    font-size: 36px;
-  }
-
-  .banner-description {
-    font-size: 14px;
-  }
-
-  .btn {
-    padding: 10px 20px;
-    font-size: 16px;
-  }
-
-  .content-section,
-  .tabbed-section {
-    padding: 30px 20px;
-  }
-
-  .section-title {
-    font-size: 20px;
-  }
-
-  .scroll-item {
-    flex: 0 0 140px;
-    height: 220px;
-  }
-
-  .tap {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  .tab-content {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-  }
+  .header-nav { padding: 15px 20px; height: auto; }
+  .logo h1 { font-size: 20px; }
+  .nav-menu { display: none; }
+  .search-box { width: 100%; padding: 10px; }
+  .bannerSection { height: 400px; padding-left: 20px; margin-top: 100px; }
+  .bannerTitle { font-size: 36px; }
+  .bannerDescrip { font-size: 14px; }
+  .btn { padding: 10px 20px; font-size: 16px; }
+  .sectionTitle { font-size: 20px; }
 }

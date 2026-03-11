@@ -40,7 +40,7 @@ function PlatformCard({ work }) {
         <span className="cardYear">{year}</span>
         <div className="cardRating">
           <span className="heart">♡</span>
-          <span className="ratingScore">{work.vote_average?.toFixed(1) || "0.0"}</span>
+          <span className="ratingScore">⭐{work.vote_average?.toFixed(1) || "0.0"}</span>
         </div>
       </div>
     </div>
@@ -52,21 +52,31 @@ export default function Main() {
   const [loading, setLoading] = useState(false); 
   const [trendingWorks, setTrendingWorks] = useState([]); 
   const [originalWorks, setOriginalWorks] = useState([]); 
-  
+  const [CurrentBannerIndex, setCurrentBannerIndex] = useState(0);
   const scrollRef = useRef(null);
   const scrollRef2 = useRef(null);
 
   useEffect(() => {
     // 실시간 인기 작품
-    // KOBIS API 키 발급받기!!!!!!!!!!!!
     const fetchTrendingWorks = async () => {
       setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // 🌟 2초 강제 지연 (테스트용)
       try {
-        // 🌟 1. 한국에서 현재 인기 있는 영화 (region=KR 추가)
-        const res = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_KEY}&language=ko-KR&region=KR`);
-        ;
-        const data = await res.json();
-        setTrendingWorks(data.results || []);
+        const [movieRes, tvRes] = await Promise.all([
+          // 1. 한국 영화 + 한국에서 볼 수 있음 + 인기순
+          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc`),
+          // 2. 한국 TV 프로그램 + 한국에서 볼 수 있음 + 인기순
+          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc`)
+        ]);
+
+        const movieData = await movieRes.json();
+        const tvData = await tvRes.json();
+
+        // 🌟 영화와 TV 데이터를 하나로 합치고, 인기 점수(popularity)가 높은 순서대로 줄 세우기
+        const combinedTrending = [...(movieData.results || []), ...(tvData.results || [])]
+          .sort((a, b) => b.popularity - a.popularity);
+
+        setTrendingWorks(combinedTrending);
       } catch (error) {
         console.error("인기 데이터를 불러오는데 실패했습니다.", error);
       } finally {
@@ -86,7 +96,6 @@ export default function Main() {
         const movieData = await movieRes.json();
         const tvData = await tvRes.json();
 
-        //  두 데이터를 합치고 인기순으로 줄 세우기
         const combinedOriginals = [...(movieData.results || []), ...(tvData.results || [])]
           .sort((a, b) => b.popularity - a.popularity);
 
@@ -100,67 +109,103 @@ export default function Main() {
     fetchOriginalWorks(); 
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBannerIndex((prevIndex) => 
+        // 마지막 작품 인덱스에 도달하면 0으로 되돌리기 (순환)
+        prevIndex === originalWorks.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000);
+    return () => clearInterval(timer); // 화면이 꺼지거나 데이터가 바뀔 때 타이머를 초기화. (메모리 누수 방지)
+  }, [originalWorks]); // originalWorks 데이터가 로딩된 후 타이머 작동
+
   // 가로 스크롤 함수
   const scrollLeft = (ref) => {
     if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
   };
-  
   const scrollRight = (ref) => {
     if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
   };
 
+  const currentBannerWork = originalWorks[CurrentBannerIndex];
+
   return (
     <div className="frame mainWrapper">
       <Nav/>
+
+      {/* Banner Section */}
+      {originalWorks.length > 0 && currentBannerWork && (
+        <div className="bannerSection"
+        style={{
+          backgroundImage: `url(https://image.tmdb.org/t/p/original${currentBannerWork.backdrop_path})`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat'
+        }}>
+          <div className="bannerOverlay"></div> {/* 이미지를 자연스럽게 덮어주는 그라데이션 막 */}
+          <div className="bannerContent">
+            <h2 className="bannerTitle">
+              {currentBannerWork.title || currentBannerWork.name}
+            </h2>
+
+            <p className="bannerDescrip">
+              {currentBannerWork.overview
+              ? (currentBannerWork.overview.length > 50
+              ? currentBannerWork.overview.slice(0, 50) + "..." /*줄거리 너무 길면 ...처리 */
+              :currentBannerWork.overview)
+              : "세상을 구하기 위한 마지막 사투가 시작된다."}
+            </p>
+
+            <div className="bannerBtn">
+              <button className="btn btnDetail">자세히 보기</button>
+              <button className="btn btnInfo">원작 정보기</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="searchContainer">
         <img src={search_icon} className="search-icon" alt="검색"/>
         <input type="text" placeholder="  제목, 장르, 지은이 검색" className="search-box"/>
       </div>
+      {loading ? (
+        <div className="loading">데이터를 불러오는 중입니다...🍿</div>
+      ) : (
+        <>
+          {/* 1. 실시간 인기 작품 */}
+          <section className="scrollSection">
+            <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h3 className="sectionTitle">실시간 인기 작품</h3>
+            </div>
 
-      {/* Banner Section */}
-      <div className="banner-section">
-        <div className="banner-content">배너 내용</div>
-          <div className="banner-title-image"></div>
-          <div className="banner-buttons">
-            <button className="btn btn-white">자세히 보기</button>
-            <button className="btn btn-gray">원작 정보보기</button>
-          </div>
-      </div>
+            <div className="sliderWrapper">
+              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef)}> &lt; </button>
+              <div className="platformScroll" ref={scrollRef}>
+                {trendingWorks.map((work) => (
+                  <PlatformCard key={work.id} work={work} />
+                ))}
+              </div>
+              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef)}> &gt; </button>
+            </div>  
+          </section>
 
-      {/* 1. 실시간 인기 작품 */}
-      <section className="scrollSection">
-        <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h3 className="sectionTitle">실시간 인기 작품</h3>
-        </div>
+          {/* 2. 원작을 찢고 나온 작품들 */}
+          <section className="scrollSection" style={{ marginTop: '50px' }}>
+            <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h3 className="sectionTitle">원작을 찢고 나온 작품들</h3>
+            </div>
 
-        <div className="sliderWrapper">
-          <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef)}> &lt; </button>
-          <div className="platformScroll" ref={scrollRef}>
-            {trendingWorks.map((work) => (
-              <PlatformCard key={work.id} work={work} />
-            ))}
-          </div>
-          <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef)}> &gt; </button>
-        </div>  
-      </section>
-
-      {/* 2. 원작을 찢고 나온 작품들 */}
-      <section className="scrollSection" style={{ marginTop: '50px' }}>
-        <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h3 className="sectionTitle">원작을 찢고 나온 작품들</h3>
-        </div>
-
-        <div className="sliderWrapper">
-          <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
-          <div className="platformScroll" ref={scrollRef2}>
-            {originalWorks.map((work) => (
-              <PlatformCard key={work.id} work={work} />
-            ))}
-          </div>
-          <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
-        </div>
-      </section>
-
+            <div className="sliderWrapper">
+              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
+              <div className="platformScroll" ref={scrollRef2}>
+                {originalWorks.map((work) => (
+                  <PlatformCard key={work.id} work={work} />
+                ))}
+              </div>
+              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
+            </div>
+          </section>
+        </>  
+      )}  
       <Footer />
     </div>  
   );
