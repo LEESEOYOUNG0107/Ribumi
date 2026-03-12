@@ -150,15 +150,15 @@ export default function Main() {
 
             <p className="bannerDescrip">
               {currentBannerWork.overview
-              ? (currentBannerWork.overview.length > 50
-              ? currentBannerWork.overview.slice(0, 50) + "..." /*줄거리 너무 길면 ...처리 */
+              ? (currentBannerWork.overview.length > 70
+              ? currentBannerWork.overview.slice(0, 70) + "..." /*줄거리 너무 길면 ...처리 */
               :currentBannerWork.overview)
               : "세상을 구하기 위한 마지막 사투가 시작된다."}
             </p>
 
             <div className="bannerBtn">
               <button className="btn btnDetail">자세히 보기</button>
-              <button className="btn btnInfo">원작 정보기</button>
+              <button className="btn btnInfo">원작정보 보기</button>
             </div>
           </div>
         </div>
