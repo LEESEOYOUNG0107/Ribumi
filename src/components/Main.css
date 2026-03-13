@@ -20,47 +20,6 @@
   flex-direction: column;
 }
 
-/* ─── Search Section ─── */
-.searchContainer {
-  position: relative;
-  z-index: 1;
-}
-
-.search-icon {
-  z-index: 3;
-  position: absolute;
-  left: 92%;
-  top: 55%; 
-  pointer-events: none; 
-  width: 24px;
-  height: 24px;
-  color: #666;
-  flex-shrink: 0;
-}
-
-.search-box {
-  align-items: center;
-  padding: 10px 5px;
-  border-radius: 4px;
-  width: 370px;
-  margin-left: 70%;
-  border: none;
-  margin-top: 33px;
-  position: relative; 
-  z-index: 2;
-}
-
-.search-box input {
-  flex: 1;
-  font-size: 20px;
-  color: #333;
-  font-family: 'Paperlogy';
-}
-
-.search-box input::placeholder {
-  color: #797979;
-}
-
 /* ─── Banner Section ─── */
 .bannerSection {
   position: relative;
@@ -81,7 +40,7 @@
 }
 
 .bannerContent {
-  margin-top: 350px;
+  margin-top: 250px;
   position: relative;
   z-index: 2;
   max-width: 629px;
@@ -91,16 +50,25 @@
 }
 
 .bannerTitle {
-  font-size: 40px;
+  font-size: 50px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
   font-family: 'Cafe24Surround';
 }
 
+.bannerLogo{
+  max-width: 350px;
+  max-height: 110px;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* 찌그러지지 않고 비율에 맞게 줄어들도록 설정 */
+  margin-bottom: 10px;
+}
+
 .bannerDescrip {
   font-family: 'Paperlogy';
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 300;
   color: #ffffff;
   line-height: 1.6;
@@ -113,8 +81,9 @@
 }
 
 .btn {
-  padding: 14px 30px;
+  padding: 16px 33px;
   border: none;
+  border-radius: 0 !important;
   font-size: 24px;
   font-weight: 500;
   cursor: pointer;
@@ -161,8 +130,7 @@
 }
 
 .scrollSection {
-  margin-right: 70px;
-  margin-left: 80px;
+  margin: 30px 70px 30px 80px;
 }
 
 /* ─── Horizontal Scroll Slider ─── */
@@ -287,12 +255,11 @@
   color: rgba(255, 230, 0, 0.942);
 }
 
-/* ─── Responsive (사용하지 않는 클래스 제거됨) ─── */
 @media (max-width: 1200px) {
   .header-nav { padding: 20px 40px; height: auto; flex-direction: column; gap: 20px; }
   .nav-left { width: 100%; gap: 30px; }
   .nav-menu { gap: 20px; }
-  .search-box { width: 100%; max-width: 400px; }
+  /* .searchBox { width: 100%; max-width: 400px; } */
   .sectionTitle { font-size: 24px; }
   .bannerSection { height: 600px; padding-left: 40px; }
   .bannerTitle { font-size: 48px; }
@@ -302,7 +269,7 @@
   .header-nav { padding: 15px 20px; height: auto; }
   .logo h1 { font-size: 20px; }
   .nav-menu { display: none; }
-  .search-box { width: 100%; padding: 10px; }
+  /* .searchBox { width: 100%; padding: 10px; } */
   .bannerSection { height: 400px; padding-left: 20px; margin-top: 100px; }
   .bannerTitle { font-size: 36px; }
   .bannerDescrip { font-size: 14px; }

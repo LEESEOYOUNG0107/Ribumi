@@ -83,10 +83,6 @@ export default function Book() {
   return (
     <div className="frame mainWrapper">
         <Nav/>
-        <div className="searchContainer">
-            <img src={search_icon} className="search-icon" alt="검색"/>
-            <input type="text" placeholder="  제목, 장르, 지은이 검색" className="search-box"/>
-        </div>
 
         {/* Banner Section */}
         <div style={{ marginTop: '100px' }}></div> {/*베너!!! */}

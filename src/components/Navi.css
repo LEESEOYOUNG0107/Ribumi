@@ -61,3 +61,47 @@
   border-bottom: 2px solid #ffffff;
   font-weight: 500;
 }
+
+/* ─── Search Section ─── */
+.searchContainer {
+  position: relative;
+  display: flex;
+  /* margin-left: auto; */
+  z-index: 1;
+}
+
+.searchIcon {
+  z-index: 3;
+  position: absolute;
+  left: 87%;
+  top: 25%; 
+  pointer-events: none; /* 아이콘 뒤에 있는 input이 클릭되도록 함 */
+  width: 24px;
+  height: 24px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.searchBox {
+  padding: 10px 15px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-family: 'Paperlogy';
+  font-size: 14px;
+  width: 300px; /* 헤더에 맞는 적절한 길이 */
+  transition: all 0.3s ease;
+}
+
+.searchBox input {
+  flex: 1;
+  font-size: 20px;
+  color: #333;
+  font-family: 'Paperlogy';
+}
+
+ input::placeholder {
+  color: #797979;
+  font-family: 'Paperlogy';
+  font-weight: 400;
+  font-size: 16px ;
+}

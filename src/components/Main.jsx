@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import "./Main.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
-import search_icon from "../imgs/search_icon.svg";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const genreMap = {
@@ -53,8 +52,17 @@ export default function Main() {
   const [trendingWorks, setTrendingWorks] = useState([]); 
   const [originalWorks, setOriginalWorks] = useState([]); 
   const [CurrentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [bannerLogo, setBannerLogo] = useState(null);
   const scrollRef = useRef(null);
   const scrollRef2 = useRef(null);
+
+  // 가로 스크롤 함수
+  const scrollLeft = (ref) => {
+    if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
+  };
+  const scrollRight = (ref) => {
+    if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
+  };
 
   useEffect(() => {
     // 실시간 인기 작품
@@ -119,16 +127,31 @@ export default function Main() {
     return () => clearInterval(timer); // 화면이 꺼지거나 데이터가 바뀔 때 타이머를 초기화. (메모리 누수 방지)
   }, [originalWorks]); // originalWorks 데이터가 로딩된 후 타이머 작동
 
-  // 가로 스크롤 함수
-  const scrollLeft = (ref) => {
-    if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
-  };
-  const scrollRight = (ref) => {
-    if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
-  };
-
   const currentBannerWork = originalWorks[CurrentBannerIndex];
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if(!currentBannerWork) return;
+      setBannerLogo(null); // 로고가 뜨기 전까지 이전 로고를 지움
 
+      try{
+        let mediaType = currentBannerWork.mediaType || currentBannerWork.mediaType;
+        if (!mediaType) {
+          mediaType = currentBannerWork.first_air_date ? 'tv' : 'movie';
+        }
+        const response = await fetch(`https://api.themoviedb.org/3/${mediaType}/${currentBannerWork.id}/images?api_key=${TMDB_KEY}&include_image_language=ko,null`);
+        const data = await response.json();
+
+        // 로고 이미지가 하나라도 존재하면 첫 번째 로고 경로를 저장!
+        if (data.logos && data.logos.length > 0) {
+          setBannerLogo(data.logos[0].file_path);
+        }
+      } catch(error){
+        console.log("로고 데이터를 가져오는데 실패했습니다.", error);
+      }
+    };
+
+    fetchLogo();
+  }, [currentBannerWork]);
   return (
     <div className="frame mainWrapper">
       <Nav/>
@@ -144,18 +167,27 @@ export default function Main() {
         }}>
           <div className="bannerOverlay"></div> {/* 이미지를 자연스럽게 덮어주는 그라데이션 막 */}
           <div className="bannerContent">
-            <h2 className="bannerTitle">
-              {currentBannerWork.title || currentBannerWork.name}
-            </h2>
+            <div className="bannerTitleSection">
+              {bannerLogo ? (
+                <img // 로고 이미지가 있으면 로고를 보여줌 (배경이 투명한 PNG 파일임)
+                  src={`https://image.tmdb.org/t/p/w500${bannerLogo}`} 
+                  alt="작품 타이틀 로고" 
+                  className="bannerLogo" 
+                />
+              ) : (
+                // 로고가 없는 마이너한 작품이면 그냥 원래대로 텍스트 제목을 보여줌
+                <h2 className="bannerTitle">{currentBannerWork.title || currentBannerWork.name}</h2>
+              )}
+</div>
 
-            <p className="bannerDescrip">
-              {currentBannerWork.overview
-              ? (currentBannerWork.overview.length > 70
-              ? currentBannerWork.overview.slice(0, 70) + "..." /*줄거리 너무 길면 ...처리 */
-              :currentBannerWork.overview)
-              : "세상을 구하기 위한 마지막 사투가 시작된다."}
-            </p>
-
+            {currentBannerWork.overview && (
+              <p className="bannerDescrip">
+                { currentBannerWork.overview.length > 70
+                  ? currentBannerWork.overview.slice(0, 70) + "..." /*줄거리 너무 길면 ...처리 */
+                  : currentBannerWork.overview}
+              </p>
+            )}
+            
             <div className="bannerBtn">
               <button className="btn btnDetail">자세히 보기</button>
               <button className="btn btnInfo">원작정보 보기</button>
@@ -163,10 +195,7 @@ export default function Main() {
           </div>
         </div>
       )}
-      <div className="searchContainer">
-        <img src={search_icon} className="search-icon" alt="검색"/>
-        <input type="text" placeholder="  제목, 장르, 지은이 검색" className="search-box"/>
-      </div>
+
       {loading ? (
         <div className="loading">데이터를 불러오는 중입니다...🍿</div>
       ) : (
