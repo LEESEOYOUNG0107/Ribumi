@@ -81,24 +81,13 @@ export default function Book() {
   useEffect(() => {
     const loadBooks = async () => {
       setLoading(true);
-      try {
-        const [newRes, popularRes, bannerRes] = await Promise.all([
-          fetchAladinBooks("ItemNewSpecial"), // 1. 전체 신간 리스트
-          fetchAladinBooks("Bestseller"),   // 2. 베스트셀러 리스트
-          searchAladinBooks("원작")
-        ]);
-
-        setNewBooks(newRes);
-        setPopularBooks(popularRes);
-        if (bannerRes && bannerRes.length > 0) {
-          setBannerBooks(bannerRes);
-        } else if (popularRes.length > 0) {
-          // 검색 결과가 없으면 베스트셀러 중 앞의 5권을 배너로 씁니다.
-          setBannerBooks(popularRes.slice(0, 5));
-        }
-      } finally {
-        setLoading(false);
-      }
+      // Promise.all을 쓰지 않고 개별적으로 호출하여 상태를 업데이트
+      fetchAladinBooks("ItemNewSpecial").then(res => setNewBooks(res));
+      fetchAladinBooks("Bestseller").then(res => setPopularBooks(res));
+      searchAladinBooks("원작").then(res => {
+        if (res && res.length > 0) setBannerBooks(res);
+        setLoading(false); // 마지막 데이터가 오면 로딩 해제
+      });
     };
 
     loadBooks();
