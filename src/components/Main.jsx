@@ -68,7 +68,6 @@ export default function Main() {
     // 실시간 인기 작품
     const fetchTrendingWorks = async () => {
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // 🌟 2초 강제 지연 (테스트용)
       try {
         const [movieRes, tvRes] = await Promise.all([
           // 1. 한국 영화 + 한국에서 볼 수 있음 + 인기순
@@ -134,7 +133,7 @@ export default function Main() {
       setBannerLogo(null); // 로고가 뜨기 전까지 이전 로고를 지움
 
       try{
-        let mediaType = currentBannerWork.mediaType || currentBannerWork.mediaType;
+        let mediaType = currentBannerWork.media_Type;
         if (!mediaType) {
           mediaType = currentBannerWork.first_air_date ? 'tv' : 'movie';
         }
@@ -178,7 +177,7 @@ export default function Main() {
                 // 로고가 없는 마이너한 작품이면 그냥 원래대로 텍스트 제목을 보여줌
                 <h2 className="bannerTitle">{currentBannerWork.title || currentBannerWork.name}</h2>
               )}
-</div>
+            </div>
 
             {currentBannerWork.overview && (
               <p className="bannerDescrip">

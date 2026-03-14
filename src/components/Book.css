@@ -1,0 +1,58 @@
+/* 배너 전체 컨테이너: 높이를 살짝 키워 여백 확보 */
+.bookBannerSection {
+  width: 100%;
+  height: 500px; 
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-top: 150px;
+  margin-bottom: 100px;
+}
+
+.bannerTrack {
+  display: flex;
+  animation: scrollLeft 60s linear infinite;
+}
+.bannerTrack:hover {
+  animation-play-state: paused;
+}
+
+/* 개별 아이템: 지그재그 배치를 위한 설정 */
+.bannerItem {
+  width: 80%;
+  min-width: 280px;
+  padding: 40px 20px; /* 🌟 상하 여백을 주어 움직일 공간 확보 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.bannerItem:nth-child(odd) {
+  transform: translateY(-30px); 
+}
+.bannerItem:nth-child(even) {
+  transform: translateY(30px); 
+}
+
+.bannerItem:hover {
+  transform: translateY(0) scale(1.1) !important; /* 호버 시에는 중앙으로 오며 확대 */
+  z-index: 10;
+}
+
+.bannerPosterImage {
+  width: 220px;
+  height: 320px;
+  object-fit: cover;
+}
+
+@keyframes scrollLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        /* 아이템이 2배로 복사되어 있으므로 전체 트랙의 절반(-50%)까지 이동하면 무한 루프가 완성됩니다. */
+        transform: translateX(-50%);
+    }
+}

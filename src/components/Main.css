@@ -259,7 +259,6 @@
   .header-nav { padding: 20px 40px; height: auto; flex-direction: column; gap: 20px; }
   .nav-left { width: 100%; gap: 30px; }
   .nav-menu { gap: 20px; }
-  /* .searchBox { width: 100%; max-width: 400px; } */
   .sectionTitle { font-size: 24px; }
   .bannerSection { height: 600px; padding-left: 40px; }
   .bannerTitle { font-size: 48px; }
@@ -269,7 +268,6 @@
   .header-nav { padding: 15px 20px; height: auto; }
   .logo h1 { font-size: 20px; }
   .nav-menu { display: none; }
-  /* .searchBox { width: 100%; padding: 10px; } */
   .bannerSection { height: 400px; padding-left: 20px; margin-top: 100px; }
   .bannerTitle { font-size: 36px; }
   .bannerDescrip { font-size: 14px; }

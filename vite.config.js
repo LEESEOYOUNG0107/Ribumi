@@ -8,12 +8,16 @@ export default defineConfig({
       '/openApi': {
         target: 'http://www.kopis.or.kr',
         changeOrigin: true,
+      },
+        '/aladin' : {
+        target: 'https:www.aladin.co.kr',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/aladin/, '')
+      },
+        'auth':{
+        target: 'http://localhost:8000',
+        changeOrigin: true,
       }
-    },
-
-    'auth':{
-      target: 'http://localhost:8000',
-      changeOrigin: true,
     }
   }
 })

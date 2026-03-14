@@ -1,56 +1,79 @@
 import { useEffect, useState, useRef } from "react";
 import "./Main.css";
+import "./Book.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
-import search_icon from "../imgs/search_icon.svg";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
-const KAKAO_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 
 function BookCard({ book }) {
-    if(!book) return null;
-    const imgUrl = book.thumbnail ? book.thumbnail : "https://via.placeholder.com/180x250?text=No+Image";
-    const year = book.datetime ? book.datetime.substring(0,4) : "";
-    const authors = book.authors && book.authors.length > 0 ? book.authors.join(", ") : "작자 미상";
+  if(!book) return null;
+  let imgUrl = book.cover;
+  if (imgUrl) {
+    imgUrl = imgUrl.replace('/coversum/', '/cover500/');
+  } else {
+    imgUrl = "https://placehold.co/180x250?text=No+Image";
+  }
+  const year = book.pubDate ? book.pubDate.substring(0,4) : "";
+  const authors = book.author ? book.author.split("(지은이)")[0].trim() : "작자 미상";
 
+  // 나중에 상세페이지로 이동하기 위한 핸들러 틀
+  const goToDetail = () => {
+      console.log("이동할 도서 ISBN:", book.isbn13);
+      // window.location.href = `/book/${book.isbn13}`;
+  };
+  
   return (
     <div className="platformCard" style={{ width: '180px', flexShrink: 0 }}>
-      <div className="cardImage" style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+      <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
-          {/* 책 제목이 너무 길면 자르기 */}
-          <h4 className="cardTitle">{book.title.length > 12 ? book.title.slice(0, 12) + "..." : book.title}</h4>
+          <h4 className="cardTitle">{book.title}</h4>
         </div>
         <span className="cardGenre" style={{ color: '#aaa', fontSize: '11px' }}>{authors}</span>
       </div>    
       <div className="cardRatingGroup">
         <span className="cardYear">{year}</span>
-        <span style={{ color: '#fff', fontSize: '12px' }}>{book.price ? `${book.price.toLocaleString()}원` : "가격 미상"}</span>
+        <span style={{ color: '#fff', fontSize: '12px' }}>
+          {book.priceSales ? `${book.priceSales.toLocaleString()}원` : "가격 미상"}
+        </span>
       </div>
     </div>
   );
 }
 
 export default function Book() {
-    const [newBooks, setNewBooks] = useState([]);
-    const [popularBooks, setPopularBooks] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const scrollRef1 = useRef(null);
-    const scrollRef2 = useRef(null);
+  const [newBooks, setNewBooks] = useState([]);
+  const [popularBooks, setPopularBooks] = useState([]);
+  const [bannerBooks, setBannerBooks] = useState([]);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const scrollRef1 = useRef(null);
+  const scrollRef2 = useRef(null);
 
-    const fetchKakaoBooks = async (query, sort = "accuracy") => {
+  // 검색 API
+  const searchAladinBooks = async (keyword) => {
+      const url = `/aladin/ttb/api/ItemSearch.aspx?ttbkey=${ALADIN_KEY}&Query=${encodeURIComponent(keyword)}&QueryType=Keyword&MaxResults=20&start=1&SearchTarget=Book&output=js&Version=20131101&Sort=Accuracy`;
+      try {
+          const response = await fetch(url);
+          const data = await response.json();
+          return data.item || [];
+        } catch (error) {
+          return [];
+      }
+  };
+
+  const fetchAladinBooks = async (queryType) => {
+    // output=js: JSON 응답, Version=20131101: 최신 데이터 형식
+    const url = `/aladin/ttb/api/ItemList.aspx?ttbkey=${ALADIN_KEY}&QueryType=${queryType}&MaxResults=15&start=1&SearchTarget=Book&output=js&Version=20131101`;
+    
     try {
-      const response = await fetch(`https://dapi.kakao.com/v3/search/book?query=${query}&sort=${sort}&size=15`, {
-        method: "GET",
-        headers: {
-          // 🌟 카카오 API는 헤더에 Authorization을 꼭 이렇게 넣어야 합니다!
-          Authorization: `KakaoAK ${KAKAO_KEY}`
-        }
-      });
+      const response = await fetch(url);
       const data = await response.json();
-      return data.documents; // 카카오는 results 대신 documents 배열에 담아줍니다.
+      return data.item || []; // 알라딘은 'item' 배열에 데이터를 담아줌
     } catch (error) {
-      console.error("도서 데이터를 불러오는데 실패했습니다.", error);
+      console.error(`${queryType} 데이터를 불러오는데 실패했습니다.`, error);
       return [];
     }
   };
@@ -58,19 +81,38 @@ export default function Book() {
   useEffect(() => {
     const loadBooks = async () => {
       setLoading(true);
-      try{
-        const newReleases = await fetchKakaoBooks("소설", "latest"); // 1. 2025 최신작 
-        setNewBooks(newReleases);
+      try {
+        const [newRes, popularRes, bannerRes] = await Promise.all([
+          fetchAladinBooks("ItemNewSpecial"), // 1. 전체 신간 리스트
+          fetchAladinBooks("Bestseller"),   // 2. 베스트셀러 리스트
+          searchAladinBooks("원작")
+        ]);
 
-        const populars = await fetchKakaoBooks("베스트셀러", "accuracy"); // 2. 최근 인기 도서 (베스트셀러 키워드로 검색)
-        setPopularBooks(populars);
-      } finally{
+        setNewBooks(newRes);
+        setPopularBooks(popularRes);
+        if (bannerRes && bannerRes.length > 0) {
+          setBannerBooks(bannerRes);
+        } else if (popularRes.length > 0) {
+          // 검색 결과가 없으면 베스트셀러 중 앞의 5권을 배너로 씁니다.
+          setBannerBooks(popularRes.slice(0, 5));
+        }
+      } finally {
         setLoading(false);
       }
     };
 
     loadBooks();
   }, []);
+
+  const currentBanner = bannerBooks[currentBannerIndex];
+  // 배너 자동 전환 로직
+  useEffect(() => {
+    if (bannerBooks.length === 0) return;
+    const timer = setInterval(() => {
+        setCurrentBannerIndex((prev) => (prev === bannerBooks.length - 1 ? 0 : prev + 1));
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [bannerBooks]);
 
   // 가로 스크롤 함수
   const scrollLeft = (ref) => {
@@ -82,45 +124,56 @@ export default function Book() {
 
   return (
     <div className="frame mainWrapper">
-        <Nav/>
+      <Nav/>
 
-        {/* Banner Section */}
-        <div style={{ marginTop: '100px' }}></div> {/*베너!!! */}
-      
-      
+      {/* Banner Section */}
+      {!loading && currentBanner && (
+        <section className="bookBannerSection">
     
+          {/* 4개가 동시에 보이도록 하는 컨테이너 */}
+          <div className="bannerTrackWrapper">
+            <div className="bannerTrack">
+              {[...bannerBooks, ...bannerBooks].map((book, idx) => (
+                <div className="bannerItem" key={idx} onClick={() => console.log(book.isbn13)}>
+                  <img 
+                    src={book.cover.replace('/coversum/', '/cover500/')} 
+                    alt={book.title} 
+                    className="bannerPosterImage" 
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
       
-        {loading ? (
-            <div className="loading">데이터를 불러오는 중입니다...🍿</div>
+      {loading ? (
+        <div className="loading">데이터를 불러오는 중입니다...🍿</div>
         ) : (
-            <>
-                <section className="scrollSection">
-                    <h3 className="sectionTitle">2025 최신작</h3>
-                    <div className="sliderWrapper">
-                        <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
-                        <div className="platformScroll" ref={scrollRef1} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
-                            {newBooks.map((book, idx) => (
-                                <BookCard key={book.isbn || idx} book={book} />
-                            ))}
-                        </div>
-                        <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
-                    </div>  
-                </section>
+          <>
+            <section className="scrollSection">
+              <h3 className="sectionTitle">2026 최신작</h3>
+              <div className="sliderWrapper">
+                <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
+                <div className="platformScroll" ref={scrollRef1} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
+                  {newBooks.map((book, idx) => ( <BookCard key={book.isbn || idx} book={book}/> ))}
+                </div>
+                <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
+              </div>  
+            </section>
 
-                {/* 2. 최근 인기 도서 섹션 */}
-                <section className="scrollSection" style={{ marginTop: '50px' }}>
-                    <h3 className="sectionTitle">최근 인기 도서</h3>
-                    <div className="sliderWrapper">
-                    <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
-                    <div className="platformScroll" ref={scrollRef2} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
-                        {popularBooks.map((book, idx) => (
-                        <BookCard key={book.isbn || idx} book={book} />
-                        ))}
-                    </div>
-                    <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
-                    </div>  
-                </section>
-            </>  
+            {/* 2. 최근 인기 도서 섹션 */}
+            <section className="scrollSection" style={{ marginTop: '50px' }}>
+              <h3 className="sectionTitle">최근 인기 도서</h3>
+              <div className="sliderWrapper">
+                <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
+                <div className="platformScroll" ref={scrollRef2} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
+                  {popularBooks.map((book, idx) => ( <BookCard key={book.isbn || idx} book={book} /> ))}
+                </div>
+                <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
+              </div>  
+            </section>
+          </>  
       )}  
       <Footer />
     </div>  
