@@ -1,11 +1,11 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useRef } from "react"; 
 import Navi from "./components/Navi";
-//import Search from "./components/Search"; // 새로 만든 통합 검색 컴포넌트
 import Book from "./components/Book"; 
 import MyRecords from "./components/MyRecords";
 import Home from "./components/Home";
 import Main from "./components/Main";
+import Performance from "./components/Performance";
 // import Login from "./components/Login";
 import Detail from "./components/Detail";
 // import "./App.css";
@@ -30,6 +30,7 @@ export default function App() {
           {/* <Route path="/login" element={<Login />} /> */}
           <Route path="/main" element={<Main />} /> {/* 통합 장르 페이지 */}  
           <Route path="/book" element={<Book/>} />
+          <Route path="/performance" element={<Performance/>} />
           
           {/* 영화/드라마 상세 정보 페이지 */}
           {/*<Route path="/detail/:type/:id" element={<Detail />} />

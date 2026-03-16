@@ -18,6 +18,7 @@ export default function Nav({ className }) {
         <div className={`nav-item ${location.pathname === "/" ? "nav-active" : ""}`} onClick={() => navigate("/")}>홈</div>
         <div className={`nav-item ${location.pathname === "/main" ? "nav-active" : ""}`} onClick={() => navigate("/main")}>통합장르</div>
         <div className={`nav-item ${location.pathname === "/book" ? "nav-active" : ""}`} onClick={() => navigate("/book")}>도서장르</div>
+        <div className={`nav-item ${location.pathname === "/performace" ? "nav-active" : ""}`} onClick={() => navigate("/performance")}>공연장르</div>
         <div className="nav-item">내 페이지</div>
       </div>
 

@@ -5,18 +5,20 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/openApi': {
-        target: 'http://www.kopis.or.kr',
-        changeOrigin: true,
-      },
-        '/aladin' : {
-        target: 'https:www.aladin.co.kr',
+      '/aladin' : {
+        target: 'https://www.aladin.co.kr',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/aladin/, '')
       },
-        'auth':{
+      'auth':{
         target: 'http://localhost:8000',
         changeOrigin: true,
+      },
+      '/kopis': {                     
+        target: 'https://kopis.or.kr',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/kopis/, '')
       }
     }
   }
