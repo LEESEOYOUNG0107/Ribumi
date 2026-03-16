@@ -1,5 +1,4 @@
-/* 배너 전체 컨테이너: 높이를 살짝 키워 여백 확보 */
-.bookBannerSection {
+.BannerSection {
   width: 100%;
   height: 500px; 
   position: relative;

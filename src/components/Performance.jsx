@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import "./Main.css"; // 공통 스타일
-import "./Performance.css"; // 공연 전용 배너 스타일
+import "./Book.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
 
@@ -75,7 +75,32 @@ export default function PerformancePage() {
       console.error("KOPIS 일반 데이터 실패", error);
       return [];
     }
+  
   };
+
+ const fetchBoxOffice = async () => {
+  const url = `/kopis/openApi/restful/boxoffice?service=${KOPIS_KEY}&ststype=month&shcate=&stdate=20260216&eddate=20260316`;
+  
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(text, "text/xml");
+    const boxofNodes = xmlDoc.querySelectorAll("boxof");  // ✅ boxof
+    
+    return Array.from(boxofNodes).map(node => ({
+      id: node.querySelector("mt20id")?.textContent,
+      title: node.querySelector("prfnm")?.textContent,
+      poster: node.querySelector("poster")?.textContent?.replace("http://", "https://"),
+      genre: node.querySelector("cate")?.textContent,
+      rank: node.querySelector("rnum")?.textContent,
+      place: node.querySelector("prfplcnm")?.textContent,
+    }));
+  } catch (error) {
+    console.error("박스오피스 데이터 실패", error);
+    return [];
+  }
+};
 
   useEffect(() => {
     const loadPerformances = async () => {
@@ -93,11 +118,11 @@ export default function PerformancePage() {
       // 1. 상영중인 최신 공연 (기간: 오늘~다음달, 장르: 전체)
       fetchKopisData(todayStr, nextMonthStr, "", 1, 15).then(res => setNewPerfs(res));
       
-      // 2. 주목할 만한 인기 뮤지컬 (기간: 2024.01.01~오늘, 장르: 뮤지컬(GGGA))
-      fetchKopisData("20240101", todayStr, "GGGA", 1, 15).then(res => setPopularPerfs(res));
+      // 2. 주목할 만한 인기 공연
+      fetchBoxOffice().then(res => setPopularPerfs(res));
       
       // 3. 무한 스크롤 배너 (기간: 오늘~다음달, 장르: 뮤지컬(GGGA), 20개 넉넉히)
-      fetchKopisData(todayStr, nextMonthStr, "GGGA", 1, 20).then(res => {
+      fetchKopisData(todayStr, nextMonthStr, "", 1, 20).then(res => {
         if (res && res.length > 0) setBannerPerfs(res);
         setLoading(false); // 마지막 배너 데이터까지 오면 로딩 끝
       });
@@ -119,7 +144,7 @@ export default function PerformancePage() {
 
       {/* 배너 섹션 */}
       {!loading && bannerPerfs.length > 0 && (
-        <section className="perfBannerSection">
+        <section className="BannerSection">
           <div className="bannerTrackWrapper">
             <div className="bannerTrack">
               {[...bannerPerfs, ...bannerPerfs].map((perf, idx) => (
@@ -140,6 +165,18 @@ export default function PerformancePage() {
         <div className="loading">공연 데이터를 불러오는 중입니다...🎫</div>
       ) : (
           <>
+            {/* 인기 뮤지컬 섹션 */}
+            <section className="scrollSection" style={{ marginTop: '50px' }}>
+              <h3 className="sectionTitle">이번 주 예매 TOP 공연</h3>
+              <div className="sliderWrapper">
+                <button className="sliderBtn leftBtn" onClick={() => handleScrollLeft(scrollRef2)}> &lt; </button>
+                <div className="platformScroll" ref={scrollRef2}>
+                  {popularPerfs.map((perf, idx) => ( <PerformanceCard key={perf.id || idx} perf={perf} /> ))}
+                </div>
+                <button className="sliderBtn rightBtn" onClick={() => handleScrollRight(scrollRef2)}> &gt; </button>
+              </div>  
+            </section>
+
             {/* 최신 공연 섹션 */}
             <section className="scrollSection">
               <h3 className="sectionTitle">상영중인 최신 공연</h3>
@@ -149,18 +186,6 @@ export default function PerformancePage() {
                   {newPerfs.map((perf, idx) => ( <PerformanceCard key={perf.id || idx} perf={perf}/> ))}
                 </div>
                 <button className="sliderBtn rightBtn" onClick={() => handleScrollRight(scrollRef1)}> &gt; </button>
-              </div>  
-            </section>
-
-            {/* 인기 뮤지컬 섹션 */}
-            <section className="scrollSection" style={{ marginTop: '50px' }}>
-              <h3 className="sectionTitle">주목할 만한 인기 뮤지컬</h3>
-              <div className="sliderWrapper">
-                <button className="sliderBtn leftBtn" onClick={() => handleScrollLeft(scrollRef2)}> &lt; </button>
-                <div className="platformScroll" ref={scrollRef2}>
-                  {popularPerfs.map((perf, idx) => ( <PerformanceCard key={perf.id || idx} perf={perf} /> ))}
-                </div>
-                <button className="sliderBtn rightBtn" onClick={() => handleScrollRight(scrollRef2)}> &gt; </button>
               </div>  
             </section>
           </>  

@@ -117,7 +117,7 @@ export default function Book() {
 
       {/* Banner Section */}
       {!loading && currentBanner && (
-        <section className="bookBannerSection">
+        <section className="BannerSection">
     
           {/* 4개가 동시에 보이도록 하는 컨테이너 */}
           <div className="bannerTrackWrapper">
