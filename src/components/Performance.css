@@ -1,0 +1,32 @@
+.platformCard{
+    width: 180px;
+    flex-shrink: 0
+}
+/* 🌟 2. Flexbox 고무줄 성질 끊기 (글자가 길다고 부모 박스를 늘리지 못하게 함) */
+.cardMeta, .cardTitleSection {
+  min-width: 0; 
+}
+.cardTitle {
+  margin: 0;
+  
+  /* 말줄임표 3대장 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  display: block;
+  width: 100%;
+}
+.cardGenre {
+  font-size: 10px;
+  color: #797979;
+  
+  /* 말줄임표 3대장 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  display: block;
+  width: 100%;
+  margin-top: 4px; /* 장르가 너무 붙어있지 않게 간격 약간 추가 */
+}
