@@ -1,29 +1,76 @@
 import { useState } from "react";
-import axios from "axios";
-import Nav from "./Navi";
-import Footer from "./Footer";
+import { useNavigate } from "react-router-dom";
+import ribumi_logo from "../imgs/logo2.png";
+import "./Login.css";
 
-export default function Login(){
-    const [loginData, setLoginData] = useState({userId: "", password: ""});
-    
+export default function Login() {
+    const [id, setId] = useState("");
+    const [pw, setPw] = useState("");
+    const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        try{
-            const res = await axios.post("/auth/login", loginData);
-            //localStorage.setItem("token", res.data.token);
-            alert("로그인 성공!");
-            nav("/"); // 메인 페이지로 이동
-        } catch (err) {
-            alert("아이디 또는 비밀번호가 틀렸습니다.");
-        }
-    }
-    return(
-        <div className="frame mainWrapper">
-            <Nav/>
-            <h2 className="mb-4 text-center">로그인</h2>
-            
-            <Footer />
+    const handleLogin = () => {
+        console.log("로그인 시도:", id, pw);
+    };
+
+    return (
+        <div className="loginWrapper">
+            {/* 배경 그라디언트 */}
+            <div className="loginBg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="742" viewBox="0 0 1920 742" fill="none">
+                    <g filter="url(#filter0_f_306_5056)">
+                        <path d="M334.763 248.695C145.545 266.812 -58 144.237 -58 144.237V742H1978L1978 157.731C1978 157.731 1740.35 441.92 1496.07 412.13C1270.8 384.659 1180.27 98.5914 949.388 81.2615C718.511 63.9315 523.982 230.578 334.763 248.695Z"
+                            fill="url(#paint0_linear_306_5056)"
+                            fillOpacity="0.82" />
+                    </g>
+                    <defs>
+                        <filter id="filter0_f_306_5056" x="-138" y="0" width="2196" height="822" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">  {/* ✅ color-interpolation-filters → colorInterpolationFilters */}
+                            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                            <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_306_5056" />
+                        </filter>
+                        <linearGradient id="paint0_linear_306_5056" x1="953.056" y1="89.6251" x2="953.056" y2="741.999" gradientUnits="userSpaceOnUse">
+                            <stop stopColor="#1E2A78" />
+                            <stop offset="1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            {/* 로그인 카드 */}
+            <div className="loginCard">
+                <img src={ribumi_logo} alt="ribumi" className="loginCenterLogo" />
+
+                {/* 입력 필드 */}
+                <div className="loginInputGroup">
+                    <input
+                        type="text"
+                        placeholder="아이디 입력"
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
+                        className="loginInput"
+                    />
+                    <input
+                        type="password"
+                        placeholder="비밀번호 입력"
+                        value={pw}
+                        onChange={(e) => setPw(e.target.value)}
+                        className="loginInput"
+                        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                    />
+                </div>
+
+                {/* 로그인 버튼 */}
+                <button className="loginBtn" onClick={handleLogin}>
+                    로그인
+                </button>
+
+                {/* 하단 링크 */}
+                <div className="loginLinks">
+                    <span className="loginLink">돌려보기</span>
+                    <span className="loginDivider">|</span>
+                    <span className="loginLink" onClick={() => navigate("/signup")}>회원가입</span>
+                </div>
+            </div>
         </div>
     );
 }

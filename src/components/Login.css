@@ -1,0 +1,107 @@
+/* ─── 전체 배경 ─── */
+.loginWrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: #0a0e1a;
+}
+.loginBg {
+  position: absolute; 
+  top: 0;             
+  left: 0;             
+  width: 100%;         
+  height: 100%;       
+  z-index: 0;
+  pointer-events: none;
+}
+.loginBg svg {
+  width: 100%;         
+  height: 100%;        
+}
+.loginTopLogo img {
+  height: 28px;/
+}
+
+/* ─── 로그인 카드 ─── */
+.loginCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 340px;
+  z-index: 10;
+}
+
+/* ─── 중앙 로고 ─── */
+.loginCenterLogo {
+  width: 80%;
+  margin-bottom: 32px;
+}
+
+/* ─── 입력 필드 그룹 ─── */
+.loginInputGroup {
+  width: 100%;
+  background: white;
+  border-radius: 5px;   
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.loginInput {
+  width: 100%;
+  padding: 16px 18px;
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  background: white;
+  box-sizing: border-box;
+}
+
+.loginInput:last-child {
+  border-bottom: none;
+}
+
+/* ─── 로그인 버튼 ─── */
+.loginBtn {
+  width: 100%;
+  padding: 16px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+.loginBtn:hover {
+  background: #1d4ed8;
+}
+
+/* ─── 하단 링크 ─── */
+.loginLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.loginLink {
+  cursor: pointer;
+  color: #aaa;
+}
+
+.loginLink:hover {
+  color: white;
+}
+
+.loginDivider {
+  color: #555;
+}

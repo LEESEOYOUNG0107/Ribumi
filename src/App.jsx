@@ -7,7 +7,6 @@ import Home from "./components/Home";
 import Main from "./components/Main";
 import Performance from "./components/Performance";
 import Login from "./components/Login";
-// import Login from "./components/Login";
 import Detail from "./components/Detail";
 // import "./App.css";
 
