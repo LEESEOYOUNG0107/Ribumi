@@ -6,6 +6,7 @@ import MyRecords from "./components/MyRecords";
 import Home from "./components/Home";
 import Main from "./components/Main";
 import Performance from "./components/Performance";
+import Login from "./components/Login";
 // import Login from "./components/Login";
 import Detail from "./components/Detail";
 // import "./App.css";
@@ -27,10 +28,10 @@ export default function App() {
         
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/login" element={<Login />} /> */}
           <Route path="/main" element={<Main />} /> {/* 통합 장르 페이지 */}  
           <Route path="/book" element={<Book/>} />
           <Route path="/performance" element={<Performance/>} />
+          <Route path="/login" element={<Login />} />
           
           {/* 영화/드라마 상세 정보 페이지 */}
           {/*<Route path="/detail/:type/:id" element={<Detail />} />

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import Nav from "./Navi";
+import Footer from "./Footer";
 
 export default function Login(){
     const [loginData, setLoginData] = useState({userId: "", password: ""});
-    const nav = useNavigate();
+    
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -18,19 +19,11 @@ export default function Login(){
         }
     }
     return(
-        <div>
+        <div className="frame mainWrapper">
+            <Nav/>
             <h2 className="mb-4 text-center">로그인</h2>
-            <form onSubmit={handleLogin}>
-                <div className="mb-3">
-                    <input type="text" placeholder="아이디" onChange={(e) => setLoginData({...loginData, userId: e.target.value})} />
-                </div>
-
-                <div className="mb-3">
-                    <input type="password" placeholder="비밀번호" onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
-                </div>
-
-                <button type="submit" className="btn btn-success w-100">로그인</button>
-            </form>
+            
+            <Footer />
         </div>
     );
 }

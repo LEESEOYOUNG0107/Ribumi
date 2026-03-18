@@ -61,6 +61,39 @@
   border-bottom: 2px solid #ffffff;
   font-weight: 500;
 }
+/* Dropdown menu*/
+ul, li{
+  list-style: none;
+  padding: 0 !important; 
+  margin: 0 !important;
+}
+.sideBar > ul ul{
+  display: none;
+}
+.sideBar > ul > li {
+  position: relative;
+  cursor: pointer;
+}
+.sideBar > ul > li:hover > ul {
+  display: block;
+  position: absolute;
+  background-color: #050505;
+  top: 170%;        
+  left: 50%;    
+  transform: translateX(-50%);
+  width: 120px;  
+  z-index: 8;
+  text-align: center; 
+}
+.sideBar > ul > li:hover > ul::before {
+  content: "";
+  position: absolute;
+  top: -30px;       /* 메뉴가 170%로 내려가 있으므로, 그 틈새만큼 끌어올려 공간을 채움 */
+  left: 0;
+  width: 100%;
+  height: 30px;     
+  background-color: transparent; /*투명*/
+}
 
 /* ─── Search Section ─── */
 .searchContainer {
@@ -73,8 +106,8 @@
 .searchIcon {
   z-index: 3;
   position: absolute;
-  left: 87%;
-  top: 25%; 
+  left: 3%;
+  top: 20%; 
   pointer-events: none; /* 아이콘 뒤에 있는 input이 클릭되도록 함 */
   width: 24px;
   height: 24px;
