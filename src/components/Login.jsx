@@ -13,9 +13,9 @@ export default function Login() {
     };
 
     return (
-        <div className="loginWrapper">
+        <div className="authWrapper">
             {/* 배경 그라디언트 */}
-            <div className="loginBg">
+            <div className="authBg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="742" viewBox="0 0 1920 742" fill="none">
                     <g filter="url(#filter0_f_306_5056)">
                         <path d="M334.763 248.695C145.545 266.812 -58 144.237 -58 144.237V742H1978L1978 157.731C1978 157.731 1740.35 441.92 1496.07 412.13C1270.8 384.659 1180.27 98.5914 949.388 81.2615C718.511 63.9315 523.982 230.578 334.763 248.695Z"
@@ -37,38 +37,36 @@ export default function Login() {
             </div>
 
             {/* 로그인 카드 */}
-            <div className="loginCard">
-                <img src={ribumi_logo} alt="ribumi" className="loginCenterLogo" />
+            <div className="authCard">
+                <img src={ribumi_logo} alt="ribumi" className="authLogo" />
 
                 {/* 입력 필드 */}
-                <div className="loginInputGroup">
+                <div className="authInputGroup">
                     <input
                         type="text"
                         placeholder="아이디 입력"
                         value={id}
                         onChange={(e) => setId(e.target.value)}
-                        className="loginInput"
+                        className="authInput"
                     />
                     <input
                         type="password"
                         placeholder="비밀번호 입력"
                         value={pw}
                         onChange={(e) => setPw(e.target.value)}
-                        className="loginInput"
+                        className="authInput"
                         onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                     />
                 </div>
 
                 {/* 로그인 버튼 */}
-                <button className="loginBtn" onClick={handleLogin}>
-                    로그인
-                </button>
+                <button className="authBtn" onClick={handleLogin}> 로그인 </button>
 
                 {/* 하단 링크 */}
-                <div className="loginLinks">
-                    <span className="loginLink">돌려보기</span>
-                    <span className="loginDivider">|</span>
-                    <span className="loginLink" onClick={() => navigate("/signup")}>회원가입</span>
+                <div className="authLinks">
+                    <span className="authLink" onClick={() => navigate("/main")}> 돌려보기 </span>
+                    <span className="authDivider">|</span>
+                    <span className="authLink" onClick={() => navigate("/signup")}>회원가입</span>
                 </div>
             </div>
         </div>

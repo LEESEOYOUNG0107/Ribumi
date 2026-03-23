@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Main from "./components/Main";
 import Performance from "./components/Performance";
 import Login from "./components/Login";
+import Signup from "./components/Signup";
 import Detail from "./components/Detail";
 // import "./App.css";
 
@@ -17,13 +18,12 @@ export default function App() {
   const [records, setRecords] = useState([]);
   const idRef = useRef(0);
 
-  // 홈페이지가 아닐 때만 Navi를 표시
-  const isHome = location.pathname === "/";
+  const isHome = location.pathname === "/" || location.pathname === "/login" || location.pathname === "/signup";
 
   return (
     //<AuthProvider> {/* 로그인 유저 정보를 앱 전체에 공유 */}
       <div className="App">
-        {!isHome && <Navi />} {/* 홈페이지가 아닐 때만 상단 메뉴바 표시 */}
+        {!isHome && <Navi />}
         
         <Routes>
           <Route path="/" element={<Home />} />
@@ -31,6 +31,7 @@ export default function App() {
           <Route path="/book" element={<Book/>} />
           <Route path="/performance" element={<Performance/>} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           
           {/* 영화/드라마 상세 정보 페이지 */}
           {/*<Route path="/detail/:type/:id" element={<Detail />} />

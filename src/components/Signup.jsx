@@ -1,57 +1,115 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
+import "./Signup.css";
 
-export default function Signup(){
-    const [formData, setFormData] = useState({
-        userId: "",
-        password: "",
-        userName: "",
-    });
-    const nav = useNavigate();
+export default function Signup() {
+    const [id, setId] = useState("");
+    const [pw, setPw] = useState("");
+    const [pwConfirm, setPwConfirm] = useState("");
+    const [nickname, setNickname] = useState("");
+    const navigate = useNavigate();
 
-    const handleChange = (e) => { // 입력값이 바뀔 때마다 상태 업데이트
-        setFormData({
-            ...formData, [e.target.name]: e.target.value,
-        });
+    const handleSignup = () => {
+        console.log("회원가입 시도:", id, pw, pwConfirm, nickname);
     };
 
-    const handleSingup = async (e) => {
-        e.preventDefault();
-        try{
-            const res = await axios.post("/auth/users", formData);
-            if(res.status === 200){
-                alert("회원가입 성공! 로그인해 주세요.");
-                nav("/login");
-            }
-        }catch(err){
-            console.error("회원가입 실패: ", err);
-            alert("회원가입 중 오류가 발생했습니다.");
-        }
-    };
+    return (
+        <div className="authWrapper">
+            {/* 배경 그라디언트 */}
+            <div className="authBg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="742" viewBox="0 0 1920 742" fill="none">
+                    <g filter="url(#filter0_f_306_5056)">
+                        <path d="M334.763 248.695C145.545 266.812 -58 144.237 -58 144.237V742H1978L1978 157.731C1978 157.731 1740.35 441.92 1496.07 412.13C1270.8 384.659 1180.27 98.5914 949.388 81.2615C718.511 63.9315 523.982 230.578 334.763 248.695Z"
+                            fill="url(#paint0_linear_306_5056)"
+                            fillOpacity="0.82" />
+                    </g>
+                    <defs>
+                        <filter id="filter0_f_306_5056" x="-138" y="0" width="2196" height="822" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">  {/* ✅ color-interpolation-filters → colorInterpolationFilters */}
+                            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                            <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_306_5056" />
+                        </filter>
+                        <linearGradient id="paint0_linear_306_5056" x1="953.056" y1="89.6251" x2="953.056" y2="741.999" gradientUnits="userSpaceOnUse">
+                            <stop stopColor="#1E2A78" />
+                            <stop offset="1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
 
-    return(
-        <div>
-            <div className="container mt-5" style={{ maxWidth: "400px" }}>
-                <h2 className="mb-4 text-center">회원가입</h2>
-                <form onSubmit={handleSignup}>
-                    <div className="mb-3">
-                        <label className="form-label">아이디</label>
-                        <input type="text" name="userId" className="form-control" onChange={handleChange} required />
-                    </div>
+            {/* 회원가입 카드 */}
+            <div className="authCard signup">
 
-                    <div className="mb-3">
-                        <label className="form-label">비밀번호</label>
-                        <input type="password" name="password" className="form-control" onChange={handleChange} required />
+                {/* 아이디 */}
+                <div className="signupField">
+                    <label className="signupLabel">아이디</label>
+                    <div className="authInputGroup">
+                        <input
+                            type="text"
+                            placeholder="아이디 입력"
+                            value={id}
+                            onChange={(e) => setId(e.target.value)}
+                            className="authInput"
+                        />
                     </div>
+                </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">이름</label>
-                        <input type="text" name="userName" className="form-control" onChange={handleChange} required />
+                {/* 비밀번호 */}
+                <div className="signupField">
+                    <label className="signupLabel">비밀번호</label>
+                    <p className="signupDesc">영문, 숫자를 포함한 8자 이상의 비밀번호를 입력해주세요.</p>
+                    <div className="authInputGroup">
+                        <input
+                            type="password"
+                            placeholder="비밀번호 입력"
+                            value={pw}
+                            onChange={(e) => setPw(e.target.value)}
+                            className="authInput"
+                        />
                     </div>
-                    
-                    <button type="submit" className="btn btn-primary w-100">가입하기</button>
-                </form>
+                </div>
+
+                {/* 비밀번호 확인 */}
+                <div className="signupField">
+                    <label className="signupLabel">비밀번호 확인</label>
+                    <div className="authInputGroup">
+                        <input
+                            type="password"
+                            placeholder="비밀번호 확인 입력"
+                            value={pwConfirm}
+                            onChange={(e) => setPwConfirm(e.target.value)}
+                            className="authInput"
+                        />
+                    </div>
+                </div>
+
+                {/* 닉네임 */}
+                <div className="signupField">
+                    <label className="signupLabel">닉네임</label>
+                    <div className="authInputGroup">
+                        <input
+                            type="text"
+                            placeholder="별명 (2~10자)"
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            className="authInput"
+                            onKeyDown={(e) => e.key === "Enter" && handleSignup()}
+                        />
+                    </div>
+                </div>
+
+                {/* 회원가입 버튼 */}
+                <button className="authBtn" onClick={handleSignup}>
+                    회원가입
+                </button>
+
+                {/* 하단 링크 */}
+                <div className="authLinks">
+                    <span className="authLink" onClick={() => navigate("/main")}>돌려보기</span>
+                    <span className="authDivider">|</span>
+                    <span className="authLink" onClick={() => navigate("/login")}>로그인</span>
+                </div>
             </div>
         </div>
     );
