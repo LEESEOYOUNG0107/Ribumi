@@ -6,7 +6,7 @@ import searchIcon from "../imgs/search_icon.svg";
 export default function Nav({ className }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const isHome = location.pathname === "/" || location.pathname === "/login";
+  const isHome = location.pathname === "/";
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
 
   return (
@@ -20,7 +20,7 @@ export default function Nav({ className }) {
           <div className={`nav-item ${location.pathname === "/" ? "nav-active" : ""}`} onClick={() => navigate("/")}>홈</div>
           <div className={`nav-item ${location.pathname === "/main" ? "nav-active" : ""}`} onClick={() => navigate("/main")}>통합장르</div>
           <div className={`nav-item ${location.pathname === "/book" ? "nav-active" : ""}`} onClick={() => navigate("/book")}>도서장르</div>
-          <div className={`nav-item ${location.pathname === "/performance" ? "nav-active" : ""}`} onClick={() => navigate("/performance")}>공연장르</div>      
+          <div className={`nav-item ${location.pathname === "/performance" ? "nav-active" : ""}`} onClick={() => navigate("/performance")}>공연장르</div>   
         </div>
 
         <div style={{display: 'flex', alignItems: 'center', gap: '20px'}}>

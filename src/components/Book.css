@@ -45,7 +45,15 @@
   height: 320px;
   object-fit: cover;
 }
+.cardGenre{
+  color: #aaa;
+  font-size: 11px;
+}
+.authGenre {
+  display: flex;
+  gap: 38%;
 
+}
 @keyframes scrollLeft {
     0% {
         transform: translateX(0);

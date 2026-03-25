@@ -27,30 +27,24 @@ function PerformanceCard({ perf }) {
       
       <div className="cardMeta">
         <div className="cardTitleSection">
-          {/* 🌟 2. 제목이 너무 길면 한 줄로 고정하고 '...' 처리 */}
-          <h4 className="cardTitle"> {perf.title} </h4>
+          <h4 className="cardTitle"> {perf.title} </h4> 
         </div>
         
         {/* 장르와 장소도 길어질 경우를 대비해 '...' 처리 */}
-        <span 
+        <div 
           className="cardGenre"
           style={{ 
             whiteSpace: 'nowrap', 
             overflow: 'hidden', 
             textOverflow: 'ellipsis', 
             width: '100%',
-            display: 'block' 
+            // display: 'block' 
           }}
         >
           {perf.genre} {perf.place ? `| ${perf.place}` : ''}
-        </span>
+        </div>
+        <span className="heart">♡</span>
       </div>    
-      
-      <div className="cardRatingGroup">
-        <span className="cardYear">
-          {perf.startDate} ~ {perf.endDate}
-        </span>
-      </div>
     </div>
   );
 }

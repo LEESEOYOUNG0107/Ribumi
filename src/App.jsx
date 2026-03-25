@@ -9,6 +9,7 @@ import Performance from "./components/Performance";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Detail from "./components/Detail";
+import MyPage from "./components/Mypage";
 // import "./App.css";
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/performance" element={<Performance/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/mypage" element={<MyPage />} />
           
           {/* 영화/드라마 상세 정보 페이지 */}
           {/*<Route path="/detail/:type/:id" element={<Detail />} />

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import "./Main.css";
+
 import "./Book.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
@@ -28,16 +28,18 @@ function BookCard({ book }) {
     <div className="platformCard" style={{ width: '180px', flexShrink: 0 }}>
       <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
-        <div className="cardTitleSection">
-          <h4 className="cardTitle">{book.title}</h4>
+        <span className="cardTitle">{book.title}</span>
+        <div className="authGenre">
+          <span className="cardGenre">{authors}</span>
+          <span className="cardGenre">{book.categoryName ? book.categoryName.split('>').pop() : ""}</span>
         </div>
-        <span className="cardGenre" style={{ color: '#aaa', fontSize: '11px' }}>{authors}</span>
       </div>    
       <div className="cardRatingGroup">
         <span className="cardYear">{year}</span>
-        <span style={{ color: '#fff', fontSize: '12px' }}>
-          {book.priceSales ? `${book.priceSales.toLocaleString()}원` : "가격 미상"}
-        </span>
+        <div className="cardRating">
+          <span className="heart">♡</span>
+          <span className="ratingScore">⭐{book.customerReviewRank ? (book.customerReviewRank / 2).toFixed(1) : "0.0"}</span>
+        </div>
       </div>
     </div>
   );
