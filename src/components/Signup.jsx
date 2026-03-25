@@ -44,6 +44,7 @@ export default function Signup() {
                 {/* 아이디 */}
                 <div className="signupField">
                     <label className="signupLabel">아이디</label>
+                    <p className="signupDesc">영문 5자 이상의 아이디를 입력해주세요</p>
                     <div className="authInputGroup">
                         <input
                             type="text"
@@ -80,21 +81,6 @@ export default function Signup() {
                             value={pwConfirm}
                             onChange={(e) => setPwConfirm(e.target.value)}
                             className="authInput"
-                        />
-                    </div>
-                </div>
-
-                {/* 닉네임 */}
-                <div className="signupField">
-                    <label className="signupLabel">닉네임</label>
-                    <div className="authInputGroup">
-                        <input
-                            type="text"
-                            placeholder="별명 (2~10자)"
-                            value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
-                            className="authInput"
-                            onKeyDown={(e) => e.key === "Enter" && handleSignup()}
                         />
                     </div>
                 </div>
