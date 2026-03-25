@@ -7,41 +7,29 @@ import Footer from "./Footer";
 
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
-// ─── 개별 공연 카드 컴포넌트 ───
-function PerformanceCard({ perf }) {
-  if (!perf) return null;
-  const imgUrl = perf.poster || "https://placehold.co/180x250?text=No+Image";
+function PerformanceCard({ item }) {
+  if (!item) return null;
+  const imgUrl = item.poster || "https://placehold.co/180x250?text=No+Image";
 
   const goToDetail = () => {
-    console.log("이동할 공연 ID:", perf.id);
-    // window.location.href = `/performance/${perf.id}`;
+    console.log("이동할 공연 ID:", item.id);
   };
 
   return (
-    // Main.css의 platformCard 속성을 그대로 사용하여 규격 통일
     <div className="platformCard" onClick={goToDetail}>
       <div 
         className="cardImage" 
         style={{ backgroundImage: `url(${imgUrl})` }}
       ></div>
-      
       <div className="cardMeta">
         <div className="cardTitleSection">
-          <h4 className="cardTitle"> {perf.title} </h4> 
+          <h4 className="cardTitle">{item.title}</h4> 
         </div>
-        
-        {/* 장르와 장소도 길어질 경우를 대비해 '...' 처리 */}
         <div 
           className="cardGenre"
-          style={{ 
-            whiteSpace: 'nowrap', 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis', 
-            width: '100%',
-            // display: 'block' 
-          }}
+          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}
         >
-          {perf.genre} {perf.place ? `| ${perf.place}` : ''}
+          {item.genre} {item.place ? `| ${item.place}` : ''}
         </div>
         <span className="heart">♡</span>
       </div>    
@@ -49,7 +37,6 @@ function PerformanceCard({ perf }) {
   );
 }
 
-// ─── 메인 공연 페이지 컴포넌트 ───
 export default function PerformancePage() { 
   const [newPerfs, setNewPerfs] = useState([]);
   const [popularPerfs, setPopularPerfs] = useState([]);
@@ -59,18 +46,15 @@ export default function PerformancePage() {
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
 
-  // KOPIS 일반 공연 데이터
   const fetchKopisData = async (stdate, eddate, shcate = "", cpage = 1, rows = 15) => {
     const categoryParam = shcate ? `&shcate=${shcate}` : "";
     const url = `/kopis/openApi/restful/pblprfr?service=${KOPIS_KEY}&stdate=${stdate}&eddate=${eddate}&cpage=${cpage}&rows=${rows}${categoryParam}`;
-    
     try {
       const response = await fetch(url);
       const text = await response.text();
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, "text/xml");
       const dbNodes = xmlDoc.querySelectorAll("db");
-      
       return Array.from(dbNodes).map(node => ({
         id: node.querySelector("mt20id")?.textContent,
         title: node.querySelector("prfnm")?.textContent,
@@ -86,17 +70,14 @@ export default function PerformancePage() {
     }
   };
 
-  // KOPIS 박스오피스 데이터
   const fetchBoxOffice = async () => {
     const url = `/kopis/openApi/restful/boxoffice?service=${KOPIS_KEY}&ststype=month&shcate=&stdate=20260216&eddate=20260316`;
-    
     try {
       const response = await fetch(url);
       const text = await response.text();
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, "text/xml");
       const boxofNodes = xmlDoc.querySelectorAll("boxof");  
-      
       return Array.from(boxofNodes).map(node => ({
         id: node.querySelector("mt20id")?.textContent,
         title: node.querySelector("prfnm")?.textContent,
@@ -114,12 +95,10 @@ export default function PerformancePage() {
   useEffect(() => {
     const loadPerformances = async () => {
       setLoading(true);
-      
       const formatString = (date) => date.toISOString().slice(0, 10).replace(/-/g, "");
       const today = new Date();
       const nextMonth = new Date();
       nextMonth.setMonth(nextMonth.getMonth() + 1);
-
       const todayStr = formatString(today);
       const nextMonthStr = formatString(nextMonth);
 
@@ -130,11 +109,9 @@ export default function PerformancePage() {
         setLoading(false);
       });
     };
-
     loadPerformances();
   }, []);
 
-  // 가로 스크롤 공통 함수 (Main.jsx와 동일한 로직)
   const scrollLeft = (ref) => {
     if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
   };
@@ -146,16 +123,15 @@ export default function PerformancePage() {
     <div className="frame mainWrapper">
       <Nav/>
 
-      {/* 배너 섹션 (Book.css의 스타일 재활용) */}
       {!loading && bannerPerfs.length > 0 && (
         <section className="BannerSection">
           <div className="bannerTrackWrapper">
             <div className="bannerTrack">
-              {[...bannerPerfs, ...bannerPerfs].map((perf, idx) => (
-                <div className="bannerItem" key={idx} onClick={() => console.log(perf.id)}>
+              {[...bannerPerfs, ...bannerPerfs].map((item, idx) => (
+                <div className="bannerItem" key={idx} onClick={() => console.log(item.id)}>
                   <img 
-                    src={perf.poster} 
-                    alt={perf.title} 
+                    src={item.poster} 
+                    alt={item.title} 
                     className="bannerPosterImage" 
                   />
                 </div>
@@ -168,31 +144,29 @@ export default function PerformancePage() {
       {loading ? (
         <div className="loading">공연 데이터를 불러오는 중입니다...🎫</div>
       ) : (
-          <>
-            {/* 인기 뮤지컬 섹션 */}
-            <section className="scrollSection">
-              <h3 className="sectionTitle">이번 주 예매 TOP 공연</h3>
-              <div className="sliderWrapper">
-                <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
-                <div className="platformScroll" ref={scrollRef2}>
-                  {popularPerfs.map((perf, idx) => ( <PerformanceCard key={perf.id || idx} perf={perf} /> ))}
-                </div>
-                <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
-              </div>  
-            </section>
+        <>
+          <section className="scrollSection">
+            <h3 className="sectionTitle">이번 주 예매 TOP 공연</h3>
+            <div className="sliderWrapper">
+              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
+              <div className="platformScroll" ref={scrollRef2}>
+                {popularPerfs.map((item, idx) => ( <PerformanceCard key={item.id || idx} item={item} /> ))}
+              </div>
+              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
+            </div>  
+          </section>
 
-            {/* 최신 공연 섹션 */}
-            <section className="scrollSection" style={{ marginTop: '50px' }}>
-              <h3 className="sectionTitle">상영중인 최신 공연</h3>
-              <div className="sliderWrapper">
-                <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
-                <div className="platformScroll" ref={scrollRef1}>
-                  {newPerfs.map((perf, idx) => ( <PerformanceCard key={perf.id || idx} perf={perf}/> ))}
-                </div>
-                <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
-              </div>  
-            </section>
-          </>  
+          <section className="scrollSection" style={{ marginTop: '50px' }}>
+            <h3 className="sectionTitle">상영중인 최신 공연</h3>
+            <div className="sliderWrapper">
+              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
+              <div className="platformScroll" ref={scrollRef1}>
+                {newPerfs.map((item, idx) => ( <PerformanceCard key={item.id || idx} item={item}/> ))}
+              </div>
+              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
+            </div>  
+          </section>
+        </>  
       )}  
       <Footer />
     </div>  

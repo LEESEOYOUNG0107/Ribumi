@@ -14,14 +14,14 @@ const genreMap = {
   10765: "SF·판타지", 10766: "연속극", 10767: "토크쇼", 10768: "전쟁·정치"
 };
 
-function PlatformCard({ work }) {
-  if (!work) return null;
-  const posterUrl = work.poster_path ? `https://image.tmdb.org/t/p/w500${work.poster_path}` : " ";
-  const year = (work.release_date || work.first_air_date || "").substring(0, 4);
+function PlatformCard({ item }) {
+  if (!item) return null;
+  const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : " ";
+  const year = (item.release_date || item.first_air_date || "").substring(0, 4);
 
   let genreText = "기타";
-  if (work.genre_ids && work.genre_ids.length > 0) {
-    const genreNames = work.genre_ids.map(id => genreMap[id]).filter(Boolean);
+  if (item.genre_ids && item.genre_ids.length > 0) {
+    const genreNames = item.genre_ids.map(id => genreMap[id]).filter(Boolean);
     genreText = genreNames.slice(0, 2).join(' | ');
     if (!genreText) genreText = "기타";
   }
@@ -31,7 +31,7 @@ function PlatformCard({ work }) {
       <div className="cardImage" style={{ backgroundImage: `url(${posterUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
-          <h4 className="cardTitle">{work.title || work.name}</h4>
+          <h4 className="cardTitle">{item.title || item.name}</h4>
           <span className="cardGenre">{genreText}</span>
         </div>
       </div>    
@@ -39,7 +39,7 @@ function PlatformCard({ work }) {
         <span className="cardYear">{year}</span>
         <div className="cardRating">
           <span className="heart">♡</span>
-          <span className="ratingScore">⭐{work.vote_average?.toFixed(1) || "0.0"}</span>
+          <span className="ratingScore">⭐{item.vote_average?.toFixed(1) || "0.0"}</span>
         </div>
       </div>
     </div>
@@ -56,7 +56,6 @@ export default function Main() {
   const scrollRef = useRef(null);
   const scrollRef2 = useRef(null);
 
-  // 가로 스크롤 함수
   const scrollLeft = (ref) => {
     if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
   };
@@ -65,24 +64,17 @@ export default function Main() {
   };
 
   useEffect(() => {
-    // 실시간 인기 작품
     const fetchTrendingWorks = async () => {
       setLoading(true);
       try {
         const [movieRes, tvRes] = await Promise.all([
-          // 1. 한국 영화 + 한국에서 볼 수 있음 + 인기순
           fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc`),
-          // 2. 한국 TV 프로그램 + 한국에서 볼 수 있음 + 인기순
-          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc`)
+          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc&without_genres=10764,10767,10763,10766`)
         ]);
-
         const movieData = await movieRes.json();
         const tvData = await tvRes.json();
-
-        // 🌟 영화와 TV 데이터를 하나로 합치고, 인기 점수(popularity)가 높은 순서대로 줄 세우기
         const combinedTrending = [...(movieData.results || []), ...(tvData.results || [])]
           .sort((a, b) => b.popularity - a.popularity);
-
         setTrendingWorks(combinedTrending);
       } catch (error) {
         console.error("인기 데이터를 불러오는데 실패했습니다.", error);
@@ -91,21 +83,16 @@ export default function Main() {
       }
     };
 
-    // 웹툰/소설 원작 작품 가져오기
     const fetchOriginalWorks = async () => {
       try {
-        // with_keywords=818|9715 를 추가해서 소설(818)이나 만화(9715) 원작인 한국 작품만 가져옵니다!
         const [movieRes, tvRes] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc`),
-          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc`)
+          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc&without_genres=10764,10767,10763,10766`)
         ]);
-
         const movieData = await movieRes.json();
         const tvData = await tvRes.json();
-
         const combinedOriginals = [...(movieData.results || []), ...(tvData.results || [])]
           .sort((a, b) => b.popularity - a.popularity);
-
         setOriginalWorks(combinedOriginals);
       } catch (error) {
         console.error("원작 기반 데이터를 불러오는데 실패했습니다.", error);
@@ -119,74 +106,67 @@ export default function Main() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBannerIndex((prevIndex) => 
-        // 마지막 작품 인덱스에 도달하면 0으로 되돌리기 (순환)
         prevIndex === originalWorks.length - 1 ? 0 : prevIndex + 1
       );
     }, 5000);
-    return () => clearInterval(timer); // 화면이 꺼지거나 데이터가 바뀔 때 타이머를 초기화. (메모리 누수 방지)
-  }, [originalWorks]); // originalWorks 데이터가 로딩된 후 타이머 작동
+    return () => clearInterval(timer);
+  }, [originalWorks]);
 
   const currentBannerWork = originalWorks[CurrentBannerIndex];
+
   useEffect(() => {
     const fetchLogo = async () => {
       if(!currentBannerWork) return;
-      setBannerLogo(null); // 로고가 뜨기 전까지 이전 로고를 지움
-
-      try{
+      setBannerLogo(null);
+      try {
         let mediaType = currentBannerWork.media_Type;
         if (!mediaType) {
           mediaType = currentBannerWork.first_air_date ? 'tv' : 'movie';
         }
         const response = await fetch(`https://api.themoviedb.org/3/${mediaType}/${currentBannerWork.id}/images?api_key=${TMDB_KEY}&include_image_language=ko,null`);
         const data = await response.json();
-
-        // 로고 이미지가 하나라도 존재하면 첫 번째 로고 경로를 저장!
         if (data.logos && data.logos.length > 0) {
           setBannerLogo(data.logos[0].file_path);
         }
-      } catch(error){
+      } catch(error) {
         console.log("로고 데이터를 가져오는데 실패했습니다.", error);
       }
     };
-
     fetchLogo();
   }, [currentBannerWork]);
+
   return (
     <div className="frame mainWrapper">
       <Nav/>
 
-      {/* Banner Section */}
       {originalWorks.length > 0 && currentBannerWork && (
         <div className="bannerSection"
-        style={{
-          backgroundImage: `url(https://image.tmdb.org/t/p/original${currentBannerWork.backdrop_path})`,
-          backgroundSize: 'contain',
-          backgroundPosition: 'center top',
-          backgroundRepeat: 'no-repeat'
-        }}>
-          <div className="bannerOverlay"></div> {/* 이미지를 자연스럽게 덮어주는 그라데이션 막 */}
+          style={{
+            backgroundImage: `url(https://image.tmdb.org/t/p/original${currentBannerWork.backdrop_path})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat'
+          }}>
+          <div className="bannerOverlay"></div>
           <div className="bannerContent">
             <div className="bannerTitleSection">
               {bannerLogo ? (
-                <img // 로고 이미지가 있으면 로고를 보여줌 (배경이 투명한 PNG 파일임)
+                <img
                   src={`https://image.tmdb.org/t/p/w500${bannerLogo}`} 
                   alt="작품 타이틀 로고" 
                   className="bannerLogo" 
                 />
               ) : (
-                // 로고가 없는 마이너한 작품이면 그냥 원래대로 텍스트 제목을 보여줌
                 <h2 className="bannerTitle">{currentBannerWork.title || currentBannerWork.name}</h2>
               )}
             </div>
-
             {currentBannerWork.overview && (
               <p className="bannerDescrip">
-                { currentBannerWork.overview.length > 70
-                  ? currentBannerWork.overview.slice(0, 70) + "..." /*줄거리 너무 길면 ...처리 */
+                {currentBannerWork.overview.length > 70
+                  ? currentBannerWork.overview.slice(0, 70) + "..."
                   : currentBannerWork.overview}
               </p>
             )}
-            
             <div className="bannerBtn">
               <button className="btn btnDetail">자세히 보기</button>
               <button className="btn btnInfo">원작정보 보기</button>
@@ -199,34 +179,30 @@ export default function Main() {
         <div className="loading">데이터를 불러오는 중입니다...🍿</div>
       ) : (
         <>
-          {/* 1. 실시간 인기 작품 */}
           <section className="scrollSection">
             <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
               <h3 className="sectionTitle">실시간 인기 작품</h3>
             </div>
-
             <div className="sliderWrapper">
               <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef)}> &lt; </button>
               <div className="platformScroll" ref={scrollRef}>
-                {trendingWorks.map((work) => (
-                  <PlatformCard key={work.id} work={work} />
+                {trendingWorks.map((item) => (
+                  <PlatformCard key={item.id} item={item} />
                 ))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef)}> &gt; </button>
             </div>  
           </section>
 
-          {/* 2. 원작을 찢고 나온 작품들 */}
           <section className="scrollSection" style={{ marginTop: '50px' }}>
             <div className="sectionHeader" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
               <h3 className="sectionTitle">원작을 찢고 나온 작품들</h3>
             </div>
-
             <div className="sliderWrapper">
               <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
               <div className="platformScroll" ref={scrollRef2}>
-                {originalWorks.map((work) => (
-                  <PlatformCard key={work.id} work={work} />
+                {originalWorks.map((item) => (
+                  <PlatformCard key={item.id} item={item} />
                 ))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
