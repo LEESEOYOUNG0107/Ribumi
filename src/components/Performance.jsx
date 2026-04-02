@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Main.css"; 
 import "./Book.css";
 import "./Performance.css";
@@ -8,11 +9,12 @@ import Footer from "./Footer";
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
 function PerformanceCard({ item }) {
+  const navigate = useNavigate();
   if (!item) return null;
   const imgUrl = item.poster || "https://placehold.co/180x250?text=No+Image";
 
   const goToDetail = () => {
-    console.log("이동할 공연 ID:", item.id);
+    navigate(`/detail/performance/${item.id}`, { state: { item } });
   };
 
   return (
@@ -95,29 +97,33 @@ export default function PerformancePage() {
   useEffect(() => {
     const loadPerformances = async () => {
       setLoading(true);
-      const formatString = (date) => date.toISOString().slice(0, 10).replace(/-/g, "");
+      
       const today = new Date();
       const nextMonth = new Date();
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
-      const todayStr = formatString(today);
-      const nextMonthStr = formatString(nextMonth);
+      nextMonth.setMonth(today.getMonth() + 1);
 
-      fetchKopisData(todayStr, nextMonthStr, "", 1, 15).then(res => setNewPerfs(res));
-      fetchBoxOffice().then(res => setPopularPerfs(res));
-      fetchKopisData(todayStr, nextMonthStr, "", 1, 20).then(res => {
-        if (res && res.length > 0) setBannerPerfs(res);
+      const todayStr = today.toISOString().slice(0, 10).replace(/-/g, "");
+      const nextMonthStr = nextMonth.toISOString().slice(0, 10).replace(/-/g, "");
+
+      try {
+        // 여러 API 호출을 병렬로 처리
+        const [newRes, popularRes, bannerRes] = await Promise.all([
+          fetchKopisData(todayStr, nextMonthStr, "", 1, 15),
+          fetchBoxOffice(),
+          fetchKopisData(todayStr, nextMonthStr, "", 1, 20)
+        ]);
+
+        setNewPerfs(newRes);
+        setPopularPerfs(popularRes);
+        setBannerPerfs(bannerRes);
+      } catch (error) {
+        console.error("데이터 로딩 중 오류 발생", error);
+      } finally {
         setLoading(false);
-      });
+      }
     };
     loadPerformances();
-  }, []);
-
-  const scrollLeft = (ref) => {
-    if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
-  };
-  const scrollRight = (ref) => {
-    if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
-  };
+}, []);
 
   return (
     <div className="frame mainWrapper">

@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Main.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
@@ -15,6 +16,7 @@ const genreMap = {
 };
 
 function PlatformCard({ item }) {
+  const navigate = useNavigate();
   if (!item) return null;
   const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : " ";
   const year = (item.release_date || item.first_air_date || "").substring(0, 4);
@@ -27,7 +29,7 @@ function PlatformCard({ item }) {
   }
 
   return (
-    <div className="platformCard">
+    <div className="platformCard" onClick={() => navigate(`/detail/${item.first_air_date ? "tv" : "movie"}/${item.id}`, {state:{item}})}>
       <div className="cardImage" style={{ backgroundImage: `url(${posterUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
@@ -119,7 +121,7 @@ export default function Main() {
       if(!currentBannerWork) return;
       setBannerLogo(null);
       try {
-        let mediaType = currentBannerWork.media_Type;
+        let mediaType = currentBannerWork.media_type;
         if (!mediaType) {
           mediaType = currentBannerWork.first_air_date ? 'tv' : 'movie';
         }

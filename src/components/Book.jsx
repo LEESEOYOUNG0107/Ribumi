@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Book.css";
 import Nav from "./Navi";
 import Footer from "./Footer";
 
-const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 
 function BookCard({ item }) {
+  const navigate = useNavigate();
   if(!item) return null;
   let imgUrl = item.cover;
   if (imgUrl) {
@@ -18,11 +19,11 @@ function BookCard({ item }) {
   const authors = item.author ? item.author.split("(지은이)")[0].trim() : "작자 미상";
 
   const goToDetail = () => {
-      console.log("이동할 도서 ISBN:", item.isbn13);
+    navigate(`/detail/book/${item.isbn13}`, { state: { item } });
   };
   
   return (
-    <div className="platformCard" style={{ width: '180px', flexShrink: 0 }}>
+    <div className="platformCard" style={{ width: '180px', flexShrink: 0 }} onClick={goToDetail}>
       <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <span className="cardTitle">{item.title}</span>

@@ -25,21 +25,19 @@ export default function App() {
   return (
     //<AuthProvider> {/* 로그인 유저 정보를 앱 전체에 공유 */}
       <div className="App">
-        {!isHome && <Navi />}
+        <Navi />
         
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/main" element={<Main />} /> {/* 통합 장르 페이지 */}  
+          <Route path="/main" element={<Main />} /> 
           <Route path="/book" element={<Book/>} />
           <Route path="/performance" element={<Performance/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/search" element={<Search/>}/>
-          
-          {/* 영화/드라마 상세 정보 페이지 */}
-          {/*<Route path="/detail/:type/:id" element={<Detail />} />
-          
+          <Route path="/detail/:type/:id" element={<Detail />} />
+
           {/* 내가 쓴 모든 기록(도서+영상+공연) 리스트 */}
           {/*<Route path="/myrecords" element={<MyRecords records={records} />} /> */}
         </Routes>
