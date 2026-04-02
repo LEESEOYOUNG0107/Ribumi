@@ -1,0 +1,21 @@
+.searchPageHeader {
+  margin-top: 120px;
+  padding: 0 80px;
+}
+
+.searchQueryLabel {
+  font-size: 20px;
+  color: #aaa;
+  font-family: 'Paperlogy';
+}
+
+.searchQueryWord {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.searchResultCount {
+  font-size: 18px;
+  color: #797979;
+  font-weight: 400;
+}

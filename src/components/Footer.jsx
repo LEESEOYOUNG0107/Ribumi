@@ -13,7 +13,7 @@ export default function Footer() {
       </div>
       
       <div className="footer-contact">
-        <span>개발자: 이서영 E-mail: s2446@e-mirim.hs.kr</span> | <span>디자이너: 김설애 E-mail: d2402@e-mirim.hs.kr</span>
+        <span>개발자: 이서영 E-mail: s2446@e-mirim.hs.kr 강서현 E-mail: s2437@e-mirim.hs.kr</span> | <span>디자이너: 김설애 E-mail: d2402@e-mirim.hs.kr</span>
       </div>
             
       <div className="footer-address"> 서울특별시 관악구 호암로 546 미림마이스터고등학교 </div>        

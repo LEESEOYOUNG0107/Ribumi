@@ -2,13 +2,21 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Navi.css";
 import ribumi_logo from "../imgs/ribumi_logo.svg";
 import searchIcon from "../imgs/search_icon.svg";
+import { useState } from "react";
 
 export default function Nav({ className }) {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === "/";
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const handleSearch = (e) => {
+    if(e.key == "Enter" && searchQuery.trim()){
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
   return (
     <div className="header">
       <div className="logo-header">
@@ -27,7 +35,8 @@ export default function Nav({ className }) {
           {!isHome &&
             <div className="searchContainer">
               <img src={searchIcon} className="searchIcon" alt="검색"/>
-              <input type="text" placeholder="     제목, 장르, 지은이 검색" className="searchBox"/>
+              <input type="text" placeholder="     제목, 장르, 지은이 검색" className="searchBox"
+                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearch}/>
             </div>
           }  
           <aside className="sideBar">

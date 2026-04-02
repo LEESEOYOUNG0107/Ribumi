@@ -6,6 +6,7 @@ import MyRecords from "./components/MyRecords";
 import Home from "./components/Home";
 import Main from "./components/Main";
 import Performance from "./components/Performance";
+import Search from "./components/Search";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Detail from "./components/Detail";
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/search" element={<Search/>}/>
           
           {/* 영화/드라마 상세 정보 페이지 */}
           {/*<Route path="/detail/:type/:id" element={<Detail />} />
