@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import "./Signup.css";
+import { supabase } from "../lib/supabase";
 
 export default function Signup() {
     const [id, setId] = useState("");
@@ -10,10 +11,35 @@ export default function Signup() {
     const [nickname, setNickname] = useState("");
     const navigate = useNavigate();
 
-    const handleSignup = () => {
-        console.log("회원가입 시도:", id, pw, pwConfirm, nickname);
-    };
+    const handleSignup = async () => {
+        if(pw !== pwConfirm){
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
 
+        // 기존 아이디 중복 체크
+        const { data: existing } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("id", id.trim());
+
+        if(existing.length > 0){
+            alert("이미 존재하는 아이디입니다.");
+            return;
+        }
+
+        // 회원가입
+        const { error } = await supabase
+            .from("profiles")
+            .insert([{ id: id.trim(), password: pw }]); // 나중에 pw 해싱
+
+        if(error){
+            alert("회원가입 실패: " + error.message);
+        } else {
+            alert("회원가입 성공!");    
+            navigate("/login");
+        }
+    };
     return (
         <div className="authWrapper">
             {/* 배경 그라디언트 */}
