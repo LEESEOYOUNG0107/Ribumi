@@ -17,13 +17,9 @@ function BookCard({ item }) {
   }
   const year = item.pubDate ? item.pubDate.substring(0,4) : "";
   const authors = item.author ? item.author.split("(지은이)")[0].trim() : "작자 미상";
-
-  const goToDetail = () => {
-    navigate(`/detail/book/${item.isbn13}`, { state: { item } });
-  };
   
   return (
-    <div className="platformCard" style={{ width: '180px', flexShrink: 0 }} onClick={goToDetail}>
+    <div className="platformCard" style={{ width: '180px', flexShrink: 0 }} onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
       <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <span className="cardTitle">{item.title}</span>
@@ -51,6 +47,7 @@ export default function Book() {
   const [loading, setLoading] = useState(false);
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
+  const navigate = useNavigate();
 
   const searchAladinBooks = async (keyword) => {
     const url = `/aladin/ttb/api/ItemSearch.aspx?ttbkey=${ALADIN_KEY}&Query=${encodeURIComponent(keyword)}&QueryType=Keyword&MaxResults=20&start=1&SearchTarget=Book&output=js&Version=20131101&Sort=Accuracy`;
@@ -113,7 +110,7 @@ export default function Book() {
           <div className="bannerTrackWrapper">
             <div className="bannerTrack">
               {[...bannerBooks, ...bannerBooks].map((item, idx) => (
-                <div className="bannerItem" key={idx} onClick={() => console.log(item.isbn13)}>
+                <div className="bannerItem" key={idx} onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
                   <img 
                     src={item.cover.replace('/coversum/', '/cover500/')} 
                     alt={item.title} 

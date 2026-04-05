@@ -18,7 +18,7 @@ export default function Search() {
   const [books, setBooks] = useState([]);
   const [performances, setPerformances] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const movieRef = useRef(null);
   const tvRef = useRef(null);
   const bookRef = useRef(null);
@@ -160,10 +160,10 @@ export default function Search() {
         <div className="loading">"{query}"에 대한 검색 결과가 없습니다.</div>
       )}
 
-      <Section title="🎬 영화" data={movies} renderCard={(item) => <MovieCard item={item}/>} refObj={movieRef}/>
-      <Section title="📺 드라마" data={tvShows} renderCard={(item) => <TvCard item={item}/>} refObj={tvRef}/>
-      <Section title="📚 도서" data={books} renderCard={(item) => <BookCard item={item}/>} refObj={bookRef}/>
-      <Section title="🎭 공연" data={performances} renderCard={(item) => <PerfCard item={item}/>} refObj={perfRef}/>
+      <Section title="영화" data={movies} renderCard={(item) => <MovieCard item={item}/>} refObj={movieRef}/>
+      <Section title="드라마" data={tvShows} renderCard={(item) => <TvCard item={item}/>} refObj={tvRef}/>
+      <Section title="도서" data={books} renderCard={(item) => <BookCard item={item}/>} refObj={bookRef}/>
+      <Section title="공연" data={performances} renderCard={(item) => <PerfCard item={item}/>} refObj={perfRef}/>
 
       <Footer />
     </div>

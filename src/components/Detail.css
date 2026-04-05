@@ -15,62 +15,57 @@
   font-size: 18px;
 }
 
-/* ── 상단 제목 영역 ── */
-.detailTop {
-  position: relative;
-  z-index: 1;
-  padding: 110px 80px 32px;
-  max-width: 560px;
-  text-align: center;        /* 이미지처럼 중앙 정렬 */
-  margin: 0 auto;
+.detailLayout {
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+  padding: 110px 80px 50px;
+}
+
+.detailInfo {
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detailRight {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
 }
 
 .detailSubInfo {
   font-size: 11px;
   color: #999;
-  margin-bottom: 6px;
   letter-spacing: 0.3px;
 }
 
 .detailMainTitle {
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 10px;
   line-height: 1.3;
 }
 
 .detailTopMeta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0;
-  font-size: 11px;
+  font-size: 16px;
   color: #aaa;
-  margin-bottom: 12px;
 }
-
-/* | 구분자를 CSS로 처리 */
-.detailTopMeta span {
-  display: flex;
-  align-items: center;
-}
-
-.detailTopMeta span + span::before {
-  content: "|";
-  margin: 0 8px;
-  color: #444;
+.imfortant{
+  font-size: 20px;
+  color: #fff;
 }
 
 .detailTopOverview {
   font-size: 12px;
   color: #bbb;
   line-height: 1.7;
-  margin-bottom: 14px;
-  text-align: left;
 }
 
 .detailWishBtn {
-  display: inline-block;
+  width: fit-content;
   padding: 7px 20px;
   border: 1px solid #555;
   background: transparent;
@@ -78,28 +73,16 @@
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s;
   font-family: 'Paperlogy', sans-serif;
+  transition: border-color 0.2s;
 }
+.detailWishBtn.wished { color: #e11d48; }
+.detailWishBtn:hover { border-color: #fff; }
 
-.detailWishBtn.wished {
-  background: #e11d48;
-  border-color: #e11d48;
-}
-
-.detailWishBtn:hover {
-  border-color: #fff;
-}
-
-/* ── 슬라이더 + 관련 작품 ── */
 .detailSliderSection {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 20px;
-  padding: 0 60px 50px;
 }
 
 .detailSlider {
@@ -108,335 +91,158 @@
   gap: 12px;
 }
 
-/* 양옆 작은 포스터 */
-.sliderSide {
-  opacity: 0.45;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
-}
-
-.sliderSide:hover {
-  opacity: 0.75;
-}
-
-.sliderSide img {
-  width: 110px;
-  border-radius: 8px;
-  display: block;
-  object-fit: cover;
-}
-
-/* 중앙 큰 포스터 */
 .sliderMain {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 }
-
 .sliderMain > img {
-  width: 200px;
+  width: 70%;
   border-radius: 10px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.8);
   object-fit: cover;
 }
 
-/* 별점 박스 */
-.sliderRatingBox {
+.sliderSide { 
+  opacity: 0.45; 
+  cursor: pointer; 
+  transition: opacity 0.2s; 
+}
+.sliderSide:hover { opacity: 0.75; }
+.sliderSide img { 
+  width: 110px; 
+  border-radius: 8px; 
+  display: block; 
+  object-fit: cover; 
+}
+.RatingBox {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  /*justify-content: center; */
   gap: 6px;
   background: rgba(255,255,255,0.04);
   border: 1px solid #2a2a2a;
   border-radius: 8px;
   padding: 10px 16px;
   width: 200px;
-  justify-content: center;
   box-sizing: border-box;
 }
-
-.sliderRatingNum {
-  font-size: 17px;
-  font-weight: 700;
-  color: #FFD700;
+.RatingNum { 
+  font-size: 17px; 
+  font-weight: 700; 
+  color: #FFD700; 
+}
+.RatingTotal { 
+  font-size: 12px; 
+  color: #777; 
+}
+.sliderRatingCount { 
+  font-size: 11px; 
+  color: #555; 
 }
 
-.sliderRatingTotal {
-  font-size: 12px;
-  color: #777;
-}
+.sliderDots { display: flex; gap: 5px; justify-content: center; }
+.sliderDot { width: 5px; height: 5px; border-radius: 50%; background: #333; }
+.sliderDot.active { background: #fff; }
 
-.sliderRatingCount {
-  font-size: 11px;
-  color: #555;
-  margin-left: 2px;
-}
+.detailRelated { display: flex; flex-direction: column; gap: 10px; }
+.relatedItem { cursor: pointer; opacity: 0.55; transition: opacity 0.2s; }
+.relatedItem:hover { opacity: 1; }
+.relatedItem img { width: 110px; border-radius: 6px; display: block; object-fit: cover; }
 
-/* 인디케이터 점 */
-.sliderDots {
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-}
-
-.sliderDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #333;
-}
-
-.sliderDot.active {
-  background: #fff;
-}
-
-/* 우측 관련 작품 세로 목록 */
-.detailRelated {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.relatedItem {
-  cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 0.2s;
-}
-
-.relatedItem:hover {
-  opacity: 1;
-}
-
-.relatedItem img {
-  width: 110px;
-  border-radius: 6px;
-  display: block;
-  object-fit: cover;
-}
-
-/* ── 탭 ── */
 .detailTabWrapper {
-  position: relative;
-  z-index: 1;
   display: flex;
   border-bottom: 1px solid #1e1e1e;
   margin: 0 80px;
 }
-
 .detailTab {
   padding: 14px 28px;
   background: none;
   border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
   color: #555;
   font-size: 14px;
   cursor: pointer;
   font-family: 'Paperlogy', sans-serif;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
   transition: color 0.2s, border-color 0.2s;
 }
+.detailTab.active { color: #fff; border-bottom-color: #2563eb; }
+.detailTab:hover { color: #ccc; }
 
-.detailTab.active {
-  color: #fff;
-  border-bottom: 2px solid #2563eb;
-}
-
-.detailTab:hover {
-  color: #ccc;
-}
-
-/* ── 리뷰 섹션 ── */
 .detailReviewSection {
-  position: relative;
-  z-index: 1;
   max-width: 760px;
   margin: 0 auto;
   padding: 28px 0 80px;
 }
 
-/* 리뷰 카드 */
 .reviewCard {
   background: #0e0e0e;
+  border: 1px solid #1a1a1a;
   border-radius: 6px;
   padding: 18px 20px;
   margin-bottom: 10px;
-  border: 1px solid #1a1a1a;
 }
-
-.reviewHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-}
-
-.reviewUser {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+.reviewHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.reviewUser { display: flex; align-items: center; gap: 10px; }
 .reviewAvatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #2563eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
-  flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #2563eb; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;
 }
-
-.reviewUserName {
-  font-size: 13px;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 2px;
+.reviewUserName { 
+  font-size: 13px; 
+  font-weight: 600; 
+  display: block; 
+  margin-bottom: 2px; 
 }
-
-.reviewDate {
-  font-size: 11px;
-  color: #555;
-  display: block;
-}
-
-.reviewRating {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.reviewRatingNum {
-  font-size: 11px;
-  color: #777;
-}
-
-.reviewContent {
-  font-size: 13px;
-  color: #bbb;
-  line-height: 1.75;
-  margin-bottom: 12px;
-  word-break: keep-all;
-}
-
-.reviewFooter {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
+.reviewDate { font-size: 11px; color: #555; display: block; }
+.reviewRating { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.reviewRatingNum { font-size: 11px; color: #777; }
+.reviewContent { font-size: 13px; color: #bbb; line-height: 1.75; margin-bottom: 12px; word-break: keep-all; }
+.reviewFooter { display: flex; justify-content: space-between; align-items: center; }
 .reviewActionBtn {
-  background: none;
-  border: 1px solid #2a2a2a;
-  color: #666;
-  padding: 3px 12px;
-  border-radius: 3px;
-  font-size: 11px;
-  cursor: pointer;
-  font-family: 'Paperlogy', sans-serif;
-  transition: border-color 0.2s;
+  background: none; border: 1px solid #2a2a2a; color: #666;
+  padding: 3px 12px; border-radius: 3px; font-size: 11px;
+  cursor: pointer; font-family: 'Paperlogy', sans-serif; transition: border-color 0.2s;
 }
+.reviewActionBtn:hover { border-color: #555; color: #aaa; }
+.reviewReactions { display: flex; gap: 12px; font-size: 11px; color: #555; }
 
-.reviewActionBtn:hover {
-  border-color: #555;
-  color: #aaa;
-}
-
-.reviewReactions {
-  display: flex;
-  gap: 12px;
-  font-size: 11px;
-  color: #555;
-}
-
-/* ── 리뷰 작성 폼 ── */
-.reviewForm {
-  background: #0e0e0e;
-  border: 1px solid #1a1a1a;
-  border-radius: 6px;
-  padding: 14px 18px;
-  margin: 16px 0 10px;
-}
-
+.reviewForm { background: #0e0e0e; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px 18px; margin: 16px 0 10px; }
 .reviewFormInput {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: #ddd;
-  font-size: 13px;
-  padding: 4px 0;
-  resize: none;
-  height: 72px;
-  font-family: 'Paperlogy', sans-serif;
-  outline: none;
-  box-sizing: border-box;
-  line-height: 1.6;
+  width: 100%; background: transparent; border: none; color: #ddd;
+  font-size: 13px; padding: 4px 0; resize: none; height: 72px;
+  font-family: 'Paperlogy', sans-serif; outline: none; box-sizing: border-box; line-height: 1.6;
 }
+.reviewFormInput::placeholder { color: #333; }
+.reviewFormBottom { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  border-top: 1px solid #1a1a1a; 
+  padding-top: 10px; 
+  margin-top: 8px; 
+}
+.reviewFormCount { font-size: 11px; color: #444; }
+.reviewFormBtns { 
+  display: flex; 
+  gap: 6px; 
+}
+.reviewCancelBtn { 
+  padding: 5px 14px; 
+  background: none; 
+  border: 1px solid #333; 
+  color: #888; 
+  border-radius: 3px; 
+  cursor: pointer; 
+  font-family: 'Paperlogy', sans-serif; 
+  font-size: 12px; 
+}
+.reviewCancelBtn:hover { border-color: #555; }
+.reviewSubmitBtn { padding: 5px 14px; background: #2563eb; border: none; color: #fff; border-radius: 3px; cursor: pointer; font-family: 'Paperlogy', sans-serif; font-size: 12px; }
+.reviewSubmitBtn:hover { background: #1d4ed8; }
 
-.reviewFormInput::placeholder {
-  color: #333;
-}
-
-.reviewFormBottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #1a1a1a;
-  padding-top: 10px;
-  margin-top: 8px;
-}
-
-.reviewFormCount {
-  font-size: 11px;
-  color: #444;
-}
-
-.reviewFormBtns {
-  display: flex;
-  gap: 6px;
-}
-
-.reviewCancelBtn {
-  padding: 5px 14px;
-  background: none;
-  border: 1px solid #333;
-  color: #888;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Paperlogy', sans-serif;
-  font-size: 12px;
-  transition: border-color 0.2s;
-}
-
-.reviewCancelBtn:hover {
-  border-color: #555;
-}
-
-.reviewSubmitBtn {
-  padding: 5px 14px;
-  background: #2563eb;
-  border: none;
-  color: #fff;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Paperlogy', sans-serif;
-  font-size: 12px;
-  transition: background 0.2s;
-}
-
-.reviewSubmitBtn:hover {
-  background: #1d4ed8;
-}
-
-/* ── 답글 입력창 ── */
-.replyForm {
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  border-radius: 6px;
-  padding: 12px 16px;
-  margin-top: 10px;
-}
+.replyForm { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 6px; padding: 12px 16px; margin-top: 10px; }

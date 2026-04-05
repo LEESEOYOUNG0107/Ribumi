@@ -10,7 +10,6 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    console.log("로그인 시도:", id, pw);
     const { data, error } = await supabase
       .from("profiles") // users 테이블 사용
       .select("*")

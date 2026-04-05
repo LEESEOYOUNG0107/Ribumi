@@ -8,7 +8,6 @@ export default function Signup() {
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
     const [pwConfirm, setPwConfirm] = useState("");
-    const [nickname, setNickname] = useState("");
     const navigate = useNavigate();
 
     const handleSignup = async () => {

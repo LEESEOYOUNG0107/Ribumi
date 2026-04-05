@@ -22,7 +22,6 @@ const StarRating = ({ rating, size = 16 }) => (
 
 export default function Detail() {
   const { type, id } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
 
   const [details, setDetails] = useState(null);
@@ -64,7 +63,7 @@ export default function Detail() {
     const creditData = await creditRes.json();
     const relatedData = await relatedRes.json();
 
-    const director = creditData.cast?.find(c => c.job === "Director")?.name || "";
+    const director = creditData.crew?.find(c => c.job === "Director")?.name || "";
     const cast = creditData.cast?.slice(0, 5).map(c => c.name).join(", ") || "";
 
     setDetails({
@@ -75,7 +74,7 @@ export default function Detail() {
       genre: detailData.genres?.map(g => g.name).join(" · ") || "",
       releaseDate: detailData.release_date || detailData.first_air_date || "",
       overview: detailData.overview || "",
-      rating: detailData.vote_average ? (detailData.vote_average / 2).toFixed(1) : "0.0",
+      rating: detailData.vote_average ? detailData.vote_average.toFixed(1) : "0.0",
       voteCount: detailData.vote_count?.toLocaleString() || "0",
       director,
       cast,
@@ -116,7 +115,7 @@ export default function Detail() {
       genre: book.categoryName?.split(">").pop() || "",
       releaseDate: book.pubDate || "",
       overview: book.description || book.fullDescription || "",
-      rating: book.customerReviewRank ? (book.customerReviewRank / 2).toFixed(1) : "0.0",
+      rating: book.customerReviewRank ? book.customerReviewRank.toFixed(1) : "0.0",
       voteCount: "",
       extra: {
         author,
@@ -189,79 +188,88 @@ export default function Detail() {
     <div className="detailWrapper">
       <Nav />
 
-      {/* ── 상단 정보 ── */}
-      <div className="detailTop">
-        <div className="detailTopMeta">
-          <span>{
-            details._type === "movie" ? "영화" :
-            details._type === "tv" ? "드라마" :
-            details._type === "book" ? "도서" : "공연"
-          }</span>
-          {details.genre && <span>{details.genre}</span>}
-          {details.releaseDate && <span>{details.releaseDate}</span>}
-          {details.extra?.runtime && <span>{details.extra.runtime}</span>}
-          {details.extra?.publisher && <span>{details.extra.publisher}</span>}
-          {details.extra?.place && <span>{details.extra.place}</span>}
-          {details.extra?.translator && <span>옮긴이 | {details.extra.translator}</span>}
-          {details.extra?.age && <span>{details.extra.age}</span>}
-        </div>
+      {/* ── 전체 레이아웃 ── */}
+      <div className="detailLayout">
 
-        <h1 className="detailMainTitle">{details.title}</h1>
-
-        <p className="detailSubInfo">
-          {details._type === "movie" && details.director && `감독 | ${details.director}`}
-          {details._type === "tv" && details.cast && `출연 | ${details.cast}`}
-          {details._type === "book" && details.extra.author && `저자 | ${details.extra.author}`}
-          {details._type === "performance" && details.extra.cast && `출연 | ${details.extra.cast}`}
-        </p>
-
-        <p className="detailTopOverview">
-          {details.overview.length > 150 ? details.overview.slice(0, 150) + "..." : details.overview}
-        </p>
-
-        <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={() => setIsWished(!isWished)}>
-          {isWished ? "♥ 찜 완료" : "♡ 찜하기"}
-        </button>
-      </div>
-
-      {/* ── 포스터 슬라이더 + 관련 작품 ── */}
-      <div className="detailSliderSection">
-        <div className="detailSlider">
-
-          {relatedWorks[0] && (
-            <div className="sliderSide left" onClick={() => navigate(`/detail/${relatedWorks[0].type}/${relatedWorks[0].id}`, { state: { item: relatedWorks[0].item } })}>
-              <img src={relatedWorks[0].poster} alt={relatedWorks[0].title} />
+        {/* 왼쪽: 기본 설명 (바닥 기준 정렬) */}
+        <div className="detailInfo">
+          <div className="detailTopMeta">
+            <div className="imfortant">
+              {details.releaseDate && <span>{details.releaseDate}</span>} | {/*details.releaseDate가 존재할 때만 <span>을 화면에 그리고, 없으면 아무것도 안 그림*/}
+              {details.extra?.runtime && <span>{details.extra.runtime}</span>}
             </div>
-          )}
 
-          <div className="sliderMain">
-            <img src={details.poster || "https://placehold.co/220x330?text=No+Image"} alt={details.title} />
-            <div className="sliderRatingBox">
-              <StarRating rating={parseFloat(details.rating)} size={22} />
-              <span className="sliderRatingNum">{details.rating}</span>
-              <span className="sliderRatingTotal">/ 5.0</span>
-              {details.voteCount && <span className="sliderRatingCount">{details.voteCount}명</span>}
+            <div>
+              {details.extra?.author && <span>저자: {details.extra.author}</span>}
+              {details.extra?.translator && <span>옮긴이: {details.extra.translator}</span>}
             </div>
-            <div className="sliderDots">
-              {[0,1,2].map(i => <span key={i} className={`sliderDot ${i === 1 ? "active" : ""}`} />)}
+            
+            <div>
+              {details.director && <div>감독 {details.director}</div>}
+              {details.cast && <span>출연 {details.cast}</span>}
+
+              {details.extra?.publisher && <span>출판사: {details.extra.publisher}</span>}
+              {details.extra?.place && <span>{details.extra.place}</span>}
+              {details.extra?.age && <span>{details.extra.age}</span>}
             </div>
+            
+          </div>
+          <p className="detailTopOverview">
+            {details.overview.length > 150 ? details.overview.slice(0, 150) + "..." : details.overview}
+          </p>
+
+          <div className="RatingBox">
+            <span className="RatingNum">{details.rating}</span>
+            <StarRating rating={parseFloat(details.rating) / 2} size={22} />
+            <span className="sliderRatingCount">{details.voteCount}명</span>
           </div>
 
-          {relatedWorks[1] && (
-            <div className="sliderSide right" onClick={() => navigate(`/detail/${relatedWorks[1].type}/${relatedWorks[1].id}`, { state: { item: relatedWorks[1].item } })}>
-              <img src={relatedWorks[1].poster} alt={relatedWorks[1].title} />
-            </div>
-          )}
+          <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={() => setIsWished(!isWished)}>
+            {isWished ? "♥" : "♡"}
+          </button>
         </div>
 
-        <div className="detailRelated">
-          {relatedWorks.slice(2, 4).map(work => (
-            <div key={work.id} className="relatedItem" onClick={() => navigate(`/detail/${work.type}/${work.id}`, { state: { item: work.item } })}>
-              <img src={work.poster} alt={work.title} />
+        {/* 오른쪽: 장르 + 제목 + 포스터 */}
+        <div className="detailRight">
+          <div className="detailTopMeta">
+            {details.genre && <span>{details.genre}</span>}
+          </div>
+          <h1 className="detailMainTitle">{details.title}</h1>
+
+          {/* ── 포스터 슬라이더 + 관련 작품 ── */}
+          <div className="detailSliderSection">
+            <div className="detailSlider">
+
+              {relatedWorks[0] && (
+                <div className="sliderSide left" onClick={() => navigate(`/detail/${relatedWorks[0].type}/${relatedWorks[0].id}`, { state: { item: relatedWorks[0].item } })}>
+                  <img src={relatedWorks[0].poster} alt={relatedWorks[0].title} />
+                </div>
+              )}
+
+              <div className="sliderMain">
+                <img src={details.poster || "https://placehold.co/220x330?text=No+Image"} alt={details.title} />
+                <div className="sliderDots">
+                  {[0, 1, 2].map(i => <span key={i} className={`sliderDot ${i === 1 ? "active" : ""}`} />)}
+                </div>
+              </div>
+
+              {relatedWorks[1] && (
+                <div className="sliderSide right" onClick={() => navigate(`/detail/${relatedWorks[1].type}/${relatedWorks[1].id}`, { state: { item: relatedWorks[1].item } })}>
+                  <img src={relatedWorks[1].poster} alt={relatedWorks[1].title} />
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      </div>
+
+            <div className="detailRelated">
+              {relatedWorks.slice(2, 4).map(work => (
+                <div key={work.id} className="relatedItem" onClick={() => navigate(`/detail/${work.type}/${work.id}`, { state: { item: work.item } })}>
+                  <img src={work.poster} alt={work.title} />
+                </div>
+              ))}
+            </div>
+          </div>{/* detailSliderSection 끝 */}
+        </div>{/* detailRight 끝 */}
+      </div>{/* detailLayout 끝 */}
 
       {/* ── 탭 ── */}
       <div className="detailTabWrapper">

@@ -13,12 +13,8 @@ function PerformanceCard({ item }) {
   if (!item) return null;
   const imgUrl = item.poster || "https://placehold.co/180x250?text=No+Image";
 
-  const goToDetail = () => {
-    navigate(`/detail/performance/${item.id}`, { state: { item } });
-  };
-
   return (
-    <div className="platformCard" onClick={goToDetail}>
+    <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
       <div 
         className="cardImage" 
         style={{ backgroundImage: `url(${imgUrl})` }}
@@ -44,7 +40,7 @@ export default function PerformancePage() {
   const [popularPerfs, setPopularPerfs] = useState([]);
   const [bannerPerfs, setBannerPerfs] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+  const navigate = useNavigate();
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
 
@@ -134,7 +130,7 @@ export default function PerformancePage() {
           <div className="bannerTrackWrapper">
             <div className="bannerTrack">
               {[...bannerPerfs, ...bannerPerfs].map((item, idx) => (
-                <div className="bannerItem" key={idx} onClick={() => console.log(item.id)}>
+                <div className="bannerItem" key={idx} onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
                   <img 
                     src={item.poster} 
                     alt={item.title} 
