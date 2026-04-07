@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ribumi_logo from "../imgs/logo2.png";
 import "./Login.css";
 import { supabase } from "../lib/supabase";
+import bcrypt from "bcryptjs";
 
 export default function Login() {
   const [id, setId] = useState("");
@@ -11,24 +12,25 @@ export default function Login() {
 
   const handleLogin = async () => {
     const { data, error } = await supabase
-      .from("profiles") // users 테이블 사용
+      .from("profiles")
       .select("*")
       .eq("id", id.trim())
-      .eq("password", pw); // 나중에 해싱 적용 필요
+      .single();
 
-    if (error) {
-      console.error("로그인 조회 에러:", error);
-      alert("서버 조회 실패");
+    if (error || !data) {
+      alert("아이디 또는 비밀번호가 틀립니다.");
       return;
     }
 
-    if (data && data.length > 0) {
-      alert("로그인 성공!");
-      // 로그인 세션 처리 (예: localStorage, Context 등)
-      navigate("/main");
-    } else {
+    const isMatch = await bcrypt.compare(pw, data.password);
+
+    if (!isMatch) {
       alert("아이디 또는 비밀번호가 틀립니다.");
+      return;
     }
+
+    alert("로그인 성공!");
+    navigate("/main");
   };
 
   return (
