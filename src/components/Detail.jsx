@@ -33,6 +33,7 @@ export default function Detail() {
   const [newReview, setNewReview] = useState("");
   const [replyOpenId, setReplyOpenId] = useState(null); // 어떤 댓글의 답글창이 열려있는지 (댓글ID)
   const [replyText, setReplyText] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false); // 줄거리 더보기 상태
   const [isWished, setIsWished] = useState(false);
 
   useEffect(() => {
@@ -78,9 +79,6 @@ export default function Detail() {
       voteCount: detailData.vote_count?.toLocaleString() || "0",
       director,
       cast,
-      extra: {
-        runtime: detailData.runtime ? `${detailData.runtime}분` : detailData.episode_run_time?.[0] ? `${detailData.episode_run_time[0]}분/화` : "",
-      }
     });
 
     setRelatedWorks(
@@ -102,26 +100,26 @@ export default function Detail() {
     const book = data.item?.[0];
     if (!book) return;
 
-    const author = book.author?.split("(지은이)")[0]?.trim() || "";
-    const translator = book.author?.includes("(옮긴이)")
-      ? book.author.split("(옮긴이)")[0].split(",").pop()?.trim()
-      : "";
+    const categoryArray = book.categoryName?.split(">") || [];
+    // 전체 경로가 "국내도서 > 소설/시/희곡 > 장르소설 > ..." 이라면
+    // categoryArray[1]은 "소설/시/희곡"이 됩니다.
+    const displayGenre = categoryArray.length > 1 ? categoryArray[2] : categoryArray[0] || "미분류";
 
     setDetails({
       _type: "book",
       title: book.title,
       poster: book.cover?.replace("/coversum/", "/cover500/") || null,
       backdrop: null,
-      genre: book.categoryName?.split(">").pop() || "",
-      releaseDate: book.pubDate || "",
+      genre: displayGenre,
+      releaseDate: `${book.pubDate || ""} 출간`,
       overview: book.description || book.fullDescription || "",
       rating: book.customerReviewRank ? book.customerReviewRank.toFixed(1) : "0.0",
       voteCount: "",
       extra: {
-        author,
-        translator,
-        publisher: book.publisher || "",
-        isbn: book.isbn13,
+        author: `${book.author?.split("(지은이)")[0]?.trim() || ""} 지음`,
+        translator: book.author?.includes("(옮긴이)") ? book.author.split("(옮긴이)")[0].split(",").pop()?.trim() : "",
+        publisher: `출판사: ${book.publisher || ""}`,
+        isbn: `ISBN: ${book.isbn13}`,
         price: book.priceSales ? `${book.priceSales.toLocaleString()}원` : "",
       }
     });
@@ -135,6 +133,9 @@ export default function Detail() {
     const db = xml.querySelector("db");
     if (!db) return;
 
+    const guidance = db.querySelector("dtguidance")?.textContent || "안내 정보 없음";
+    const story = db.querySelector("sty")?.textContent || "줄거리 정보 없음";
+
     setDetails({
       _type: "performance",
       title: db.querySelector("prfnm")?.textContent || "",
@@ -142,7 +143,7 @@ export default function Detail() {
       backdrop: null,
       genre: db.querySelector("genrenm")?.textContent || "",
       releaseDate: db.querySelector("prfpdfrom")?.textContent || "",
-      overview: db.querySelector("dtguidance")?.textContent || "",
+      overview: `${guidance}\n\n${story}`,
       rating: "0.0",
       voteCount: "",
       extra: {
@@ -190,44 +191,84 @@ export default function Detail() {
 
       {/* ── 전체 레이아웃 ── */}
       <div className="detailLayout">
-
-        {/* 왼쪽: 기본 설명 (바닥 기준 정렬) */}
         <div className="detailInfo">
           <div className="detailTopMeta">
-            <div className="imfortant">
-              {details.releaseDate && <span>{details.releaseDate}</span>} | {/*details.releaseDate가 존재할 때만 <span>을 화면에 그리고, 없으면 아무것도 안 그림*/}
-              {details.extra?.runtime && <span>{details.extra.runtime}</span>}
-            </div>
+            {/* 영화, 드라마 렌더링 */}
+            {(details._type === "movie" || details._type === "tv") && (
+              <>
+                <div className="important">
+                  {details.director && <span>{details.director}</span>}
+                  {details.cast && <span>{details.cast}</span>}
 
-            <div>
-              {details.extra?.author && <span>저자: {details.extra.author}</span>}
-              {details.extra?.translator && <span>옮긴이: {details.extra.translator}</span>}
-            </div>
-            
-            <div>
-              {details.director && <div>감독 {details.director}</div>}
-              {details.cast && <span>출연 {details.cast}</span>}
+                </div>
+                <div>
+                  {details.releaseDate && <span>{details.releaseDate.slice(0, 4)}년</span>}
+                </div>
+              </>
+            )}
 
-              {details.extra?.publisher && <span>출판사: {details.extra.publisher}</span>}
-              {details.extra?.place && <span>{details.extra.place}</span>}
-              {details.extra?.age && <span>{details.extra.age}</span>}
-            </div>
-            
+            {/* 도서 */}
+            {details._type === "book" && (
+              <>
+                <div className="important">
+                  {details.extra?.author && <span>{details.extra.author}</span>}
+                  {details.extra?.translator && <span>{details.extra.translator} 옮김</span>}
+                </div>
+                <div className="detailExtraInfo">
+                  {details.extra?.publisher && <div>{details.extra.publisher}</div>}
+                  {details.releaseDate && <div> {details.releaseDate}</div>}
+                  {details.extra?.price && <span>{details.extra.price}</span>}
+                  {details.extra?.isbn && <span>{details.extra.isbn}</span>}
+                </div>
+
+              </>
+            )}
+
+            {/* 공연 */}
+            {details._type === "performance" && (
+              <>
+                <div className="important">
+                  {details.extra?.startDate && <span>{details.extra.startDate} ~ {details.extra.endDate}</span>}
+                </div>
+                <div className="detailExtraInfo">
+                  {details.extra?.place && <div>{details.extra.place}</div>}
+                </div>
+                <div className="detailExtraInfo">
+                  {details.extra?.runtime && <span>{details.extra.runtime}</span>}
+                  {details.extra?.age && <span>{details.extra.age}</span>}
+                </div>
+                {details.extra?.cast && (
+                  <div className="detailExtraInfo">{details.extra.cast}</div>
+                )}
+              </>
+            )}
           </div>
-          <p className="detailTopOverview">
-            {details.overview.length > 150 ? details.overview.slice(0, 150) + "..." : details.overview}
-          </p>
+
+          {/*줄거리*/}
+          <div className="overviewContainer">
+            {/* isExpanded가 참이면 'expanded' 클래스가 붙어서 다 보여줍니다 */}
+            <p className={`detailTopOverview ${isExpanded ? "expanded" : ""}`}>
+              {details.overview || "상세 정보가 제공되지 않습니다."}
+            </p>
+            
+            {/* 줄거리가 100자 이상일 때만 더보기/접기 버튼을 보여줍니다 */}
+            {details.overview && details.overview.length > 100 && (
+              <button 
+                className="overviewMoreBtn" 
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? "닫기 ▴" : "더보기 ▾"}
+              </button>
+            )}
+          </div>
 
           <div className="RatingBox">
             <span className="RatingNum">{details.rating}</span>
             <StarRating rating={parseFloat(details.rating) / 2} size={22} />
             <span className="sliderRatingCount">{details.voteCount}명</span>
           </div>
-
-          <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={() => setIsWished(!isWished)}>
-            {isWished ? "♥" : "♡"}
-          </button>
         </div>
+
 
         {/* 오른쪽: 장르 + 제목 + 포스터 */}
         <div className="detailRight">
@@ -239,34 +280,30 @@ export default function Detail() {
           {/* ── 포스터 슬라이더 + 관련 작품 ── */}
           <div className="detailSliderSection">
             <div className="detailSlider">
-
-              {relatedWorks[0] && (
-                <div className="sliderSide left" onClick={() => navigate(`/detail/${relatedWorks[0].type}/${relatedWorks[0].id}`, { state: { item: relatedWorks[0].item } })}>
-                  <img src={relatedWorks[0].poster} alt={relatedWorks[0].title} />
-                </div>
-              )}
-
               <div className="sliderMain">
                 <img src={details.poster || "https://placehold.co/220x330?text=No+Image"} alt={details.title} />
+                <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={() => setIsWished(!isWished)}>
+                  ♥
+                </button> {/*기본적으로 detailWishBtn, 찜되면 wished css 클래스 사용*/}
                 <div className="sliderDots">
                   {[0, 1, 2].map(i => <span key={i} className={`sliderDot ${i === 1 ? "active" : ""}`} />)}
                 </div>
               </div>
 
-              {relatedWorks[1] && (
+              {/* {relatedWorks[1] && (
                 <div className="sliderSide right" onClick={() => navigate(`/detail/${relatedWorks[1].type}/${relatedWorks[1].id}`, { state: { item: relatedWorks[1].item } })}>
                   <img src={relatedWorks[1].poster} alt={relatedWorks[1].title} />
                 </div>
-              )}
+              )} */}
             </div>
 
-            <div className="detailRelated">
+            {/* <div className="detailRelated">
               {relatedWorks.slice(2, 4).map(work => (
                 <div key={work.id} className="relatedItem" onClick={() => navigate(`/detail/${work.type}/${work.id}`, { state: { item: work.item } })}>
                   <img src={work.poster} alt={work.title} />
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>{/* detailSliderSection 끝 */}
         </div>{/* detailRight 끝 */}
       </div>{/* detailLayout 끝 */}

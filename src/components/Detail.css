@@ -2,8 +2,9 @@
   width: 100%;
   min-height: 100vh;
   background-color: #050505;
-  font-family: 'Paperlogy', sans-serif;
+  font-family: 'Paperlogy';
   color: #fff;
+  font-style: normal;
 }
 
 .detailLoading {
@@ -44,8 +45,8 @@
 }
 
 .detailMainTitle {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 29px;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -53,31 +54,75 @@
   font-size: 16px;
   color: #aaa;
 }
-.imfortant{
-  font-size: 20px;
+
+.important {
+  font-size: 22px;
   color: #fff;
+  display: flex;
+  gap: 10px;
+}
+.detailPlace{
+  margin-right: 10px;
+}
+.detailExtraInfo{
+  display: flex;
+  flex-direction: column;
+  line-height: 1.7;
+}
+.detailBook {
+  color: #FFF;
+  font-family: Paperlogy;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 .detailTopOverview {
   font-size: 12px;
   color: #bbb;
-  line-height: 1.7;
+  line-height: 1.6; /*글자 크기의 1.7배만큼 윗줄과 아랫줄 사이에 공간을 둔다*/
+  white-space: pre-wrap; /*다음줄로 줄바꿈*/
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /*줄 수*/
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.detailTopOverview.expanded {
+  display: block; /* 2줄 제한을 풀어버림 */
+  white-space: pre-wrap; /* 엔터(줄바꿈)도 다 보여줌 */
+}
+.overviewMoreBtn {
+  border: none;
+  color: #fff;
+  background-color: #686868;
+  padding: 5px 15px;
+  cursor: pointer;
 }
 
 .detailWishBtn {
-  width: fit-content;
-  padding: 7px 20px;
-  border: 1px solid #555;
-  background: transparent;
+  position: absolute;
+  z-index: 2;
+  bottom: 5%;
+  right: 18%;
+  /* width: fit-content; */
+  font-size: 30px;
+  border: none;
+  background-color: transparent; /*투명한*/
   color: #fff;
-  border-radius: 4px;
-  font-size: 12px;
   cursor: pointer;
-  font-family: 'Paperlogy', sans-serif;
-  transition: border-color 0.2s;
+  font-family: 'Paperlogy';
+  transition: transform 0.5s ease;
+  
 }
-.detailWishBtn.wished { color: #e11d48; }
-.detailWishBtn:hover { border-color: #fff; }
+
+.detailWishBtn.wished {
+  color: #e11d48;
+}
+.detailWishBtn:active {
+  transform: scale(1.3); 
+}
 
 .detailSliderSection {
   display: flex;
@@ -93,70 +138,107 @@
 
 .sliderMain {
   display: flex;
+  position: relative;
+  width: 100%;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 }
-.sliderMain > img {
+
+.sliderMain img {
+  position: relative;
   width: 70%;
   border-radius: 10px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
   object-fit: cover;
 }
 
-.sliderSide { 
-  opacity: 0.45; 
-  cursor: pointer; 
-  transition: opacity 0.2s; 
+.sliderSide {
+  opacity: 0.45;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
-.sliderSide:hover { opacity: 0.75; }
-.sliderSide img { 
-  width: 110px; 
-  border-radius: 8px; 
-  display: block; 
-  object-fit: cover; 
+
+.sliderSide:hover {
+  opacity: 0.75;
 }
+
 .RatingBox {
   display: flex;
   flex-direction: column;
   align-items: center;
   /*justify-content: center; */
   gap: 6px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid #2a2a2a;
   border-radius: 8px;
   padding: 10px 16px;
   width: 200px;
   box-sizing: border-box;
 }
-.RatingNum { 
-  font-size: 17px; 
-  font-weight: 700; 
-  color: #FFD700; 
-}
-.RatingTotal { 
-  font-size: 12px; 
-  color: #777; 
-}
-.sliderRatingCount { 
-  font-size: 11px; 
-  color: #555; 
+
+.RatingNum {
+  font-size: 17px;
+  font-weight: 700;
+  color: #FFD700;
 }
 
-.sliderDots { display: flex; gap: 5px; justify-content: center; }
-.sliderDot { width: 5px; height: 5px; border-radius: 50%; background: #333; }
-.sliderDot.active { background: #fff; }
+.RatingTotal {
+  font-size: 12px;
+  color: #777;
+}
 
-.detailRelated { display: flex; flex-direction: column; gap: 10px; }
-.relatedItem { cursor: pointer; opacity: 0.55; transition: opacity 0.2s; }
-.relatedItem:hover { opacity: 1; }
-.relatedItem img { width: 110px; border-radius: 6px; display: block; object-fit: cover; }
+.sliderRatingCount {
+  font-size: 11px;
+  color: #555;
+}
+
+.sliderDots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.sliderDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.sliderDot.active {
+  background: #fff;
+}
+
+.detailRelated {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.relatedItem {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.relatedItem:hover {
+  opacity: 1;
+}
+
+.relatedItem img {
+  width: 110px;
+  border-radius: 6px;
+  display: block;
+  object-fit: cover;
+}
 
 .detailTabWrapper {
   display: flex;
   border-bottom: 1px solid #1e1e1e;
   margin: 0 80px;
 }
+
 .detailTab {
   padding: 14px 28px;
   background: none;
@@ -166,11 +248,18 @@
   color: #555;
   font-size: 14px;
   cursor: pointer;
-  font-family: 'Paperlogy', sans-serif;
+  font-family: 'Paperlogy';
   transition: color 0.2s, border-color 0.2s;
 }
-.detailTab.active { color: #fff; border-bottom-color: #2563eb; }
-.detailTab:hover { color: #ccc; }
+
+.detailTab.active {
+  color: #fff;
+  border-bottom-color: #2563eb;
+}
+
+.detailTab:hover {
+  color: #ccc;
+}
 
 .detailReviewSection {
   max-width: 760px;
@@ -185,64 +274,176 @@
   padding: 18px 20px;
   margin-bottom: 10px;
 }
-.reviewHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.reviewUser { display: flex; align-items: center; gap: 10px; }
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.reviewUser {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .reviewAvatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: #2563eb; display: flex; align-items: center;
-  justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
 }
-.reviewUserName { 
-  font-size: 13px; 
-  font-weight: 600; 
-  display: block; 
-  margin-bottom: 2px; 
+
+.reviewUserName {
+  font-size: 13px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
 }
-.reviewDate { font-size: 11px; color: #555; display: block; }
-.reviewRating { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.reviewRatingNum { font-size: 11px; color: #777; }
-.reviewContent { font-size: 13px; color: #bbb; line-height: 1.75; margin-bottom: 12px; word-break: keep-all; }
-.reviewFooter { display: flex; justify-content: space-between; align-items: center; }
+
+.reviewDate {
+  font-size: 11px;
+  color: #555;
+  display: block;
+}
+
+.reviewRating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.reviewRatingNum {
+  font-size: 11px;
+  color: #777;
+}
+
+.reviewContent {
+  font-size: 13px;
+  color: #bbb;
+  line-height: 1.75;
+  margin-bottom: 12px;
+  word-break: keep-all;
+}
+
+.reviewFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .reviewActionBtn {
-  background: none; border: 1px solid #2a2a2a; color: #666;
-  padding: 3px 12px; border-radius: 3px; font-size: 11px;
-  cursor: pointer; font-family: 'Paperlogy', sans-serif; transition: border-color 0.2s;
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #666;
+  padding: 3px 12px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Paperlogy', sans-serif;
+  transition: border-color 0.2s;
 }
-.reviewActionBtn:hover { border-color: #555; color: #aaa; }
-.reviewReactions { display: flex; gap: 12px; font-size: 11px; color: #555; }
 
-.reviewForm { background: #0e0e0e; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px 18px; margin: 16px 0 10px; }
+.reviewActionBtn:hover {
+  border-color: #555;
+  color: #aaa;
+}
+
+.reviewReactions {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #555;
+}
+
+.reviewForm {
+  background: #0e0e0e;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 16px 0 10px;
+}
+
 .reviewFormInput {
-  width: 100%; background: transparent; border: none; color: #ddd;
-  font-size: 13px; padding: 4px 0; resize: none; height: 72px;
-  font-family: 'Paperlogy', sans-serif; outline: none; box-sizing: border-box; line-height: 1.6;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #ddd;
+  font-size: 13px;
+  padding: 4px 0;
+  resize: none;
+  height: 72px;
+  font-family: 'Paperlogy', sans-serif;
+  outline: none;
+  box-sizing: border-box;
+  line-height: 1.6;
 }
-.reviewFormInput::placeholder { color: #333; }
-.reviewFormBottom { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  border-top: 1px solid #1a1a1a; 
-  padding-top: 10px; 
-  margin-top: 8px; 
-}
-.reviewFormCount { font-size: 11px; color: #444; }
-.reviewFormBtns { 
-  display: flex; 
-  gap: 6px; 
-}
-.reviewCancelBtn { 
-  padding: 5px 14px; 
-  background: none; 
-  border: 1px solid #333; 
-  color: #888; 
-  border-radius: 3px; 
-  cursor: pointer; 
-  font-family: 'Paperlogy', sans-serif; 
-  font-size: 12px; 
-}
-.reviewCancelBtn:hover { border-color: #555; }
-.reviewSubmitBtn { padding: 5px 14px; background: #2563eb; border: none; color: #fff; border-radius: 3px; cursor: pointer; font-family: 'Paperlogy', sans-serif; font-size: 12px; }
-.reviewSubmitBtn:hover { background: #1d4ed8; }
 
-.replyForm { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 6px; padding: 12px 16px; margin-top: 10px; }
+.reviewFormInput::placeholder {
+  color: #333;
+}
+
+.reviewFormBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #1a1a1a;
+  padding-top: 10px;
+  margin-top: 8px;
+}
+
+.reviewFormCount {
+  font-size: 11px;
+  color: #444;
+}
+
+.reviewFormBtns {
+  display: flex;
+  gap: 6px;
+}
+
+.reviewCancelBtn {
+  padding: 5px 14px;
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Paperlogy', sans-serif;
+  font-size: 12px;
+}
+
+.reviewCancelBtn:hover {
+  border-color: #555;
+}
+
+.reviewSubmitBtn {
+  padding: 5px 14px;
+  background: #2563eb;
+  border: none;
+  color: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Paperlogy', sans-serif;
+  font-size: 12px;
+}
+
+.reviewSubmitBtn:hover {
+  background: #1d4ed8;
+}
+
+.replyForm {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 10px;
+}
