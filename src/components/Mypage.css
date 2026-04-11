@@ -1,0 +1,265 @@
+.mypageWrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #050505;
+  font-family: 'Paperlogy', sans-serif;
+  color: #fff;
+}
+
+.mypageContainer {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 120px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* ── 프로필 ── */
+.mypageProfile {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.mypageAvatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatarCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  border: 2px solid #444;
+}
+
+.mypageUsername {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.mypageStats {
+  display: flex;
+  gap: 32px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #888;
+}
+
+.statNum {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ── 섹션 공통 ── */
+.mypageSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mypageSectionTitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: #fff;
+  border-bottom: 1px solid #1e1e1e;
+  padding-bottom: 12px;
+}
+
+.mypageEmpty {
+  color: #555;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+/* ── 찜한 작품 ── */
+.wishedGrid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wishedCard {
+  width: 130px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wishedPoster {
+  width: 130px;
+  height: 190px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishedNoImg {
+  font-size: 10px;
+  color: #555;
+}
+
+.wishedRemoveBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  color: #e11d48;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.wishedCard:hover .wishedRemoveBtn {
+  opacity: 1;
+}
+
+.wishedMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wishedTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wishedInfo {
+  font-size: 11px;
+  color: #777;
+}
+
+/* ── 리뷰 탭 ── */
+.reviewTabRow {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.reviewTabBtn {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: #555;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Paperlogy', sans-serif;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.reviewTabBtn.active {
+  color: #fff;
+  border-bottom-color: #2563eb;
+}
+
+.reviewTabBtn:hover { color: #ccc; }
+
+/* ── 리뷰 카드 ── */
+.mypageReviewCard {
+  background: #0e0e0e;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mypageReviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.mypageReviewLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mypageReviewType {
+  font-size: 11px;
+  background: #2563eb33;
+  color: #2563eb;
+  border: 1px solid #2563eb55;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.mypageReviewTitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mypageReviewDate {
+  font-size: 11px;
+  color: #555;
+}
+
+.mypageReviewRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mypageReviewRatingNum {
+  font-size: 11px;
+  color: #777;
+}
+
+.mypageReviewContent {
+  font-size: 13px;
+  color: #bbb;
+  line-height: 1.7;
+}
+
+.mypageReviewFooter {
+  display: flex;
+  gap: 8px;
+}
+
+.mypageReviewBtn {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #777;
+  padding: 4px 14px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Paperlogy', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.mypageReviewBtn:hover { border-color: #555; color: #aaa; }
+.mypageReviewBtn.delete:hover { border-color: #ef4444; color: #ef4444; }

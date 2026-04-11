@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Nav from "./Navi";
 import Footer from "./Footer";
 import "./Detail.css";
+import likesImg from "../imgs/likes.svg";
+import replyImg from "../imgs/reply.svg";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
@@ -31,10 +33,80 @@ export default function Detail() {
   const [activeTab, setActiveTab] = useState("review");
   const [reviews, setReviews] = useState(DUMMY_REVIEWS);
   const [newReview, setNewReview] = useState("");
-  const [replyOpenId, setReplyOpenId] = useState(null); // 어떤 댓글의 답글창이 열려있는지 (댓글ID)
+  const [newReviewRating, setNewReviewRating] = useState(0);
+  const [replyOpenId, setReplyOpenId] = useState(null);
   const [replyText, setReplyText] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false); // 줄거리 더보기 상태
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isWished, setIsWished] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editContent, setEditContent] = useState("");
+
+  const currentUser = "나";
+
+  const handleReviewSubmit = () => {
+    if (!newReview.trim()) return alert("내용을 입력해주세요.");
+    setReviews([{
+      id: Date.now(),
+      user: currentUser,
+      date: new Date().toLocaleDateString().replace(/\. $/, ""),
+      rating: newReviewRating,  // ← 별점 반영
+      content: newReview,
+      likes: 0,
+      comments: 0,
+      isLiked: false,
+    }, ...reviews]);
+    setNewReview("");
+    setNewReviewRating(0);      // ← 별점 초기화
+    setIsReviewModalOpen(false);
+  };
+
+  const handleEditSave = (id) => {
+    if (!editContent.trim()) return alert("내용을 입력해주세요.");
+    setReviews(reviews.map(r => r.id === id ? { ...r, content: editContent } : r));
+    setEditingReviewId(null);
+  };
+
+  const handleReplySubmit = (id) => {
+    if (!replyText.trim()) return alert("답글 내용을 입력해주세요.");
+
+    // 1. 방금 내가 쓴 답글 데이터를 하나의 객체로 만듭니다.
+    const newReply = {
+      id: Date.now(),
+      user: currentUser, // "나"
+      text: replyText,   // 내가 입력한 텍스트
+      date: new Date().toLocaleDateString('ko-KR', {
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      }).replace(/\. /g, '.').replace(/\.$/, '')
+    };
+
+    // 2. 답글 갯수(comments)를 1 올리고, replies 배열에 방금 쓴 내용을 추가합니다.
+    setReviews(reviews.map(r =>
+      r.id === id
+        ? {
+          ...r,
+          comments: r.comments + 1,
+          replies: [...(r.replies || []), newReply] // 👈 핵심: 기존 답글 뒤에 새 내용 붙이기
+        }
+        : r
+    ));
+
+    setReplyOpenId(null);
+    setReplyText("");
+  };
+
+  const handleDeleteReview = (id) => {
+    if (window.confirm("댓글을 삭제하시겠습니까?")) {
+      setReviews(reviews.filter(r => r.id !== id));
+    }
+  };
+
+  const handleLikeToggle = (id) => {
+    setReviews(reviews.map(r => {
+      if (r.id !== id) return r;
+      return { ...r, isLiked: !r.isLiked, likes: r.isLiked ? r.likes - 1 : r.likes + 1 };
+    }));
+  };
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -101,8 +173,6 @@ export default function Detail() {
     if (!book) return;
 
     const categoryArray = book.categoryName?.split(">") || [];
-    // 전체 경로가 "국내도서 > 소설/시/희곡 > 장르소설 > ..." 이라면
-    // categoryArray[1]은 "소설/시/희곡"이 됩니다.
     const displayGenre = categoryArray.length > 1 ? categoryArray[2] : categoryArray[0] || "미분류";
 
     setDetails({
@@ -157,20 +227,6 @@ export default function Detail() {
     });
   };
 
-  const handleSubmitReview = () => {
-    if (!newReview.trim()) return alert("내용을 입력해주세요.");
-    setReviews([...reviews, {
-      id: Date.now(),
-      user: "나",
-      date: new Date().toLocaleDateString("ko-KR").replace(/\. /g, "."),
-      rating: 5,
-      content: newReview,
-      likes: 0,
-      comments: 0,
-    }]);
-    setNewReview("");
-  };
-
   if (loading) return (
     <div className="detailWrapper">
       <Nav />
@@ -189,17 +245,18 @@ export default function Detail() {
     <div className="detailWrapper">
       <Nav />
 
-      {/* ── 전체 레이아웃 ── */}
       <div className="detailLayout">
+
+        {/* 왼쪽: 기본 설명 */}
         <div className="detailInfo">
           <div className="detailTopMeta">
-            {/* 영화, 드라마 렌더링 */}
+
+            {/* 영화, 드라마 */}
             {(details._type === "movie" || details._type === "tv") && (
               <>
                 <div className="important">
                   {details.director && <span>{details.director}</span>}
                   {details.cast && <span>{details.cast}</span>}
-
                 </div>
                 <div>
                   {details.releaseDate && <span>{details.releaseDate.slice(0, 4)}년</span>}
@@ -216,11 +273,10 @@ export default function Detail() {
                 </div>
                 <div className="detailExtraInfo">
                   {details.extra?.publisher && <div>{details.extra.publisher}</div>}
-                  {details.releaseDate && <div> {details.releaseDate}</div>}
+                  {details.releaseDate && <div>{details.releaseDate}</div>}
                   {details.extra?.price && <span>{details.extra.price}</span>}
                   {details.extra?.isbn && <span>{details.extra.isbn}</span>}
                 </div>
-
               </>
             )}
 
@@ -237,26 +293,18 @@ export default function Detail() {
                   {details.extra?.runtime && <span>{details.extra.runtime}</span>}
                   {details.extra?.age && <span>{details.extra.age}</span>}
                 </div>
-                {details.extra?.cast && (
-                  <div className="detailExtraInfo">{details.extra.cast}</div>
-                )}
+                {details.extra?.cast && <div className="detailExtraInfo">{details.extra.cast}</div>}
               </>
             )}
           </div>
 
-          {/*줄거리*/}
+          {/* 줄거리 */}
           <div className="overviewContainer">
-            {/* isExpanded가 참이면 'expanded' 클래스가 붙어서 다 보여줍니다 */}
             <p className={`detailTopOverview ${isExpanded ? "expanded" : ""}`}>
               {details.overview || "상세 정보가 제공되지 않습니다."}
             </p>
-            
-            {/* 줄거리가 100자 이상일 때만 더보기/접기 버튼을 보여줍니다 */}
             {details.overview && details.overview.length > 100 && (
-              <button 
-                className="overviewMoreBtn" 
-                onClick={() => setIsExpanded(!isExpanded)}
-              >
+              <button className="overviewMoreBtn" onClick={() => setIsExpanded(!isExpanded)}>
                 {isExpanded ? "닫기 ▴" : "더보기 ▾"}
               </button>
             )}
@@ -269,7 +317,6 @@ export default function Detail() {
           </div>
         </div>
 
-
         {/* 오른쪽: 장르 + 제목 + 포스터 */}
         <div className="detailRight">
           <div className="detailTopMeta">
@@ -277,47 +324,32 @@ export default function Detail() {
           </div>
           <h1 className="detailMainTitle">{details.title}</h1>
 
-          {/* ── 포스터 슬라이더 + 관련 작품 ── */}
           <div className="detailSliderSection">
             <div className="detailSlider">
               <div className="sliderMain">
                 <img src={details.poster || "https://placehold.co/220x330?text=No+Image"} alt={details.title} />
                 <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={() => setIsWished(!isWished)}>
                   ♥
-                </button> {/*기본적으로 detailWishBtn, 찜되면 wished css 클래스 사용*/}
+                </button>
                 <div className="sliderDots">
                   {[0, 1, 2].map(i => <span key={i} className={`sliderDot ${i === 1 ? "active" : ""}`} />)}
                 </div>
               </div>
-
-              {/* {relatedWorks[1] && (
-                <div className="sliderSide right" onClick={() => navigate(`/detail/${relatedWorks[1].type}/${relatedWorks[1].id}`, { state: { item: relatedWorks[1].item } })}>
-                  <img src={relatedWorks[1].poster} alt={relatedWorks[1].title} />
-                </div>
-              )} */}
             </div>
+          </div>
+        </div>
 
-            {/* <div className="detailRelated">
-              {relatedWorks.slice(2, 4).map(work => (
-                <div key={work.id} className="relatedItem" onClick={() => navigate(`/detail/${work.type}/${work.id}`, { state: { item: work.item } })}>
-                  <img src={work.poster} alt={work.title} />
-                </div>
-              ))}
-            </div> */}
-          </div>{/* detailSliderSection 끝 */}
-        </div>{/* detailRight 끝 */}
-      </div>{/* detailLayout 끝 */}
+      </div>
 
-      {/* ── 탭 ── */}
+      {/* 탭 */}
       <div className="detailTabWrapper">
         <button className={`detailTab ${activeTab === "review" ? "active" : ""}`} onClick={() => setActiveTab("review")}>감상하기</button>
         <button className={`detailTab ${activeTab === "wish" ? "active" : ""}`} onClick={() => setActiveTab("wish")}>바라던 작품</button>
       </div>
 
-      {/* ── 리뷰 탭 ── */}
+      {/* 리뷰 탭 */}
       {activeTab === "review" && (
         <div className="detailReviewSection">
-
           {reviews.map(review => (
             <div key={review.id} className="reviewCard">
               <div className="reviewHeader">
@@ -334,56 +366,128 @@ export default function Detail() {
                 </div>
               </div>
 
-              <p className="reviewContent">{review.content}</p>
-
-              <div className="reviewFooter">
-                <div style={{ display: "flex", gap: 6 }}>
-                  <button className="reviewActionBtn">수정</button>
-                  <button
-                    className="reviewActionBtn"
-                    onClick={() => {
-                      setReplyOpenId(replyOpenId === review.id ? null : review.id);
-                      setReplyText("");
-                    }}
-                  >
-                    답글
-                  </button>
-                </div>
-                <div className="reviewReactions">
-                  <span>♡ 좋아요 {review.likes}</span>
-                  <span>💬 댓글 {review.comments}</span>
-                </div>
-              </div>
-
-              {/* 답글 입력창 — 해당 댓글 아래에만 표시 */}
-              {replyOpenId === review.id && (
-                <div className="replyForm">
+              {editingReviewId === review.id ? (
+                <div style={{ margin: "10px 0" }}>
                   <textarea
                     className="reviewFormInput"
-                    placeholder="답글을 입력해주세요..."
-                    value={replyText}
-                    onChange={e => setReplyText(e.target.value)}
-                    maxLength={500}
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
                   />
-                  <div className="reviewFormBottom">
-                    <span className="reviewFormCount">{replyText.length}/500</span>
-                    <div className="reviewFormBtns">
-                      <button className="reviewCancelBtn" onClick={() => { setReplyOpenId(null); setReplyText(""); }}>취소</button>
-                      <button className="reviewSubmitBtn" onClick={() => { setReplyOpenId(null); setReplyText(""); }}>등록</button>
-                    </div>
+                  <div className="reviewFormBtns" style={{ justifyContent: "flex-end", marginTop: "10px" }}>
+                    <button className="reviewCancelBtn" onClick={() => setEditingReviewId(null)}>취소</button>
+                    <button className="reviewSubmitBtn" onClick={() => handleEditSave(review.id)}>수정 완료</button>
                   </div>
                 </div>
+              ) : (
+                <>
+                  <p className="reviewContent">{review.content}</p>
+                  <div className="reviewFooter">
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button className="reviewActionBtn" onClick={() => { setEditingReviewId(review.id); setEditContent(review.content); }}>수정</button>
+                      <button className="reviewActionBtn" onClick={() => handleDeleteReview(review.id)}>삭제</button>
+                      <button className="reviewActionBtn" onClick={() => { setReplyOpenId(replyOpenId === review.id ? null : review.id); setReplyText(""); }}>답글</button>
+                    </div>
+                    <div className="reviewReactions">
+                      <img src={likesImg} alt="likes" style={{ width: 16, cursor: "pointer" }} onClick={() => handleLikeToggle(review.id)} />
+                      <span>좋아요 {review.likes}</span>
+                      <img src={replyImg} alt="reply" style={{ width: 16 }} />
+                      <span>답글 {review.comments}</span>
+                    </div>
+                  </div>
+
+                  {review.replies && review.replies.length > 0 && (
+                    <div className="repliesList" style={{ marginTop: "16px", padding: "12px 16px", backgroundColor: "#111", borderRadius: "6px", border: "1px solid #222" }}>
+
+                      {/* 저장된 답글들을 하나씩 꺼내서 화면에 그립니다 */}
+                      {review.replies.map(reply => (
+                        <div key={reply.id} style={{ display: "flex", flexDirection: "column", gap: "4px", marginBottom: "12px", borderBottom: "1px solid #222", paddingBottom: "8px" }}>
+
+                          {/* 답글 작성자 이름과 날짜 */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: "12px", fontWeight: "600", color: "#ddd" }}>{reply.user}</span>
+                            <span style={{ fontSize: "10px", color: "#666" }}>{reply.date}</span>
+                          </div>
+
+                          {/* 답글 내용 */}
+                          <p style={{ margin: 0, fontSize: "12px", color: "#aaa", lineHeight: "1.5" }}>
+                            {reply.text}
+                          </p>
+
+                        </div>
+                      ))}
+
+                    </div>
+                  )}
+
+                  {replyOpenId === review.id && (
+                    <div className="replyForm">
+                      <textarea
+                        className="reviewFormInput"
+                        placeholder="답글을 입력해주세요..."
+                        value={replyText}
+                        onChange={e => setReplyText(e.target.value)}
+                        maxLength={500}
+                      />
+                      <div className="reviewFormBottom">
+                        <span className="reviewFormCount">{replyText.length}/500</span>
+                        <div className="reviewFormBtns">
+                          <button className="reviewCancelBtn" onClick={() => { setReplyOpenId(null); setReplyText(""); }}>취소</button>
+                          <button className="reviewSubmitBtn" onClick={() => handleReplySubmit(review.id)}>등록</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ))}
 
+          <div className="reviewForm">
+            <button className="writeReviewBtn" onClick={() => setIsReviewModalOpen(true)}>
+              + 리뷰 작성
+            </button>
+          </div>
         </div>
       )}
 
-      {/* ── 바라던 작품 탭 ── */}
+      {/* 바라던 작품 탭 */}
       {activeTab === "wish" && (
         <div className="detailReviewSection">
           <p style={{ color: "#aaa", textAlign: "center", padding: "60px 0" }}>바라던 작품 기능은 준비 중입니다.</p>
+        </div>
+      )}
+
+      {/* 리뷰 작성 팝업 */}
+      {isReviewModalOpen && (
+        <div className="reviewModalOverlay" onClick={() => setIsReviewModalOpen(false)}>
+          <div className="reviewModal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modalTitle">리뷰 작성</h3>
+
+            {/* 별점 선택 */}
+            <div style={{ display: "flex", gap: 6 }}>
+              {[1, 2, 3, 4, 5].map(star => (
+                <span
+                  key={star}
+                  style={{ fontSize: 24, cursor: "pointer", color: star <= Math.round(newReviewRating) ? "#FFD700" : "#444" }}
+                  onClick={() => setNewReviewRating(star)}
+                >★</span>
+              ))}
+            </div>
+
+            <textarea
+              className="reviewModalInput"
+              placeholder="이 작품에 대한 감상을 자유롭게 남겨주세요..."
+              value={newReview}
+              onChange={(e) => setNewReview(e.target.value)}
+              maxLength={500}
+            />
+            <div style={{ fontSize: 11, color: "#444", textAlign: "right" }}>{newReview.length}/500</div>
+
+            <div className="reviewModalBtns">
+              <button className="reviewCancelBtn" onClick={() => { setIsReviewModalOpen(false); setNewReview(""); }}>취소</button>
+              <button className="reviewSubmitBtn" onClick={handleReviewSubmit}>등록</button>
+            </div>
+          </div>
         </div>
       )}
 

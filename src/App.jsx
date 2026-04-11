@@ -37,9 +37,7 @@ export default function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/search" element={<Search/>}/>
           <Route path="/detail/:type/:id" element={<Detail />} />
-
-          {/* 내가 쓴 모든 기록(도서+영상+공연) 리스트 */}
-          {/*<Route path="/myrecords" element={<MyRecords records={records} />} /> */}
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </div>
     //</AuthProvider>
