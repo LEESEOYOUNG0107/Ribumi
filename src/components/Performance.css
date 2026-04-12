@@ -30,3 +30,6 @@
   width: 100%;
   margin-top: 4px; /* 장르가 너무 붙어있지 않게 간격 약간 추가 */
 }
+.cardHeart.wished {
+  color: #e11d48;
+}

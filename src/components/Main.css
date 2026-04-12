@@ -248,9 +248,13 @@
   align-items: center;
 }
 
-.heart {
-  color: #ff4d4d;
+.cardHeart {
+  color: #fff;
+  transition: transform 0.5s ease;
+  background-color: transparent;
+  border: none;
 }
+.cardHeart.wished { color: #e11d48; }
 .ratingScore{
   color: rgba(255, 230, 0, 0.942);
 }

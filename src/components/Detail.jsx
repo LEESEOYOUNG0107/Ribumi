@@ -101,11 +101,35 @@ export default function Detail() {
     }
   };
 
-  const handleLikeToggle = (id) => {
+  const handleLikeToggle = (id) => { //댓글 좋아요 함수
     setReviews(reviews.map(r => {
       if (r.id !== id) return r;
       return { ...r, isLiked: !r.isLiked, likes: r.isLiked ? r.likes - 1 : r.likes + 1 };
     }));
+  };
+
+  const handleWishToggle = async () => {
+    setIsWished(!isWished);
+    const currentWishList = JSON.parse(localStorage.getItem("wishList") || "[]");
+
+    if (!isWished) {
+      const isAlreadyExist = currentWishList.some(item => item.id === id);
+      if (!isAlreadyExist) {
+        const newWishItem = {
+          id: id,
+          type: type,
+          title: details.title,
+          poster: details.poster,
+          year: details.year || "2024",
+          rating: details.rating || 0
+        };
+        localStorage.setItem("wishList", JSON.stringify([newWishItem, ...currentWishList]));
+        alert("찜한 작품에 추가되었습니다.");
+      }
+    } else {
+      const updatedWishList = currentWishList.filter(item => item.id !== id);
+      localStorage.setItem("wishList", JSON.stringify(updatedWishList));
+    }
   };
 
   useEffect(() => {
@@ -328,7 +352,7 @@ export default function Detail() {
             <div className="detailSlider">
               <div className="sliderMain">
                 <img src={details.poster || "https://placehold.co/220x330?text=No+Image"} alt={details.title} />
-                <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={() => setIsWished(!isWished)}>
+                <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={handleWishToggle}>
                   ♥
                 </button>
                 <div className="sliderDots">

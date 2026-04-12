@@ -17,6 +17,34 @@ const genreMap = {
 
 function PlatformCard({ item }) {
   const navigate = useNavigate();
+  const [isWished, setIsWished] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("wishList") || "[]");
+    return saved.some(wish => String(wish.id) === String(item?.id));
+  });
+
+  const handleWishClick = (e) => {
+    e.stopPropagation(); // 💡 카드 클릭(상세페이지 이동) 방지
+
+    const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
+    if (isWished) {
+      // 찜 삭제
+      const updated = currentList.filter(wish => String(wish.id) !== String(item.id));
+      localStorage.setItem("wishList", JSON.stringify(updated));
+    } else {
+      // 찜 추가
+      const newItem = {
+        id: item.id,
+        type: item.first_air_date ? "tv" : "movie",
+        title: item.title || item.name,
+        poster: posterUrl,
+        year: year,
+        rating: item.vote_average
+      };
+      localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
+    }
+    setIsWished(!isWished); // 하트 색깔 반전
+  };
+
   if (!item) return null;
   const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : " ";
   const year = (item.release_date || item.first_air_date || "").substring(0, 4);
@@ -29,18 +57,20 @@ function PlatformCard({ item }) {
   }
 
   return (
-    <div className="platformCard" onClick={() => navigate(`/detail/${item.first_air_date ? "tv" : "movie"}/${item.id}`, {state:{item}})}>
+    <div className="platformCard" onClick={() => navigate(`/detail/${item.first_air_date ? "tv" : "movie"}/${item.id}`, { state: { item } })}>
       <div className="cardImage" style={{ backgroundImage: `url(${posterUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
           <h4 className="cardTitle">{item.title || item.name}</h4>
           <span className="cardGenre">{genreText}</span>
         </div>
-      </div>    
+      </div>
       <div className="cardRatingGroup">
         <span className="cardYear">{year}</span>
         <div className="cardRating">
-          <span className="heart">♡</span>
+          <button className={`cardHeart ${isWished ? "wished" : ""}`} onClick={handleWishClick}>
+            {isWished ? "♥" : "♡"}
+          </button>
           <span className="ratingScore">⭐{item.vote_average?.toFixed(1) || "0.0"}</span>
         </div>
       </div>
@@ -50,9 +80,9 @@ function PlatformCard({ item }) {
 
 export default function Main() {
   const [activeTab, setActiveTab] = useState("movie");
-  const [loading, setLoading] = useState(false); 
-  const [trendingWorks, setTrendingWorks] = useState([]); 
-  const [originalWorks, setOriginalWorks] = useState([]); 
+  const [loading, setLoading] = useState(false);
+  const [trendingWorks, setTrendingWorks] = useState([]);
+  const [originalWorks, setOriginalWorks] = useState([]);
   const [CurrentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [bannerLogo, setBannerLogo] = useState(null);
   const scrollRef = useRef(null);
@@ -102,12 +132,12 @@ export default function Main() {
     };
 
     fetchTrendingWorks();
-    fetchOriginalWorks(); 
+    fetchOriginalWorks();
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentBannerIndex((prevIndex) => 
+      setCurrentBannerIndex((prevIndex) =>
         prevIndex === originalWorks.length - 1 ? 0 : prevIndex + 1
       );
     }, 5000);
@@ -118,7 +148,7 @@ export default function Main() {
 
   useEffect(() => {
     const fetchLogo = async () => {
-      if(!currentBannerWork) return;
+      if (!currentBannerWork) return;
       setBannerLogo(null);
       try {
         let mediaType = currentBannerWork.media_type;
@@ -130,7 +160,7 @@ export default function Main() {
         if (data.logos && data.logos.length > 0) {
           setBannerLogo(data.logos[0].file_path);
         }
-      } catch(error) {
+      } catch (error) {
         console.log("로고 데이터를 가져오는데 실패했습니다.", error);
       }
     };
@@ -139,7 +169,7 @@ export default function Main() {
 
   return (
     <div className="frame mainWrapper">
-      <Nav/>
+      <Nav />
 
       {originalWorks.length > 0 && currentBannerWork && (
         <div className="bannerSection"
@@ -154,9 +184,9 @@ export default function Main() {
             <div className="bannerTitleSection">
               {bannerLogo ? (
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${bannerLogo}`} 
-                  alt="작품 타이틀 로고" 
-                  className="bannerLogo" 
+                  src={`https://image.tmdb.org/t/p/w500${bannerLogo}`}
+                  alt="작품 타이틀 로고"
+                  className="bannerLogo"
                 />
               ) : (
                 <h2 className="bannerTitle">{currentBannerWork.title || currentBannerWork.name}</h2>
@@ -193,7 +223,7 @@ export default function Main() {
                 ))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef)}> &gt; </button>
-            </div>  
+            </div>
           </section>
 
           <section className="scrollSection" style={{ marginTop: '50px' }}>
@@ -210,9 +240,9 @@ export default function Main() {
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
             </div>
           </section>
-        </>  
-      )}  
+        </>
+      )}
       <Footer />
-    </div>  
+    </div>
   );
 }

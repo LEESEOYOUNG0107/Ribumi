@@ -54,6 +54,9 @@
   gap: 38%;
 
 }
+.cardHeart.wished {
+  color: #e11d48;
+}
 @keyframes scrollLeft {
     0% {
         transform: translateX(0);

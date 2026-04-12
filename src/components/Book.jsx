@@ -8,16 +8,42 @@ const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 
 function BookCard({ item }) {
   const navigate = useNavigate();
-  if(!item) return null;
+  const [isWished, setIsWished] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("wishList") || "[]");
+    return saved.some(wish => String(wish.id) === String(item.isbn13));
+  });
+
+  const handleWishClick = (e) => {
+    e.stopPropagation();
+    const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
+
+    if (isWished) {
+      const updated = currentList.filter(wish => String(wish.id) !== String(item.isbn13));
+      localStorage.setItem("wishList", JSON.stringify(updated));
+    } else {
+      const newItem = {
+        id: item.isbn13,
+        type: "book",
+        title: item.title,
+        poster: item.cover,
+        year: item.pubDate ? item.pubDate.substring(0, 4) : "",
+        rating: 0 // 도서는 별점 데이터 형태에 따라 조정
+      };
+      localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
+    }
+    setIsWished(!isWished);
+  };
+
+  if (!item) return null;
   let imgUrl = item.cover;
   if (imgUrl) {
     imgUrl = imgUrl.replace('/coversum/', '/cover500/');
   } else {
     imgUrl = "https://placehold.co/180x250?text=No+Image";
   }
-  const year = item.pubDate ? item.pubDate.substring(0,4) : "";
+  const year = item.pubDate ? item.pubDate.substring(0, 4) : "";
   const authors = item.author ? item.author.split("(지은이)")[0].trim() : "작자 미상";
-  
+
   return (
     <div className="platformCard" style={{ width: '180px', flexShrink: 0 }} onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
       <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
@@ -27,11 +53,13 @@ function BookCard({ item }) {
           <span className="cardGenre">{authors}</span>
           <span className="cardGenre">{item.categoryName ? item.categoryName.split('>').pop() : ""}</span>
         </div>
-      </div>    
+      </div>
       <div className="cardRatingGroup">
         <span className="cardYear">{year}</span>
         <div className="cardRating">
-          <span className="heart">♡</span>
+          <button className={`cardHeart ${isWished ? "wished" : ""}`} onClick={handleWishClick}>
+            {isWished ? "♥" : "♡"}
+          </button>
           <span className="ratingScore">⭐{item.customerReviewRank ? (item.customerReviewRank / 2).toFixed(1) : "0.0"}</span>
         </div>
       </div>
@@ -103,7 +131,7 @@ export default function Book() {
 
   return (
     <div className="frame mainWrapper">
-      <Nav/>
+      <Nav />
 
       {!loading && currentBanner && (
         <section className="BannerSection">
@@ -111,10 +139,10 @@ export default function Book() {
             <div className="bannerTrack">
               {[...bannerBooks, ...bannerBooks].map((item, idx) => (
                 <div className="bannerItem" key={idx} onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
-                  <img 
-                    src={item.cover.replace('/coversum/', '/cover500/')} 
-                    alt={item.title} 
-                    className="bannerPosterImage" 
+                  <img
+                    src={item.cover.replace('/coversum/', '/cover500/')}
+                    alt={item.title}
+                    className="bannerPosterImage"
                   />
                 </div>
               ))}
@@ -122,7 +150,7 @@ export default function Book() {
           </div>
         </section>
       )}
-      
+
       {loading ? (
         <div className="loading">데이터를 불러오는 중입니다...🍿</div>
       ) : (
@@ -132,10 +160,10 @@ export default function Book() {
             <div className="sliderWrapper">
               <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
               <div className="platformScroll" ref={scrollRef1} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
-                {newBooks.map((item, idx) => ( <BookCard key={item.isbn || idx} item={item}/> ))}
+                {newBooks.map((item, idx) => (<BookCard key={item.isbn || idx} item={item} />))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
-            </div>  
+            </div>
           </section>
 
           <section className="scrollSection" style={{ marginTop: '50px' }}>
@@ -143,14 +171,14 @@ export default function Book() {
             <div className="sliderWrapper">
               <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
               <div className="platformScroll" ref={scrollRef2} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
-                {popularBooks.map((item, idx) => ( <BookCard key={item.isbn || idx} item={item} /> ))}
+                {popularBooks.map((item, idx) => (<BookCard key={item.isbn || idx} item={item} />))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
-            </div>  
+            </div>
           </section>
-        </>  
-      )}  
+        </>
+      )}
       <Footer />
-    </div>  
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Main.css"; 
+import "./Main.css";
 import "./Book.css";
 import "./Performance.css";
 import Nav from "./Navi";
@@ -10,32 +10,61 @@ const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
 function PerformanceCard({ item }) {
   const navigate = useNavigate();
+
+  const [isWished, setIsWished] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("wishList") || "[]");
+    return saved.some(wish => String(wish.id) === String(item.id));
+  });
+
+  const handleWishClick = (e) => {
+    e.stopPropagation();
+    const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
+
+    if (isWished) {
+      const updated = currentList.filter(wish => String(wish.id) !== String(item.id));
+      localStorage.setItem("wishList", JSON.stringify(updated));
+    } else {
+      const newItem = {
+        id: item.id,
+        type: "performance",
+        title: item.title,
+        poster: item.poster,
+        year: item.date || "",
+        rating: 0
+      };
+      localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
+    }
+    setIsWished(!isWished);
+  };
+
   if (!item) return null;
   const imgUrl = item.poster || "https://placehold.co/180x250?text=No+Image";
 
   return (
     <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
-      <div 
-        className="cardImage" 
+      <div
+        className="cardImage"
         style={{ backgroundImage: `url(${imgUrl})` }}
       ></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
-          <h4 className="cardTitle">{item.title}</h4> 
+          <h4 className="cardTitle">{item.title}</h4>
         </div>
-        <div 
+        <div
           className="cardGenre"
           style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}
         >
           {item.genre} {item.place ? `| ${item.place}` : ''}
         </div>
-        <span className="heart">♡</span>
-      </div>    
+        <button className={`cardHeart ${isWished ? "wished" : ""}`} onClick={handleWishClick}>
+          {isWished ? "♥" : "♡"}
+        </button>
+      </div>
     </div>
   );
 }
 
-export default function PerformancePage() { 
+export default function PerformancePage() {
   const [newPerfs, setNewPerfs] = useState([]);
   const [popularPerfs, setPopularPerfs] = useState([]);
   const [bannerPerfs, setBannerPerfs] = useState([]);
@@ -75,7 +104,7 @@ export default function PerformancePage() {
       const text = await response.text();
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, "text/xml");
-      const boxofNodes = xmlDoc.querySelectorAll("boxof");  
+      const boxofNodes = xmlDoc.querySelectorAll("boxof");
       return Array.from(boxofNodes).map(node => ({
         id: node.querySelector("mt20id")?.textContent,
         title: node.querySelector("prfnm")?.textContent,
@@ -93,7 +122,7 @@ export default function PerformancePage() {
   useEffect(() => {
     const loadPerformances = async () => {
       setLoading(true);
-      
+
       const today = new Date();
       const nextMonth = new Date();
       nextMonth.setMonth(today.getMonth() + 1);
@@ -119,11 +148,11 @@ export default function PerformancePage() {
       }
     };
     loadPerformances();
-}, []);
+  }, []);
 
   return (
     <div className="frame mainWrapper">
-      <Nav/>
+      <Nav />
 
       {!loading && bannerPerfs.length > 0 && (
         <section className="BannerSection">
@@ -131,10 +160,10 @@ export default function PerformancePage() {
             <div className="bannerTrack">
               {[...bannerPerfs, ...bannerPerfs].map((item, idx) => (
                 <div className="bannerItem" key={idx} onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
-                  <img 
-                    src={item.poster} 
-                    alt={item.title} 
-                    className="bannerPosterImage" 
+                  <img
+                    src={item.poster}
+                    alt={item.title}
+                    className="bannerPosterImage"
                   />
                 </div>
               ))}
@@ -142,7 +171,7 @@ export default function PerformancePage() {
           </div>
         </section>
       )}
-      
+
       {loading ? (
         <div className="loading">공연 데이터를 불러오는 중입니다...🎫</div>
       ) : (
@@ -152,10 +181,10 @@ export default function PerformancePage() {
             <div className="sliderWrapper">
               <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
               <div className="platformScroll" ref={scrollRef2}>
-                {popularPerfs.map((item, idx) => ( <PerformanceCard key={item.id || idx} item={item} /> ))}
+                {popularPerfs.map((item, idx) => (<PerformanceCard key={item.id || idx} item={item} />))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
-            </div>  
+            </div>
           </section>
 
           <section className="scrollSection" style={{ marginTop: '50px' }}>
@@ -163,14 +192,14 @@ export default function PerformancePage() {
             <div className="sliderWrapper">
               <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
               <div className="platformScroll" ref={scrollRef1}>
-                {newPerfs.map((item, idx) => ( <PerformanceCard key={item.id || idx} item={item}/> ))}
+                {newPerfs.map((item, idx) => (<PerformanceCard key={item.id || idx} item={item} />))}
               </div>
               <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
-            </div>  
+            </div>
           </section>
-        </>  
-      )}  
+        </>
+      )}
       <Footer />
-    </div>  
+    </div>
   );
 }

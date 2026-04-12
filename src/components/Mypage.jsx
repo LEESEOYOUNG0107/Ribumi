@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Nav from "./Navi";
 import Footer from "./Footer";
 import "./Mypage.css";
+import profileImg from "../imgs/profile.png";
 
 // 더미 데이터
 const DUMMY_WISHED = [
@@ -31,7 +32,6 @@ const StarRating = ({ rating, size = 14 }) => (
 export default function MyPage() {
   const navigate = useNavigate();
   const [reviewTab, setReviewTab] = useState("book"); // "book" | "media"
-  const [wished, setWished] = useState(DUMMY_WISHED);
   const [reviews, setReviews] = useState(DUMMY_REVIEWS);
 
   const filteredReviews = reviewTab === "book"
@@ -44,8 +44,21 @@ export default function MyPage() {
     }
   };
 
-  const handleRemoveWish = (id) => {
-    setWished(wished.filter(w => w.id !== id));
+  const [wished, setWished] = useState(() => {
+    const savedWished = localStorage.getItem("wishList");
+    return savedWished ? JSON.parse(savedWished) : [];
+  });
+
+  const handleRemoveWish = (id) => { // 👈 여기는 id로 받고 있습니다.
+    if (window.confirm("찜한 작품에서 삭제하시겠습니까?")) {
+      // 💡 핵심: targetId를 id로 바꾸고, 둘 다 String으로 감싸서 완벽하게 일치하는지 비교합니다!
+      const updatedWishes = wished.filter(item => String(item.id) !== String(id));
+      
+      // 화면 업데이트
+      setWished(updatedWishes); 
+      // 로컬 스토리지도 같이 업데이트(동기화)
+      localStorage.setItem("wishList", JSON.stringify(updatedWishes)); 
+    }
   };
 
   return (
@@ -57,7 +70,7 @@ export default function MyPage() {
         {/* ── 프로필 ── */}
         <div className="mypageProfile">
           <div className="mypageAvatar">
-            <div className="avatarCircle"></div>
+            <div className="avatarCircle"><img src={profileImg} alt="profile" /></div>
             <span className="mypageUsername">홍길동님</span>
           </div>
           <div className="mypageStats">
@@ -72,7 +85,7 @@ export default function MyPage() {
           </div>
         </div>
 
-        {/* ── 찜한 작품 ── */}
+        {/* ── 찜한 작품 ──  더미데이터 사용중이라 데이터 정확하게 안 나옴*/}
         <section className="mypageSection">
           <h3 className="mypageSectionTitle">찜한 작품</h3>
           {wished.length === 0 ? (
