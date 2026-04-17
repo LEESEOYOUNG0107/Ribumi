@@ -5,23 +5,16 @@ import Footer from "./Footer";
 import "./Mypage.css";
 import profileImg from "../imgs/profile.png";
 
-// 더미 데이터
-const DUMMY_WISHED = [
-  { id: 1, type: "movie", title: "전지적 독자 시점", year: "2025", rating: 7.9, poster: "https://image.tmdb.org/t/p/w300/dummy1.jpg" },
-  { id: 2, type: "tv", title: "오늘밤 세계에서", year: "2024", rating: 8.2, poster: "https://image.tmdb.org/t/p/w300/dummy2.jpg" },
-  { id: 3, type: "book", title: "채식주의자", year: "2023", rating: 8.8, poster: "" },
-];
-
-const DUMMY_REVIEWS = [
-  {
-    id: 1, type: "book", title: "채식주의자", date: "2026.02.25", rating: 4,
-    content: "역시 원작소설이네요. 재밌게 잘 봤습니다. 역시 원작소설이네요. 재밌게 잘 봤습니다. 역시 원작소설이네요. 재밌게 잘 봤습니다.",
-  },
-  {
-    id: 2, type: "movie", title: "전지적 독자 시점", date: "2026.02.25", rating: 4,
-    content: "역시 원작소설이네요. 재밌게 잘 봤습니다. 역시 원작소설이네요. 재밌게 잘 봤습니다.",
-  },
-];
+// const DUMMY_REVIEWS = [
+//   {
+//     id: 1, type: "book", title: "채식주의자", date: "2026.02.25", rating: 4,
+//     content: "역시 원작소설이네요. 재밌게 잘 봤습니다. 역시 원작소설이네요. 재밌게 잘 봤습니다. 역시 원작소설이네요. 재밌게 잘 봤습니다.",
+//   },
+//   {
+//     id: 2, type: "movie", title: "전지적 독자 시점", date: "2026.02.25", rating: 4,
+//     content: "역시 원작소설이네요. 재밌게 잘 봤습니다. 역시 원작소설이네요. 재밌게 잘 봤습니다.",
+//   },
+// ];
 
 const StarRating = ({ rating, size = 14 }) => (
   <span style={{ color: "#FFD700", fontSize: size }}>
@@ -31,16 +24,25 @@ const StarRating = ({ rating, size = 14 }) => (
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const [reviewTab, setReviewTab] = useState("book"); // "book" | "media"
-  const [reviews, setReviews] = useState(DUMMY_REVIEWS);
+  const [reviewTab, setReviewTab] = useState("book");
+  
+  // 1. 초기값 설정: 로컬 스토리지에서 꺼내오기
+  const [reviews, setReviews] = useState(() => {
+    const saved = localStorage.getItem("myReviews");
+    // 저장된 게 있으면 그걸 쓰고, 없으면 더미데이터를 기본값으로 보여줍니다.
+    return saved ? JSON.parse(saved) : "작성한 리뷰가 없습니다.";
+  });// "book" | "media"
 
   const filteredReviews = reviewTab === "book"
     ? reviews.filter(r => r.type === "book")
     : reviews.filter(r => r.type !== "book");
 
+  // 2. 삭제 기능 동기화
   const handleDeleteReview = (id) => {
     if (window.confirm("리뷰를 삭제하시겠습니까?")) {
-      setReviews(reviews.filter(r => r.id !== id));
+      const updatedReviews = reviews.filter(r => String(r.id) !== String(id));
+      setReviews(updatedReviews);
+      localStorage.setItem("myReviews", JSON.stringify(updatedReviews)); // 💡 삭제 후 로컬스토리지도 업데이트!
     }
   };
 
@@ -50,15 +52,11 @@ export default function MyPage() {
   });
 
   const handleRemoveWish = (id) => { // 👈 여기는 id로 받고 있습니다.
-    if (window.confirm("찜한 작품에서 삭제하시겠습니까?")) {
-      // 💡 핵심: targetId를 id로 바꾸고, 둘 다 String으로 감싸서 완벽하게 일치하는지 비교합니다!
-      const updatedWishes = wished.filter(item => String(item.id) !== String(id));
-      
+    const updatedWishes = wished.filter(item => String(item.id) !== String(id));
       // 화면 업데이트
-      setWished(updatedWishes); 
+      setWished(updatedWishes);
       // 로컬 스토리지도 같이 업데이트(동기화)
-      localStorage.setItem("wishList", JSON.stringify(updatedWishes)); 
-    }
+      localStorage.setItem("wishList", JSON.stringify(updatedWishes));
   };
 
   return (

@@ -10,12 +10,6 @@ const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
-const DUMMY_REVIEWS = [
-  { id: 1, user: "김리뷰", date: "2026.02.25", rating: 4, content: "원작 소설을 정말 잘 살린 작품입니다. 나름 원작 팬으로서 스토리 전개가 마음에 들었고, 배우들의 연기도 훌륭했습니다. 특히 감정선이 잘 표현되어 있어서 중간중간 눈물이 났어요.", likes: 2, comments: 1 },
-  { id: 2, user: "박감상", date: "2026.02.25", rating: 4, content: "처음엔 기대 반 걱정 반으로 봤습니다. 사실 원작보다 더 잘 만든 부분도 있어서 좋았습니다. 영상미가 특히 뛰어나고 OST도 훌륭했어요. 다만 원작의 일부 장면이 삭제되어 아쉬움이 남습니다.", likes: 2, comments: 1 },
-  { id: 3, user: "이별점", date: "2026.02.25", rating: 3, content: "전반적으로 볼만한 작품입니다. 원작을 읽지 않아도 충분히 즐길 수 있는 구성이에요. 다만 중반부 전개가 다소 느리게 느껴져서 집중력이 흐트러지는 순간이 있었습니다.", likes: 2, comments: 1 },
-];
-
 const StarRating = ({ rating, size = 16 }) => (
   <span style={{ color: "#FFD700", fontSize: size }}>
     {"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}
@@ -31,7 +25,11 @@ export default function Detail() {
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState("review");
-  const [reviews, setReviews] = useState(DUMMY_REVIEWS);
+  const [reviews, setReviews] = useState(() => {
+    const allReviews = JSON.parse(localStorage.getItem("myReviews") || "[]");
+    // 전체 리뷰 중에서 '현재 보고 있는 작품(id)'의 리뷰만 필터링
+    return allReviews.filter(review => String(review.targetId) === String(id));
+  });
   const [newReview, setNewReview] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(0);
   const [replyOpenId, setReplyOpenId] = useState(null);
@@ -44,21 +42,37 @@ export default function Detail() {
 
   const currentUser = "나";
 
-  const handleReviewSubmit = () => {
-    if (!newReview.trim()) return alert("내용을 입력해주세요.");
-    setReviews([{
-      id: Date.now(),
-      user: currentUser,
-      date: new Date().toLocaleDateString().replace(/\. $/, ""),
-      rating: newReviewRating,  // ← 별점 반영
+  const handleReviewSubmit = () => { 
+    // 1. 로컬 스토리지에서 전체 리뷰 가져오기
+    const allReviews = JSON.parse(localStorage.getItem("myReviews") || "[]");
+
+    // 2. 새 리뷰 객체 만들기 (누락된 정보들 꽉꽉 채워넣기!)
+    const reviewItem = {
+      id: Date.now(),       // 리뷰 자체의 고유 번호
+      targetId: id,         // 💡 어떤 작품에 쓴 건지 작품 번호 기록 (가장 중요!)
+      type: type,
+      title: details.title,
+      date: new Date().toLocaleDateString(),
+      rating: newReviewRating,
       content: newReview,
+      user: currentUser,    // "나"
       likes: 0,
       comments: 0,
-      isLiked: false,
-    }, ...reviews]);
-    setNewReview("");
-    setNewReviewRating(0);      // ← 별점 초기화
+      replies: []
+    };
+
+    // 3. 로컬 스토리지에 전체 리뷰 저장 (마이페이지 연동)
+    const updatedAllReviews = [reviewItem, ...allReviews];
+    localStorage.setItem("myReviews", JSON.stringify(updatedAllReviews));
+
+    // 4. 💡 현재 상세페이지 화면에 즉시 띄우기 (이게 있어야 새로고침 안 해도 보입니다)
+    setReviews([reviewItem, ...reviews]);
+
+    // 5. 팝업 닫고 입력창 초기화하기
     setIsReviewModalOpen(false);
+    setNewReview("");
+    setNewReviewRating(0);
+    alert("리뷰가 등록되었습니다!");
   };
 
   const handleEditSave = (id) => {
@@ -98,6 +112,10 @@ export default function Detail() {
   const handleDeleteReview = (id) => {
     if (window.confirm("댓글을 삭제하시겠습니까?")) {
       setReviews(reviews.filter(r => r.id !== id));
+
+      const allReviews = JSON.parse(localStorage.getItem("myReviews") || "[]");
+      const updatedAllReviews = allReviews.filter(r => r.id !== reviewId);
+      localStorage.setItem("myReviews", JSON.stringify(updatedAllReviews));
     }
   };
 
@@ -334,11 +352,17 @@ export default function Detail() {
             )}
           </div>
 
-          <div className="RatingBox">
-            <span className="RatingNum">{details.rating}</span>
-            <StarRating rating={parseFloat(details.rating) / 2} size={22} />
-            <span className="sliderRatingCount">{details.voteCount}명</span>
+          <div className="rating_wish_box">
+            <div className="RatingBox">
+              <span className="RatingNum">{details.rating}</span>
+              <StarRating rating={parseFloat(details.rating) / 2} size={22} />
+              <span className="sliderRatingCount">{details.voteCount}명</span>
+            </div>
+            <button className={`wishBtn ${isWished ? "wished" : ""}`} onClick={handleWishToggle}>
+              ♥
+            </button>
           </div>
+          
         </div>
 
         {/* 오른쪽: 장르 + 제목 + 포스터 */}
@@ -352,9 +376,6 @@ export default function Detail() {
             <div className="detailSlider">
               <div className="sliderMain">
                 <img src={details.poster || "https://placehold.co/220x330?text=No+Image"} alt={details.title} />
-                <button className={`detailWishBtn ${isWished ? "wished" : ""}`} onClick={handleWishToggle}>
-                  ♥
-                </button>
                 <div className="sliderDots">
                   {[0, 1, 2].map(i => <span key={i} className={`sliderDot ${i === 1 ? "active" : ""}`} />)}
                 </div>

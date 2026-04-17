@@ -33,12 +33,11 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: 2px solid #444;
 }
 .avatarCircle img {
   width: 100%;
   height: 100%;
-  /* border-radius: 50%; */
+  /* border: none; */
   object-fit: cover;
   background-color: transparent;
 }
