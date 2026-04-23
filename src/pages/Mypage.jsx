@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Nav from "./Navi";
-import Footer from "./Footer";
+import Nav from "../components/Navi";
+import Footer from "../components/Footer";
 import "./Mypage.css";
 import profileImg from "../imgs/profile.png";
 

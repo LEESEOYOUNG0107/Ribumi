@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "./Main.css";
 import "./Book.css";
 import "./Performance.css";
-import Nav from "./Navi";
-import Footer from "./Footer";
+import Nav from "../components/Navi";
+import Footer from "../components/Footer";
 
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 

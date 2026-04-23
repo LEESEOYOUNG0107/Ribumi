@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Nav from "./Navi";
-import Footer from "./Footer";
+import Nav from "../components/Navi";
+import Footer from "../components/Footer";
 import "./Home.css";
 import main_logo from "../imgs/logo2.png";
 

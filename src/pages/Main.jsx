@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Main.css";
-import Nav from "./Navi";
-import Footer from "./Footer";
+import Nav from "../components/Navi";
+import Footer from "../components/Footer";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const genreMap = {
@@ -79,7 +79,7 @@ function PlatformCard({ item }) {
 }
 
 export default function Main() {
-  const [activeTab, setActiveTab] = useState("movie");
+  // const [activeTab, setActiveTab] = useState("movie");
   const [loading, setLoading] = useState(false);
   const [trendingWorks, setTrendingWorks] = useState([]);
   const [originalWorks, setOriginalWorks] = useState([]);

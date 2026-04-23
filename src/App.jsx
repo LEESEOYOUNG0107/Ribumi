@@ -1,16 +1,16 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useRef } from "react"; 
 import Navi from "./components/Navi";
-import Book from "./components/Book"; 
-import MyRecords from "./components/MyRecords";
-import Home from "./components/Home";
-import Main from "./components/Main";
-import Performance from "./components/Performance";
-import Search from "./components/Search";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
-import Detail from "./components/Detail";
-import MyPage from "./components/Mypage";
+import Book from "./pages/Book"; 
+// import MyRecords from "./pages/MyRecords";
+import Home from "./pages/Home";
+import Main from "./pages/Main";
+import Performance from "./pages/Performance";
+import Search from "./pages/Search";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Detail from "./pages/Detail";
+import MyPage from  "./pages/Mypage";
 // import "./App.css";
 
 export default function App() {

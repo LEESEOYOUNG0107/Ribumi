@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "./Main.css";
 import "./Search.css";
-import Nav from "./Navi";
-import Footer from "./Footer";
+import Nav from "../components/Navi";
+import Footer from "../components/Footer";
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
