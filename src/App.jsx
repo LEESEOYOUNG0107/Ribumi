@@ -1,5 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
-import { useState, useRef } from "react"; 
+import { Routes, Route } from "react-router-dom";
 import Navi from "./components/Navi";
 import Book from "./pages/Book"; 
 // import MyRecords from "./pages/MyRecords";
@@ -14,14 +13,6 @@ import MyPage from  "./pages/Mypage";
 // import "./App.css";
 
 export default function App() {
-  const location = useLocation();
-  
-  // 도서, 영화, 드라마, 공연 기록을 모두 담는 통합 상태
-  const [records, setRecords] = useState([]);
-  const idRef = useRef(0);
-
-  const isHome = location.pathname === "/" || location.pathname === "/login" || location.pathname === "/signup";
-
   return (
     //<AuthProvider> {/* 로그인 유저 정보를 앱 전체에 공유 */}
       <div className="App">

@@ -29,7 +29,7 @@ function PerformanceCard({ item }) {
         type: "performance",
         title: item.title,
         poster: item.poster,
-        year: item.date || "",
+        year: item.startDate ? item.startDate.substring(0, 4) : "",
         rating: 0
       };
       localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
@@ -41,21 +41,24 @@ function PerformanceCard({ item }) {
   const imgUrl = item.poster || "https://placehold.co/180x250?text=No+Image";
 
   return (
-    <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
-      <div
-        className="cardImage"
-        style={{ backgroundImage: `url(${imgUrl})` }}
-      ></div>
+    <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })} style={{ position: "relative" }}>
+      {/* 💡 순위 뱃지 렌더링 부분을 깔끔하게 삭제했습니다. */}
+      
+      <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})` }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
           <h4 className="cardTitle">{item.title}</h4>
         </div>
-        <div
-          className="cardGenre"
-          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}
-        >
+        <div className="cardGenre" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
           {item.genre} {item.place ? `| ${item.place}` : ''}
         </div>
+        
+        {(item.startDate || item.endDate) && (
+           <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
+             {item.startDate} ~ {item.endDate}
+           </div>
+        )}
+
         <button className={`cardHeart ${isWished ? "wished" : ""}`} onClick={handleWishClick}>
           {isWished ? "♥" : "♡"}
         </button>
@@ -70,8 +73,17 @@ export default function PerformancePage() {
   const [bannerPerfs, setBannerPerfs] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
+
+  const scrollLeft = (ref) => {
+    if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
+  };
+
+  const scrollRight = (ref) => {
+    if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
+  };
 
   const fetchKopisData = async (stdate, eddate, shcate = "", cpage = 1, rows = 15) => {
     const categoryParam = shcate ? `&shcate=${shcate}` : "";

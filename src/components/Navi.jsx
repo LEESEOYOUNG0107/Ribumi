@@ -18,7 +18,7 @@ export default function Nav({ className }) {
     }
   };
   return (
-    <div className="header">
+    <div className={`header ${className || ""}`}>
       <div className="logo-header">
         <img alt="Ribumi Logo" src={ribumi_logo} />
       </div>

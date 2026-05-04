@@ -9,6 +9,111 @@ const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
 const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
+// 장르 맵핑은 바깥에 두어 여러 컴포넌트가 공유할 수 있게 합니다.
+const genreMap = {
+  28: "액션", 12: "모험", 16: "애니메이션", 35: "코미디", 80: "범죄", 99: "다큐멘터리",
+  18: "드라마", 10751: "가족", 14: "판타지", 36: "역사", 27: "공포", 10402: "음악",
+  9648: "미스터리", 10749: "로맨스", 878: "SF", 10770: "TV 영화", 53: "스릴러",
+  10752: "전쟁", 37: "서부", 10759: "액션/모험", 10762: "아동", 10763: "뉴스",
+  10764: "리얼리티", 10765: "SF/판타지", 10766: "소프", 10767: "토크", 10768: "전쟁/정치"
+};
+
+// 💡 1. 카드 컴포넌트들을 Search 메인 함수 "바깥"으로 완전히 분리했습니다.
+const MovieCard = ({ item }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="platformCard" onClick={() => navigate(`/detail/movie/${item.id}`, { state: { item } })}>
+      <div className="cardImage" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${item.poster_path})` }}></div>
+      <div className="cardMeta">
+        <h4 className="cardTitle">{item.title}</h4>
+        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0,2).join(' | ')||"기타"}</span>
+      </div>
+      <div className="cardRatingGroup">
+        <span className="cardYear">{item.release_date?.substring(0,4)}</span>
+        <div className="cardRating">
+          <span className="heart">♡</span>
+          <span className="ratingScore">⭐{item.vote_average?.toFixed(1)}</span>
+        </div>  
+      </div>
+    </div>
+  );
+};
+
+const TvCard = ({ item }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="platformCard" onClick={() => navigate(`/detail/tv/${item.id}`, { state: { item } })}>
+      <div className="cardImage" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${item.poster_path})` }}></div>
+      <div className="cardMeta">
+        <h4 className="cardTitle">{item.name}</h4>
+        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0,2).join(' | ') || "기타"}</span>
+      </div>
+      <div className="cardRatingGroup">
+        <span className="cardYear">{item.first_air_date?.substring(0,4)}</span>
+        <div className="cardRating">
+          <span className="heart">♡</span>
+          <span className="ratingScore">⭐{item.vote_average?.toFixed(1)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BookCard = ({ item }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="platformCard" onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
+      <div className="cardImage" style={{ backgroundImage: `url(${item.cover?.replace('/coversum/','/cover500/')})` }}></div>
+      <div className="cardMeta"><h4 className="cardTitle">{item.title}</h4></div>
+      <div className="cardRatingGroup">
+        <span className="cardYear">{item.pubDate?.substring(0,4)}</span>
+        <div className="cardRating">
+           <span className="heart">♡</span>
+           <span className="ratingScore">⭐{item.customerReviewRank ? (item.customerReviewRank/2).toFixed(1) : "0.0"}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PerfCard = ({ item }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
+      <div className="cardImage" style={{ backgroundImage: `url(${item.poster})` }}></div>
+      <div className="cardMeta">
+        <h4 className="cardTitle">{item.title}</h4>
+        <span className="cardGenre">{item.genre} {item.place && `| ${item.place}`}</span>
+      </div>
+    </div>
+  );
+};
+
+// 💡 2. Section 컴포넌트 역시 바깥으로 분리했습니다.
+const Section = ({ title, data, renderCard, refObj }) => {
+  if (!data || data.length === 0) return null;
+  
+  const scrollLeft = () => {
+    if (refObj.current) refObj.current.scrollBy({ left: -refObj.current.clientWidth, behavior: "smooth" });
+  };
+  const scrollRight = () => {
+    if (refObj.current) refObj.current.scrollBy({ left: refObj.current.clientWidth, behavior: "smooth" });
+  };
+
+  return (
+    <section className="scrollSection">
+      <h3 className="sectionTitle">{title} <span className="searchResultCount">({data.length})</span></h3>
+      <div className="sliderWrapper">
+        <button className="sliderBtn leftBtn" onClick={scrollLeft}>&lt;</button>
+        <div className="platformScroll" ref={refObj}>
+          {data.map((item, i) => <div key={item.id || i}>{renderCard(item)}</div>)}
+        </div>
+        <button className="sliderBtn rightBtn" onClick={scrollRight}>&gt;</button>
+      </div>
+    </section>
+  );
+};
+
 export default function Search() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
@@ -18,18 +123,10 @@ export default function Search() {
   const [books, setBooks] = useState([]);
   const [performances, setPerformances] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const movieRef = useRef(null);
   const tvRef = useRef(null);
   const bookRef = useRef(null);
   const perfRef = useRef(null);
-
-  const scrollLeft = (ref) => {
-    if (ref.current) ref.current.scrollBy({ left: -ref.current.clientWidth, behavior: "smooth" });
-  };
-  const scrollRight = (ref) => {
-    if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
-  };
 
   useEffect(() => {
     if (!query) return;
@@ -66,82 +163,6 @@ export default function Search() {
     };
     fetchAll();
   }, [query]);
-
-  const genreMap = {
-  28: "액션", 12: "어드벤처", 16: "애니메이션", 35: "코미디",
-  80: "범죄", 99: "다큐멘터리", 18: "드라마", 10751: "가족",
-  14: "판타지", 36: "역사", 27: "공포", 10402: "음악",
-  9648: "미스터리", 10749: "로맨스", 878: "SF", 10770: "TV 영화",
-  53: "스릴러", 10752: "전쟁", 37: "서부",
-  10759: "액션·모험", 10762: "키즈", 10763: "뉴스", 10764: "리얼리티",
-  10765: "SF·판타지", 10766: "연속극", 10767: "토크쇼", 10768: "전쟁·정치"
-};
-
-  // 카드 컴포넌트들
-  const MovieCard = ({ item }) => (
-    <div className="platformCard" onClick={() => navigate(`/detail/movie/${item.id}`, { state: { item } })}>
-      <div className="cardImage" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${item.poster_path})` }}></div>
-      <div className="cardMeta">
-        <h4 className="cardTitle">{item.title}</h4>
-        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0,2).join('|')||"기타"}</span>
-      </div>
-      <div className="cardRatingGroup">
-        <span className="cardYear">{item.release_date?.substring(0,4)}</span>
-        <div className="cardRating">
-          <span className="heart">♡</span>
-          <span className="ratingScore">⭐{item.vote_average?.toFixed(1)}</span>
-        </div>  
-      </div>
-    </div>
-  );
-
-  const TvCard = ({ item }) => (
-    <div className="platformCard" onClick={() => navigate(`/detail/tv/${item.id}`, { state: { item } })}>
-      <div className="cardImage" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${item.poster_path})` }}></div>
-      <div className="cardMeta"><h4 className="cardTitle">{item.name}</h4></div>
-      <div className="cardRatingGroup">
-        <span className="cardYear">{item.first_air_date?.substring(0,4)}</span>
-        <span className="ratingScore">⭐{item.vote_average?.toFixed(1)}</span>
-      </div>
-    </div>
-  );
-
-  const BookCard = ({ item }) => (
-    <div className="platformCard" onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
-      <div className="cardImage" style={{ backgroundImage: `url(${item.cover?.replace('/coversum/','/cover500/')})` }}></div>
-      <div className="cardMeta"><h4 className="cardTitle">{item.title}</h4></div>
-      <div className="cardRatingGroup">
-        <span className="cardYear">{item.pubDate?.substring(0,4)}</span>
-        <span className="ratingScore">⭐{item.customerReviewRank ? (item.customerReviewRank/2).toFixed(1) : "0.0"}</span>
-      </div>
-    </div>
-  );
-
-  const PerfCard = ({ item }) => (
-    <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })}>
-      <div className="cardImage" style={{ backgroundImage: `url(${item.poster})` }}></div>
-      <div className="cardMeta">
-        <h4 className="cardTitle">{item.title}</h4>
-        <span className="cardGenre">{item.genre}</span>
-      </div>
-    </div>
-  );
-
-  const Section = ({ title, data, renderCard, refObj }) => {
-    if (!data.length) return null;
-    return (
-      <section className="scrollSection" style={{ marginTop: '50px' }}>
-        <h3 className="sectionTitle">{title} <span className="searchResultCount">({data.length})</span></h3>
-        <div className="sliderWrapper">
-          <button className="sliderBtn leftBtn" onClick={() => scrollLeft(refObj)}>&lt;</button>
-          <div className="platformScroll" ref={refObj}>
-            {data.map((item, i) => <div key={item.id || i}>{renderCard(item)}</div>)}
-          </div>
-          <button className="sliderBtn rightBtn" onClick={() => scrollRight(refObj)}>&gt;</button>
-        </div>
-      </section>
-    );
-  };
 
   const noResults = !loading && !movies.length && !tvShows.length && !books.length && !performances.length;
 
