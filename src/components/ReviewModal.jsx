@@ -47,7 +47,6 @@ export default function ReviewModal({
           placeholder="이 작품에 대한 감상을 자유롭게 남겨주세요..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          maxLength={500}
         />
         <div style={{ fontSize: 11, color: "#444", textAlign: "right" }}>{content.length}/500</div>
 

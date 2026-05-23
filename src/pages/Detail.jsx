@@ -7,6 +7,7 @@ import ReviewSection from "../components/ReviewSection";
 import ReviewModal from "../components/ReviewModal";
 import useDetailData from "../hook/useDetailData";
 import "../pages/Detail.css";
+import write from "../imgs/write.svg";
 
 export default function Detail() {
   const { type, id } = useParams();
@@ -109,7 +110,6 @@ export default function Detail() {
 
                 <div className="detailTabWrapper">
                   <button className={`detailTab ${activeTab === "review" ? "active" : ""}`} onClick={() => setActiveTab("review")}>감상하기</button>
-                  <button className={`detailTab ${activeTab === "wish" ? "active" : ""}`} onClick={() => setActiveTab("wish")}>바라던 작품</button>
                 </div>
 
                 {activeTab === "review" && (
@@ -127,6 +127,10 @@ export default function Detail() {
           })}
         </div>
       </div>
+
+      <button className="writeReviewBtn" onClick={() => setIsReviewModalOpen(true)}>
+        <img src={write} alt="write" className="writeReviewIcon" /> 리뷰쓰기
+      </button>
 
       <ReviewModal
         isOpen={isReviewModalOpen}

@@ -60,3 +60,51 @@
 .reviewModal .reviewModalInput{
     top: 300px;
 }
+/* modal form */
+.reviewModalOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reviewModal {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  width: 500px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalFadeIn 0.3s ease;
+}
+
+.modalTitle { margin: 0; font-size: 18px; color: #fff; }
+
+.reviewModalInput {
+  width: 100%;
+  height: 140px;
+  background-color: #0e0e0e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #ddd;
+  padding: 14px;
+  resize: none;
+  font-family: 'Paperlogy';
+  outline: none;
+  line-height: 1.5;
+}
+.reviewModalInput:focus { border-color: #ef4444; }
+
+.reviewModalBtns { display: flex; justify-content: flex-end; gap: 10px; }

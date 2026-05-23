@@ -1,6 +1,8 @@
-import { useState } from "react"; 
+import { useState } from "react";
 import likesImg from "../imgs/likes.svg";
 import replyImg from "../imgs/reply.svg";
+
+import "./ReviewSection.css";
 
 const StarRating = ({ rating, size = 16 }) => (
   <span style={{ color: "#FFD700", fontSize: size }}>
@@ -10,7 +12,6 @@ const StarRating = ({ rating, size = 16 }) => (
 
 export default function ReviewSection({
   itemReviews,
-  onOpenModal,
   onEditSave,
   onDelete,
   onReplySubmit,
@@ -56,7 +57,6 @@ export default function ReviewSection({
             </div>
             <div className="reviewRating">
               <StarRating rating={review.rating} size={14} />
-              <span className="reviewRatingNum">{review.rating}.0 / 5.0</span>
             </div>
           </div>
 
@@ -116,9 +116,6 @@ export default function ReviewSection({
         </div>
       ))}
 
-      <div className="reviewForm">
-        <button className="writeReviewBtn" onClick={onOpenModal}>+ 리뷰 작성</button>
-      </div>
     </div>
   );
 }

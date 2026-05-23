@@ -52,7 +52,7 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
             ) : (
               <>
                 <div className="important">
-                  {item.director && <span>{item.director}</span>}
+                  {item.director && <span>{item.director}</span>}|
                   {item.cast && <span>{item.cast}</span>}
                 </div>
                 <div>{item.releaseDate && <span>{item.releaseDate.slice(0, 4)}년</span>}</div>
@@ -64,7 +64,7 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
             <p className={`detailTopOverview ${isExpanded ? "expanded" : ""}`}>
               {item.overview || "상세 정보가 제공되지 않습니다."}
             </p>
-            {item.overview && item.overview.length > 100 && (
+            {item.overview && item.overview.length > 130 && (
               <button className="overviewMoreBtn" onClick={() => setIsExpanded(!isExpanded)}>
                 {isExpanded ? "닫기 ▴" : "더보기 ▾"}
               </button>

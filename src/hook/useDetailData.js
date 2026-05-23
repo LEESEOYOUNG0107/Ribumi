@@ -13,21 +13,25 @@ const keywordMap = {
 
 // ── 개별 상세 fetch 함수들 ──────────────────────────────────────────
 async function fetchTmdbDetail(itemId, mediaType) {
-    const res = await fetch(
-        `https://api.themoviedb.org/3/${mediaType}/${itemId}?api_key=${TMDB_KEY}&language=ko-KR`); // TMDB의 압축된 응답을 방지하여 JSON 파싱 오류 해결
+    const [detailRes, creditsRes] = await Promise.all([
+        fetch(`https://api.themoviedb.org/3/${mediaType}/${itemId}?api_key=${TMDB_KEY}&language=ko-KR`),
+        fetch(`https://api.themoviedb.org/3/${mediaType}/${itemId}/credits?api_key=${TMDB_KEY}&language=ko-KR`)
+    ]);
+    const detailData = await detailRes.json();
+    const creditsData = await creditsRes.json();
 
-    const data = await res.json();
-    console.log("TMDB 응답 상태:", res.status);
-    console.log("TMDB 데이터:", data);
+    const director = creditsData.crew?.find(p => p.job === "Director" || p.job === "Executive Producer")?.name || "";
+    const cast = creditsData.cast?.slice(0, 4).map(p => p.name).join(", ") || "";
     return {
         id: String(itemId), _type: mediaType,
-        title: data.title || data.name,
-        poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : null,
-        genre: data.genres?.map(g => g.name).join(" · ") || "",
-        releaseDate: data.release_date || data.first_air_date || "",
-        overview: data.overview || "",
-        rating: data.vote_average ? data.vote_average.toFixed(1) : "0.0",
-        voteCount: data.vote_count?.toLocaleString() || "0",
+        title: detailData.title || detailData.name,
+        poster: detailData.poster_path ? `https://image.tmdb.org/t/p/w500${detailData.poster_path}` : null,
+        genre: detailData.genres?.map(g => g.name).join(" · ") || "",
+        releaseDate: detailData.release_date || detailData.first_air_date || "",
+        overview: detailData.overview || "",
+        rating: detailData.vote_average ? detailData.vote_average.toFixed(1) : "0.0",
+        voteCount: detailData.vote_count?.toLocaleString() || "0",
+        director, cast,
     };
 }
 
