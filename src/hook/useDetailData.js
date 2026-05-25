@@ -5,10 +5,14 @@ const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
 const keywordMap = {
+    "선재 업고 튀어": { keyword: "내일의 으뜸", exact: false }, 
     "내일의 으뜸": { keyword: "선재 업고 튀어", exact: false },
     "유미의 세포들": { keyword: "유미의 세포들", exact: false },
     "핑거스미스": { keyword: "아가씨", exact: true },
-    "무빙": { keyword: "무빙", exact: true },
+    "아가씨": { keyword: "핑거스미스", exact: true },
+    "무빙": { keyword: "무빙", exact: true }, //제목이 완전히 일치하는 것만
+    "이제 곧 죽습니다": { keyword: "이재 곧 죽습니다", exact: false },
+    "이재, 곧 죽습니다": { keyword: "이제 곧 죽습니다", exact: false },
 };
 
 // ── 개별 상세 fetch 함수들 ──────────────────────────────────────────
@@ -42,8 +46,15 @@ async function fetchBookDetail(itemId) {
     const data = await res.json();
     const book = data.item?.[0];
     if (!book) return null;
+
+    // 예: "홍길동 (지은이), 성춘향 (옮긴이)" -> "홍길동 지음, 성춘향 옮김"
+    const formattedAuthor = book.author
+        ? book.author.replaceAll("(지은이)", "지음").replaceAll("(옮긴이)", "옮김")
+        : "";
+
     return {
-        id: String(itemId), _type: "book",
+        id: String(itemId),
+        _type: "book",
         title: book.title,
         poster: book.cover?.replace("/coversum/", "/cover500/") || null,
         genre: book.categoryName?.split(">")[1] || "도서",
@@ -51,6 +62,11 @@ async function fetchBookDetail(itemId) {
         overview: book.description || book.fullDescription || "",
         rating: book.customerReviewRank ? book.customerReviewRank.toFixed(1) : "0.0",
         voteCount: "0",
+
+        extra: {
+            author: formattedAuthor,
+            publisher: book.publisher || ""
+        }
     };
 }
 
@@ -125,14 +141,11 @@ async function fetchMediaRelatedWorks(queryTitle, currentId, isExactMatch) {
     return finalResults;
 }
 
-// ── 커스텀 훅 ────────────────────────────────────────────────────────
 export default function useDetailData(type, id) {
     const [details, setDetails] = useState(null);
     const [relatedWorks, setRelatedWorks] = useState([]);
     const [loading, setLoading] = useState(true);
 
-
-    console.log("TMDB KEY:", TMDB_KEY);
     useEffect(() => {
         const load = async () => {
             setLoading(true);
@@ -150,18 +163,39 @@ export default function useDetailData(type, id) {
                         .split(":")[0].split("-")[0]
                         .replace(/대본집|세트|양장본|포토에세이|특별판|[0-9]|권/g, "")
                         .trim();
-                    let isExactMatch = false;
 
-                    for (const [bookTitle, data] of Object.entries(keywordMap)) {
-                        if (cleanTitle.includes(bookTitle)) {
-                            cleanTitle = data.keyword;
-                            isExactMatch = data.exact;
-                            break;
-                        }
-                    }
+                    const mapped = keywordMap[cleanTitle];
+                    const searchKeyword = mapped ? mapped.keyword : cleanTitle;
+                    const isExactMatch = mapped ? mapped.exact : false;
 
-                    const related = await fetchMediaRelatedWorks(cleanTitle, id, isExactMatch);
-                    setRelatedWorks(related);
+                    const [related1, related2] = await Promise.all([
+                        fetchMediaRelatedWorks(cleanTitle, id, false),
+                        mapped ? fetchMediaRelatedWorks(searchKeyword, id, isExactMatch) : Promise.resolve([]),
+                    ]);
+
+                    const seen = new Set();
+                    const related = [...related1, ...related2].filter(work => {
+                        if (seen.has(work.id)) return false;
+                        seen.add(work.id);
+                        return true;
+                    });
+
+                    const detailedRelated = await Promise.all(
+                        related.slice(0, 5).map(async (work) => {
+                            try {
+                                if (work._type === "movie" || work._type === "tv")
+                                    return await fetchTmdbDetail(work.id, work._type);
+                                else if (work._type === "book")
+                                    return await fetchBookDetail(work.id);
+                                else if (work._type === "performance")
+                                    return await fetchPerformanceDetail(work.id);
+                            } catch {
+                                return work;
+                            }
+                        })
+                    );
+
+                    setRelatedWorks(detailedRelated.filter(Boolean));
                 }
             } catch (e) {
                 console.error("데이터 로딩 실패", e);

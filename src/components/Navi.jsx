@@ -35,7 +35,7 @@ export default function Nav({ className }) {
           {!isHome &&
             <div className="searchContainer">
               <img src={searchIcon} className="searchIcon" alt="검색"/>
-              <input type="text" placeholder="     제목, 장르, 지은이 검색" className="searchBox"
+              <input type="text" placeholder="제목, 장르, 지은이 검색" className="searchBox"
                 value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearch}/>
             </div>
           }  

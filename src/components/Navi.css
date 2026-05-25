@@ -104,9 +104,8 @@ ul, li{
 }
 
 .searchIcon {
-  z-index: 3;
   position: absolute;
-  left: 3%;
+  right: 3%;
   top: 20%; 
   pointer-events: none; /* 아이콘 뒤에 있는 input이 클릭되도록 함 */
   width: 24px;
@@ -116,21 +115,21 @@ ul, li{
 }
 
 .searchBox {
-  padding: 10px 15px;
+  padding: 10px 40px 10px 15px;
   border-radius: 2px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   font-family: 'Paperlogy';
   font-size: 14px;
-  width: 300px; /* 헤더에 맞는 적절한 길이 */
+  width: 350px; /* 헤더에 맞는 적절한 길이 */
   transition: all 0.3s ease;
 }
 
-.searchBox input {
+/* .searchBox input {
   flex: 1;
   font-size: 20px;
   color: #333;
   font-family: 'Paperlogy';
-}
+} */
 
  input::placeholder {
   color: #797979;

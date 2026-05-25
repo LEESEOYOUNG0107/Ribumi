@@ -13,29 +13,11 @@ const typeLabel = (t) =>
 export default function DetailInfo({ item, isWished, onWishToggle, displayItems, currentIndex, onSelect }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // 현재 포스터 + 이후 작품들만 표시 (이전은 숨김)
+  const visibleItems = displayItems.slice(currentIndex);
   return (
     <>
-      {/* 관련 작품 썸네일 바 작품이 2개 이상일 때만 표시 */}
-      {displayItems.length > 1 && (
-        <div className="relatedWorksBar" style={{ marginTop: "90px" }}>
-          {displayItems.map((item, index) => (
-            <div
-              key={item.id + index}
-              className={`relatedThumb ${currentIndex === index ? "active" : ""}`}
-              onClick={() => onSelect(index)}
-            >
-              <img
-                src={item.poster || "https://placehold.co/72x104?text=No"}
-                alt={item.title}
-              />
-              <span className="relatedThumbLabel">{item.title}</span>
-              <span className="relatedThumbType">{typeLabel(item._type)}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* 상세 정보 레이아웃 항상 표시 */}
+      {/* 상세 정보 레이아웃 */}
       <div className="detailLayout">
         <div className="detailInfo">
           <div className="detailTopMeta">
@@ -45,15 +27,15 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
                   {item.extra?.author && <span>{item.extra.author}</span>}
                 </div>
                 <div className="detailExtraInfo">
-                  {item.extra?.publisher && <div>{item.extra.publisher}</div>}
-                  {item.releaseDate && <div>{item.releaseDate}</div>}
+                  {item.extra?.publisher && <div>출판사: {item.extra.publisher}</div>}
+                  {item.releaseDate && <div>{item.releaseDate} 출간</div>}
                 </div>
               </>
             ) : (
               <>
                 <div className="important">
-                  {item.director && <span>{item.director}</span>}|
-                  {item.cast && <span>{item.cast}</span>}
+                  {item.director && <span>크리에이터  {item.director}</span>} 
+                  {item.cast && <span>출연 {item.cast}</span>}
                 </div>
                 <div>{item.releaseDate && <span>{item.releaseDate.slice(0, 4)}년</span>}</div>
               </>
@@ -84,18 +66,58 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
         </div>
 
         <div className="detailRight">
-          <div className="detailTopMeta">{item.genre && <span>{item.genre}</span>}</div>
-          <h1 className="detailMainTitle">{item.title}</h1>
-          <div className="detailSliderSection">
-            <div className="sliderMain">
-              <img src={item.poster || "https://placehold.co/220x330?text=No+Image"} alt={item.title} />
+          <div className="detailGenreTitle">
+            <div className="detailTopMeta">{item.genre && <span>{item.genre}</span>}</div>
+            <h1 className="detailMainTitle">{item.title}</h1>
+          </div>
+
+          {/* 포스터 슬라이더: 현재 + 다음 2개 */}
+          <div className="posterSliderViewport">
+            <div className="posterSliderTrack">
+              {visibleItems.map((work, i) => {
+                const globalIndex = currentIndex + i;
+                const isCurrent = i === 0;
+                const isSecondNext = i === 2;
+                return (
+                  <div
+                    key={work.id + globalIndex}
+                    className={`posterSlideItem ${isCurrent ? "current" : isSecondNext ? "next2" : "next1"}`}
+                    onClick={() => !isCurrent && onSelect(globalIndex)}
+                  >
+                    <img
+                      src={work.poster || "https://placehold.co/260x390?text=No+Image"}
+                      alt={work.title}
+                    />
+                    {isCurrent && (
+                      <span className="posterTypeBadge">{typeLabel(work._type)}</span>
+                    )}
+                    {!isCurrent && (
+                      <div className="posterNextOverlay">
+                        <span className="posterNextLabel">{typeLabel(work._type)}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
+
+          {/* 인디케이터 dots — 전체 작품 수만큼, 현재 위치 표시 */}
+          {displayItems.length > 1 && (
+            <div className="posterDots">
+              {displayItems.map((_, i) => (
+                <button
+                  key={i}
+                  className={`posterDot ${i === currentIndex ? "active" : ""}`}
+                  onClick={() => onSelect(i)}
+                  aria-label={`${i + 1}번째 작품`}
+                />
+              ))}
+            </div>
+          )}
+
         </div>
       </div>
     </>
-
-
-
   );
 }
