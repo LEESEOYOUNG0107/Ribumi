@@ -80,11 +80,14 @@ function PlatformCard({ item }) {
 
 export default function Main() {
   // const [activeTab, setActiveTab] = useState("movie");
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [trendingWorks, setTrendingWorks] = useState([]);
   const [originalWorks, setOriginalWorks] = useState([]);
   const [CurrentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [bannerLogo, setBannerLogo] = useState(null);
+  const [isBannerExpanded, setIsBannerExpanded] = useState(false);
+
   const scrollRef = useRef(null);
   const scrollRef2 = useRef(null);
 
@@ -145,6 +148,16 @@ export default function Main() {
   }, [originalWorks]);
 
   const currentBannerWork = originalWorks[CurrentBannerIndex];
+  useEffect(() => {
+    setIsBannerExpanded(false); // 배너가 다음 슬라이드로 넘어가면 글을 다시 접습니다.
+  }, [CurrentBannerIndex]);
+
+  //원작 정보 보기 버튼 클릭 시 상세페이지로 이동
+  const handleGoToDetail = () => {
+    if (!currentBannerWork) return;
+    const mediaType = currentBannerWork.first_air_date ? "tv" : "movie";
+    navigate(`/detail/${mediaType}/${currentBannerWork.id}`, { state: { item: currentBannerWork } });
+  };
 
   useEffect(() => {
     const fetchLogo = async () => {
@@ -194,14 +207,16 @@ export default function Main() {
             </div>
             {currentBannerWork.overview && (
               <p className="bannerDescrip">
-                {currentBannerWork.overview.length > 70
-                  ? currentBannerWork.overview.slice(0, 70) + "..."
-                  : currentBannerWork.overview}
+                {isBannerExpanded
+                  ? currentBannerWork.overview : currentBannerWork.overview.length > 70
+                  ? currentBannerWork.overview.slice(0, 70) + "..." : currentBannerWork.overview}
               </p>
             )}
             <div className="bannerBtn">
-              <button className="btn btnDetail">자세히 보기</button>
-              <button className="btn btnInfo">원작정보 보기</button>
+              <button className="btn btnDetail" onClick={() => setIsBannerExpanded(!isBannerExpanded)}>
+                {isBannerExpanded ? "접기 ▴" : "자세히 보기 ▾"}
+              </button>
+              <button className="btn btnInfo" onClick={handleGoToDetail}>원작정보 보기</button>
             </div>
           </div>
         </div>

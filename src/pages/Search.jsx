@@ -26,14 +26,14 @@ const MovieCard = ({ item }) => {
       <div className="cardImage" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${item.poster_path})` }}></div>
       <div className="cardMeta">
         <h4 className="cardTitle">{item.title}</h4>
-        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0,2).join(' | ')||"기타"}</span>
+        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0, 2).join(' | ') || "기타"}</span>
       </div>
       <div className="cardRatingGroup">
-        <span className="cardYear">{item.release_date?.substring(0,4)}</span>
+        <span className="cardYear">{item.release_date?.substring(0, 4)}</span>
         <div className="cardRating">
           <span className="heart">♡</span>
           <span className="ratingScore">⭐{item.vote_average?.toFixed(1)}</span>
-        </div>  
+        </div>
       </div>
     </div>
   );
@@ -46,10 +46,10 @@ const TvCard = ({ item }) => {
       <div className="cardImage" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${item.poster_path})` }}></div>
       <div className="cardMeta">
         <h4 className="cardTitle">{item.name}</h4>
-        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0,2).join(' | ') || "기타"}</span>
+        <span className="cardGenre">{item.genre_ids?.map(id => genreMap[id]).filter(Boolean).slice(0, 2).join(' | ') || "기타"}</span>
       </div>
       <div className="cardRatingGroup">
-        <span className="cardYear">{item.first_air_date?.substring(0,4)}</span>
+        <span className="cardYear">{item.first_air_date?.substring(0, 4)}</span>
         <div className="cardRating">
           <span className="heart">♡</span>
           <span className="ratingScore">⭐{item.vote_average?.toFixed(1)}</span>
@@ -63,13 +63,13 @@ const BookCard = ({ item }) => {
   const navigate = useNavigate();
   return (
     <div className="platformCard" onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
-      <div className="cardImage" style={{ backgroundImage: `url(${item.cover?.replace('/coversum/','/cover500/')})` }}></div>
+      <div className="cardImage" style={{ backgroundImage: `url(${item.cover?.replace('/coversum/', '/cover500/')})` }}></div>
       <div className="cardMeta"><h4 className="cardTitle">{item.title}</h4></div>
       <div className="cardRatingGroup">
-        <span className="cardYear">{item.pubDate?.substring(0,4)}</span>
+        <span className="cardYear">{item.pubDate?.substring(0, 4)}</span>
         <div className="cardRating">
-           <span className="heart">♡</span>
-           <span className="ratingScore">⭐{item.customerReviewRank ? (item.customerReviewRank/2).toFixed(1) : "0.0"}</span>
+          <span className="heart">♡</span>
+          <span className="ratingScore">⭐{item.customerReviewRank ? (item.customerReviewRank / 2).toFixed(1) : "0.0"}</span>
         </div>
       </div>
     </div>
@@ -89,27 +89,33 @@ const PerfCard = ({ item }) => {
   );
 };
 
-// 💡 2. Section 컴포넌트 역시 바깥으로 분리했습니다.
-const Section = ({ title, data, renderCard, refObj }) => {
+const Section = ({ title, data, renderCard }) => {
+  // 처음에는 12개(대략 3줄 분량)만 보여주도록 설정합니다.
+  const [visibleCount, setVisibleCount] = useState(12);
+
   if (!data || data.length === 0) return null;
-  
-  const scrollLeft = () => {
-    if (refObj.current) refObj.current.scrollBy({ left: -refObj.current.clientWidth, behavior: "smooth" });
-  };
-  const scrollRight = () => {
-    if (refObj.current) refObj.current.scrollBy({ left: refObj.current.clientWidth, behavior: "smooth" });
-  };
 
   return (
-    <section className="scrollSection">
-      <h3 className="sectionTitle">{title} <span className="searchResultCount">({data.length})</span></h3>
-      <div className="sliderWrapper">
-        <button className="sliderBtn leftBtn" onClick={scrollLeft}>&lt;</button>
-        <div className="platformScroll" ref={refObj}>
-          {data.map((item, i) => <div key={item.id || i}>{renderCard(item)}</div>)}
-        </div>
-        <button className="sliderBtn rightBtn" onClick={scrollRight}>&gt;</button>
+    <section className="searchSection">
+      <h3 className="sectionTitle">
+        {title} <span className="searchResultCount">({data.length})</span>
+      </h3>
+
+      {/* 전체 데이터 중 visibleCount 개수만큼만 잘라서 화면에 보여줌. */}
+      <div className="searchGrid">
+        {data.slice(0, visibleCount).map((item, i) => (
+          <div key={item.id || i}>{renderCard(item)}</div>
+        ))}
       </div>
+
+      {/* 전체 결과 개수가 현재 보여지는 개수보다 많을 때만 '더보기'를 띄움 */}
+      {data.length > visibleCount && (
+        <div className="showMoreBtnWrapper">
+          <button className="showMoreBtn" onClick={() => setVisibleCount(data.length)}>
+            더보기 ▾
+          </button>
+        </div>
+      )}
     </section>
   );
 };
@@ -140,7 +146,7 @@ export default function Search() {
       // 드라마
       fetch(`https://api.themoviedb.org/3/search/tv?api_key=${TMDB_KEY}&language=ko-KR&query=${encodeURIComponent(query)}`)
         .then(r => r.json()).then(d => setTvShows(
-          (d.results || []).filter(t => ![10764,10767,10763,10766].some(g => t.genre_ids?.includes(g)))
+          (d.results || []).filter(t => ![10764, 10767, 10763, 10766].some(g => t.genre_ids?.includes(g)))
         ));
 
       // 도서
@@ -181,10 +187,10 @@ export default function Search() {
         <div className="loading">"{query}"에 대한 검색 결과가 없습니다.</div>
       )}
 
-      <Section title="영화" data={movies} renderCard={(item) => <MovieCard item={item}/>} refObj={movieRef}/>
-      <Section title="드라마" data={tvShows} renderCard={(item) => <TvCard item={item}/>} refObj={tvRef}/>
-      <Section title="도서" data={books} renderCard={(item) => <BookCard item={item}/>} refObj={bookRef}/>
-      <Section title="공연" data={performances} renderCard={(item) => <PerfCard item={item}/>} refObj={perfRef}/>
+      <Section title="영화" data={movies} renderCard={(item) => <MovieCard item={item} />} refObj={movieRef} />
+      <Section title="TV" data={tvShows} renderCard={(item) => <TvCard item={item} />} refObj={tvRef} />
+      <Section title="도서" data={books} renderCard={(item) => <BookCard item={item} />} refObj={bookRef} />
+      <Section title="공연" data={performances} renderCard={(item) => <PerfCard item={item} />} refObj={perfRef} />
 
       <Footer />
     </div>
