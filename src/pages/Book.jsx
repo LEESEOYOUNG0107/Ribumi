@@ -84,7 +84,7 @@ export default function Book() {
       const data = await response.json();
       return data.item || [];
     } catch (error) {
-      return [];
+      return error;
     }
   };
 

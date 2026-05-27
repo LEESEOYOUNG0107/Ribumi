@@ -1,21 +1,52 @@
-.searchPageHeader {
-  margin-top: 120px;
-  padding: 0 80px;
+.searchSection {
+  margin-top: 50px;
+  margin-bottom: 60px;
+  padding: 0 170px; /* 메인 레이아웃과 양옆 여백 통일 */
 }
 
-.searchQueryLabel {
-  font-size: 20px;
-  color: #aaa;
+.searchSection .sectionTitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 25px;
   font-family: 'Paperlogy';
 }
 
-.searchQueryWord {
-  color: #ffffff;
-  font-weight: 600;
+.searchGrid {
+  display: grid;
+  /* 🌟 화면 폭에 맞춰 자동으로 칸을 계산해서 꽉 채워줍니다 */
+  /* (180px 부분은 현재 사용 중인 카드 크기에 맞춰 160px ~ 210px 사이로 조절하시면 딱 맞습니다) */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+  gap: 35px 20px;
 }
 
-.searchResultCount {
-  font-size: 18px;
-  color: #797979;
-  font-weight: 400;
+/* 그리드 내부에 생기는 div 박스도 가로로 꽉 차게 늘려주는 코드입니다 (함께 추가) */
+.searchGrid > div {
+  width: 100%;
+}
+
+/* 더보기 버튼을 가운데 정렬하기 위한 래퍼 */
+.showMoreBtnWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* 더보기 버튼 */
+.showMoreBtn {
+  background-color: #2958A7;;
+  color: #ffffff;
+  border: none;
+  padding: 12px 40px;
+  font-size: 14px;
+  text-align: center;
+  font-family: 'Paperlogy';
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.showMoreBtn:hover {
+  transform: translateY(-2px); /* 살짝 위로 떠오르는 효과 */
 }

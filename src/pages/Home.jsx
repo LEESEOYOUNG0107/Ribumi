@@ -28,9 +28,10 @@ export default function Home() {
       const movieData = await movieRes.json();
       const tvData = await tvRes.json();
 
+
       const combined = [...(movieData.results || []), ...(tvData.results || [])]
         .filter((item) => item.poster_path) // 포스터가 있는 작품만
-        .sort((a,b) => b.popularity - a.popularity) // 인기순으로 내림차순 정렬
+        .sort((a, b) => b.popularity - a.popularity) // 인기순으로 내림차순 정렬
         .slice(0, 9) // 상위 6개 작품만
 
       const results = combined.map((item) => ({
@@ -39,7 +40,7 @@ export default function Home() {
         thumbnail: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
         contents: item.overview,
         authors: ["원작 기반 콘텐츠"],
-        mediaType: item.title ? "MOVIE" : "TV", // title 속성이 있으면 영화, 없으면 TV
+        mediaType: item.title ? "movie" : "tv", // title 속성이 있으면 영화, 없으면 TV
         vote_average: item.vote_average,
       }));
 
@@ -53,7 +54,7 @@ export default function Home() {
 
   const handleWorkClick = (work) => {
     navigate(`/detail/${work.mediaType}/${work.id}`, {
-      state: { book: work, type: work.mediaType },
+      state: { item: work },
     });
   };
 
@@ -62,23 +63,23 @@ export default function Home() {
       <div className="main-background">
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1920 822" fill="none" preserveAspectRatio="none">
           <g filter="url(#filter0_f_206_2168)">
-            <path d="M354.763 248.695C165.545 266.812 -38 144.237 -38 144.237V742H1998L1998 157.731C1998 157.731 1760.35 441.92 1516.07 412.13C1290.8 384.659 1200.27 98.5914 969.388 81.2615C738.511 63.9315 543.982 230.578 354.763 248.695Z" fill="url(#paint0_linear_206_2168)" fillOpacity="0.82"/>
+            <path d="M354.763 248.695C165.545 266.812 -38 144.237 -38 144.237V742H1998L1998 157.731C1998 157.731 1760.35 441.92 1516.07 412.13C1290.8 384.659 1200.27 98.5914 969.388 81.2615C738.511 63.9315 543.982 230.578 354.763 248.695Z" fill="url(#paint0_linear_206_2168)" fillOpacity="0.82" />
           </g>
           <defs>
             <filter id="filter0_f_206_2168" x="-118" y="0" width="2196" height="822" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-              <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-              <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_206_2168"/>
+              <feFlood floodOpacity="0" result="BackgroundImageFix" />
+              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+              <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_206_2168" />
             </filter>
             <linearGradient id="paint0_linear_206_2168" x1="973.056" y1="89.6251" x2="973.056" y2="741.999" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#1E2A78"/>
-              <stop offset="1"/>
+              <stop stopColor="#1E2A78" />
+              <stop offset="1" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      <Nav/>
+      <Nav />
       {/* Description Text */}
       <div className="description-text">
         <p>Ribumi는 리뷰(Review)와 미디어(Media)를 결합한 단어로,</p>
@@ -97,39 +98,39 @@ export default function Home() {
       <div className="popular-works-section">
         <div className="popular-works-bg">
           <svg xmlns="http://www.w3.org/2000/svg" width="1619" height="1084" viewBox="0 0 1619 1084" fill="none">
-              <g filter="url(#filter0_f_206_2166)">
-                <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" fill="url(#paint0_linear_206_2166)" fillOpacity="0.82"/>
-                <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" stroke="black"/>
-              </g>
+            <g filter="url(#filter0_f_206_2166)">
+              <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" fill="url(#paint0_linear_206_2166)" fillOpacity="0.82" />
+              <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" stroke="black" />
+            </g>
             <defs>
               <filter id="filter0_f_206_2166" x="-120.5" y="0" width="1739" height="1083.34" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-                <feGaussianBlur stdDeviation="41" result="effect1_foregroundBlur_206_2166"/>
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="41" result="effect1_foregroundBlur_206_2166" />
               </filter>
               <linearGradient id="paint0_linear_206_2166" x1="749" y1="-24.1615" x2="749" y2="1000.84" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#1E2A78"/>
-                <stop offset="1"/>
+                <stop stopColor="#1E2A78" />
+                <stop offset="1" />
               </linearGradient>
             </defs>
           </svg>
         </div>
 
         {/* 사진처럼 좌우로 나누기 위한 wrapper 추가 */}
-        <div className="popular-works-container"> 
-            
+        <div className="popular-works-container">
+
           {/* 왼쪽: 타이틀 & 설명 */}
           <div className="works-title-text">
             <div className="works-title-heading">
               <p>
-                지금 가장 인기있는 <br/>
+                지금 가장 인기있는 <br />
                 원작 기반
                 <span className="highlight"> 2차 창작물</span>
               </p>
             </div>
             <div className="works-title-subtitle">
               <p>
-                2023년 ~ 2024년에 출시 및 개봉되었던 인기있는 작품들입니다. <br/>
+                2023년 ~ 2024년에 출시 및 개봉되었던 인기있는 작품들입니다. <br />
                 이 작품들은 원작을 기반으로 한 2차 창작물로 대중들에게 큰 인기를 얻었습니다.
               </p>
             </div>
@@ -140,8 +141,8 @@ export default function Home() {
             {loading ? (
               <div className="works-loading">
                 <div className="loading-spinner"></div>
-                  <p>불러오는 중...</p>
-                </div>
+                <p>불러오는 중...</p>
+              </div>
             ) : (
               <div className="works-poster-grid">
                 {popularWorks.map((work, index) => (
@@ -158,9 +159,9 @@ export default function Home() {
               </div>
             )}
           </div>
-        </div>    
+        </div>
       </div>
-      <Footer />  
-    </div>    
+      <Footer />
+    </div>
   );
 }

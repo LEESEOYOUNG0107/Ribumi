@@ -6,7 +6,7 @@ export default function ReviewModal({
   if (!isOpen || !currentItem) return null;
 
   const typeLabel = (t) =>
-    ({ movie: "영화", tv: "드라마", book: "도서", performance: "공연" }[t] || t);
+    ({ movie: "영화", tv: "TV", book: "도서", performance: "공연" }[t] || t);
 
   return (
     <div className="reviewModalOverlay" onClick={onClose}>
@@ -14,10 +14,6 @@ export default function ReviewModal({
         {/* ── 작품 정보 헤더 ── */}
         <div className="modalItemHeader">
           <h3 className="modalTitle">리뷰 작성</h3>
-          {currentItem.genre && (
-            <span className="modalGenre">{currentItem.genre}</span>
-          )}
-
           <h3 className="modalItemTitle">{currentItem.title}</h3>
           <span className="modalTypeBadge">{typeLabel(currentItem._type)}</span>
           <img
@@ -28,8 +24,6 @@ export default function ReviewModal({
         </div>
 
         {/* ── 리뷰 작성 ── */}
-
-
         <div className="modalStarRow">
           {[1, 2, 3, 4, 5].map((star) => (
             <span

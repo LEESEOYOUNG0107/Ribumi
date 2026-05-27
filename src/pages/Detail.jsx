@@ -78,7 +78,7 @@ export default function Detail() {
   };
 
   const handleWishToggle = (item) => {
-    const isWished = wishList.some(w => w.id === item.id);
+    const isWished = wishList.some(w => (w.id) === item.id);
     const updated = isWished
       ? wishList.filter(w => w.id !== item.id)
       : [{ id: item.id, type: item._type, title: item.title, poster: item.poster }, ...wishList];
@@ -86,11 +86,9 @@ export default function Detail() {
     localStorage.setItem("wishList", JSON.stringify(updated));
   };
 
-  // ── 로딩 / 에러 ─────────────────────────────────────────────────
   if (loading) return <div className="detailWrapper"><Nav /><div className="detailLoading">불러오는 중...🍿</div></div>;
   if (!details) return <div className="detailWrapper"><Nav /><div className="detailLoading">작품 정보를 찾을 수 없습니다.</div></div>;
 
-  // ── 렌더 ─────────────────────────────────────────────────────────
   return (
     <div className="detailWrapper">
       <Nav />
@@ -109,7 +107,7 @@ export default function Detail() {
                 <DetailInfo item={item} isWished={isItemWished} onWishToggle={handleWishToggle} displayItems={displayItems} currentIndex={currentIndex} onSelect={(idx) => { setCurrentIndex(idx); setActiveTab("review"); }} />
 
                 <div className="detailTabWrapper">
-                  <button className={`detailTab ${activeTab === "review" ? "active" : ""}`} onClick={() => setActiveTab("review")}>감상하기</button>
+                  <button className={`detailTab ${activeTab === "review" ? "active" : ""}`} onClick={() => setActiveTab("review")}>리뷰보기</button>
                 </div>
 
                 {activeTab === "review" && (
