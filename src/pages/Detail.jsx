@@ -78,7 +78,7 @@ export default function Detail() {
   };
 
   const handleWishToggle = (item) => {
-    const isWished = wishList.some(w => w.id === item.id);
+    const isWished = wishList.some(w => (w.id) === item.id);
     const updated = isWished
       ? wishList.filter(w => w.id !== item.id)
       : [{ id: item.id, type: item._type, title: item.title, poster: item.poster }, ...wishList];

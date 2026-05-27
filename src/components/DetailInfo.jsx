@@ -46,7 +46,7 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
             <p className={`detailTopOverview ${isExpanded ? "expanded" : ""}`}>
               {item.overview || "상세 정보가 제공되지 않습니다."}
             </p>
-            {item.overview && item.overview.length > 130 && (
+            {item.overview && item.overview.length > 70 && (
               <button className="overviewMoreBtn" onClick={() => setIsExpanded(!isExpanded)}>
                 {isExpanded ? "닫기 ▴" : "더보기 ▾"}
               </button>

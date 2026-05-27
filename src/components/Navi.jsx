@@ -25,7 +25,7 @@ export default function Nav({ className }) {
 
       {!isAuthPage && <>
         <div className="nav-menu">
-          <div className={`nav-item ${location.pathname === "/" ? "nav-active" : ""}`} onClick={() => navigate("/")}>홈</div>
+          <div className={`nav-item ${location.pathname === "/" ? "nav-active" : ""}`} onClick={() => navigate("/")}>Ribumi란?</div>
           <div className={`nav-item ${location.pathname === "/main" ? "nav-active" : ""}`} onClick={() => navigate("/main")}>통합장르</div>
           <div className={`nav-item ${location.pathname === "/book" ? "nav-active" : ""}`} onClick={() => navigate("/book")}>도서장르</div>
           <div className={`nav-item ${location.pathname === "/performance" ? "nav-active" : ""}`} onClick={() => navigate("/performance")}>공연장르</div>   
