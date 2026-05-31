@@ -25,6 +25,7 @@ const StarRating = ({ rating, size = 14 }) => (
 );
 
 export default function MyPage() {
+  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
   const [reviewTab, setReviewTab] = useState("book");
 
@@ -35,7 +36,7 @@ export default function MyPage() {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const { data, error } = await supabase.from("reviews").select("*");
+      const { data, error } = await supabase.from("reviews").select("*").eq("user_id", userId);
 
       if (error) {
         console.error(error);
@@ -64,7 +65,7 @@ export default function MyPage() {
   const [wished, setWished] = useState([]);
   useEffect(() => {
     const fetchWishlist = async () => {
-      const { data, error } = await supabase.from("wishlist").select("*");
+      const { data, error } = await supabase.from("wishlist").select("*").eq("user_id", userId);
 
       if (error) {
         console.error(error);
@@ -99,7 +100,7 @@ export default function MyPage() {
             <div className="avatarCircle">
               <img src={profileImg} alt="profile" />
             </div>
-            <span className="mypageUsername">홍길동님</span>
+            <span className="mypageUsername">{userId}님</span>
           </div>
           <div className="mypageStats">
             <div className="statItem">
@@ -121,7 +122,11 @@ export default function MyPage() {
           ) : (
             <div className="wishedGrid">
               {wished.map((item) => (
-                <div key={item.id} className="wishedCard" onClick={() => navigate(`/detail/${item.type}/${item.id}`)}>
+                <div
+                  key={item.id}
+                  className="wishedCard"
+                  onClick={() => navigate(`/detail/${item.type}/${item.content_id}`)}
+                >
                   <div
                     className="wishedPoster"
                     style={{ backgroundImage: item.poster ? `url(${item.poster})` : "none" }}

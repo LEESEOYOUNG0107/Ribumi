@@ -11,11 +11,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", id.trim())
-      .single();
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", id.trim()).single();
 
     if (error || !data) {
       alert("아이디 또는 비밀번호가 틀립니다.");
@@ -28,7 +24,7 @@ export default function Login() {
       alert("아이디 또는 비밀번호가 틀립니다.");
       return;
     }
-
+    localStorage.setItem("userId", data.id);
     alert("로그인 성공!");
     navigate("/main");
   };
@@ -37,13 +33,7 @@ export default function Login() {
     <div className="authWrapper">
       {/* 배경 그라디언트 */}
       <div className="authBg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="1920"
-          height="742"
-          viewBox="0 0 1920 742"
-          fill="none"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="742" viewBox="0 0 1920 742" fill="none">
           <g filter="url(#filter0_f_306_5056)">
             <path
               d="M334.763 248.695C145.545 266.812 -58 144.237 -58 144.237V742H1978L1978 157.731C1978 157.731 1740.35 441.92 1496.07 412.13C1270.8 384.659 1180.27 98.5914 949.388 81.2615C718.511 63.9315 523.982 230.578 334.763 248.695Z"
@@ -64,16 +54,8 @@ export default function Login() {
               {" "}
               {/* ✅ color-interpolation-filters → colorInterpolationFilters */}
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="BackgroundImageFix"
-                result="shape"
-              />
-              <feGaussianBlur
-                stdDeviation="40"
-                result="effect1_foregroundBlur_306_5056"
-              />
+              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+              <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_306_5056" />
             </filter>
             <linearGradient
               id="paint0_linear_306_5056"

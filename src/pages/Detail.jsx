@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Nav from "../components/Navi";
 import Footer from "../components/Footer";
@@ -8,20 +8,37 @@ import ReviewModal from "../components/ReviewModal";
 import useDetailData from "../hook/useDetailData";
 import "../pages/Detail.css";
 import write from "../imgs/write.svg";
+import { supabase } from "../lib/supabase";
 
 export default function Detail() {
+  const userId = localStorage.getItem("userId");
   const { type, id } = useParams();
   const { details, relatedWorks, loading } = useDetailData(type, id);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("review");
 
-  const [allReviews, setAllReviews] = useState(() =>
-    JSON.parse(localStorage.getItem("myReviews") || "[]")
-  );
-  const [wishList, setWishList] = useState(() =>
-    JSON.parse(localStorage.getItem("wishList") || "[]")
-  );
+  const [allReviews, setAllReviews] = useState([]);
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const { data, error } = await supabase.from("reviews").select("*");
+
+      if (!error) {
+        setAllReviews(data || []);
+      }
+    };
+    fetchReviews();
+  }, []);
+  const [wishList, setWishList] = useState([]);
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      const { data, error } = await supabase.from("wishlist").select("*").eq("user_id", userId);
+      if (!error) {
+        setWishList(data || []);
+      }
+    };
+    fetchWishlist();
+  }, [userId]);
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [newReview, setNewReview] = useState("");
@@ -34,20 +51,27 @@ export default function Detail() {
   // ── 리뷰 헬퍼 ───────────────────────────────────────────────────
   const updateReviews = (updated) => {
     setAllReviews(updated);
-    localStorage.setItem("myReviews", JSON.stringify(updated));
   };
 
-  const handleReviewSubmit = () => {
+  const handleReviewSubmit = async () => {
     if (!currentItem) return;
-    updateReviews([
-      {
-        id: Date.now(), targetId: currentItem.id, type: currentItem._type,
-        title: currentItem.title, date: new Date().toLocaleDateString(),
-        rating: newReviewRating, content: newReview, user: currentUser,
-        likes: 0, comments: 0, replies: [],
-      },
-      ...allReviews,
-    ]);
+    const { data, error } = await supabase
+      .from("reviews")
+      .insert({
+        title: currentItem.title,
+        content: newReview,
+        rating: newReviewRating,
+        type: currentItem._type,
+        date: new Date().toLocaleDateString(),
+        user_id: userId,
+        content_id: currentItem.id,
+      })
+      .select();
+    if (error) {
+      console.error(error);
+      return;
+    }
+    setAllReviews([data[0], ...allReviews]);
     setIsReviewModalOpen(false);
     setNewReview("");
     setNewReviewRating(0);
@@ -55,59 +79,124 @@ export default function Detail() {
 
   const handleEditSave = (reviewId, newContent) => {
     if (!newContent.trim()) return alert("내용을 입력해주세요.");
-    updateReviews(allReviews.map(r => r.id === reviewId ? { ...r, content: newContent } : r));
+    updateReviews(allReviews.map((r) => (r.id === reviewId ? { ...r, content: newContent } : r)));
   };
 
-  const handleDeleteReview = (reviewId) => {
-    if (window.confirm("리뷰를 삭제하시겠습니까?"))
-      updateReviews(allReviews.filter(r => r.id !== reviewId));
+  const handleDeleteReview = async (reviewId) => {
+    const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+    if (error) return;
+    setAllReviews(allReviews.filter((r) => r.id !== reviewId));
   };
 
   const handleReplySubmit = (reviewId, replyText) => {
     if (!replyText.trim()) return alert("답글 내용을 입력해주세요.");
     const newReply = { id: Date.now(), user: currentUser, text: replyText, date: new Date().toLocaleDateString() };
-    updateReviews(allReviews.map(r =>
-      r.id === reviewId ? { ...r, comments: r.comments + 1, replies: [...(r.replies || []), newReply] } : r
-    ));
+    updateReviews(
+      allReviews.map((r) =>
+        r.id === reviewId ? { ...r, comments: r.comments + 1, replies: [...(r.replies || []), newReply] } : r,
+      ),
+    );
   };
 
   const handleLikeToggle = (reviewId) => {
-    updateReviews(allReviews.map(r =>
-      r.id === reviewId ? { ...r, isLiked: !r.isLiked, likes: r.isLiked ? r.likes - 1 : r.likes + 1 } : r
-    ));
+    updateReviews(
+      allReviews.map((r) =>
+        r.id === reviewId ? { ...r, isLiked: !r.isLiked, likes: r.isLiked ? r.likes - 1 : r.likes + 1 } : r,
+      ),
+    );
   };
 
-  const handleWishToggle = (item) => {
-    const isWished = wishList.some(w => (w.id) === item.id);
-    const updated = isWished
-      ? wishList.filter(w => w.id !== item.id)
-      : [{ id: item.id, type: item._type, title: item.title, poster: item.poster }, ...wishList];
-    setWishList(updated);
-    localStorage.setItem("wishList", JSON.stringify(updated));
+  const handleWishToggle = async (item) => {
+    const isWished = wishList.some((w) => String(w.content_id) === String(item.id));
+
+    if (isWished) {
+      const { error } = await supabase.from("wishlist").delete().eq("user_id", userId).eq("content_id", item.id);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setWishList(wishList.filter((w) => String(w.content_id) !== String(item.id)));
+    } else {
+      const { data, error } = await supabase
+        .from("wishlist")
+        .insert({
+          user_id: userId,
+          content_id: item.id,
+          title: item.title,
+          poster: item.poster,
+          type: item._type,
+        })
+        .select();
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setWishList([data[0], ...wishList]);
+    }
   };
 
-  if (loading) return <div className="detailWrapper"><Nav /><div className="detailLoading">불러오는 중...🍿</div></div>;
-  if (!details) return <div className="detailWrapper"><Nav /><div className="detailLoading">작품 정보를 찾을 수 없습니다.</div></div>;
+  if (loading)
+    return (
+      <div className="detailWrapper">
+        <Nav />
+        <div className="detailLoading">불러오는 중...🍿</div>
+      </div>
+    );
+  if (!details)
+    return (
+      <div className="detailWrapper">
+        <Nav />
+        <div className="detailLoading">작품 정보를 찾을 수 없습니다.</div>
+      </div>
+    );
 
   return (
     <div className="detailWrapper">
       <Nav />
 
       <div className="superSliderContainer">
-        <button className="slideNavBtn left" onClick={() => setCurrentIndex(i => i - 1)} disabled={currentIndex === 0}>❮</button>
-        <button className="slideNavBtn right" onClick={() => setCurrentIndex(i => i + 1)} disabled={currentIndex === displayItems.length - 1}>❯</button>
+        <button
+          className="slideNavBtn left"
+          onClick={() => setCurrentIndex((i) => i - 1)}
+          disabled={currentIndex === 0}
+        >
+          ❮
+        </button>
+        <button
+          className="slideNavBtn right"
+          onClick={() => setCurrentIndex((i) => i + 1)}
+          disabled={currentIndex === displayItems.length - 1}
+        >
+          ❯
+        </button>
 
         <div className="superSliderTrack" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
           {displayItems.map((item, index) => {
-            const itemReviews = allReviews.filter(r => String(r.targetId) === String(item.id));
-            const isItemWished = wishList.some(w => String(w.id) === String(item.id));
+            const itemReviews = allReviews.filter((r) => String(r.content_id) === String(item.id));
+            const isItemWished = wishList.some((w) => String(w.content_id) === String(item.id));
 
             return (
               <div key={item.id + index} className="superSlide">
-                <DetailInfo item={item} isWished={isItemWished} onWishToggle={handleWishToggle} displayItems={displayItems} currentIndex={currentIndex} onSelect={(idx) => { setCurrentIndex(idx); setActiveTab("review"); }} />
+                <DetailInfo
+                  item={item}
+                  isWished={isItemWished}
+                  onWishToggle={handleWishToggle}
+                  displayItems={displayItems}
+                  currentIndex={currentIndex}
+                  onSelect={(idx) => {
+                    setCurrentIndex(idx);
+                    setActiveTab("review");
+                  }}
+                />
 
                 <div className="detailTabWrapper">
-                  <button className={`detailTab ${activeTab === "review" ? "active" : ""}`} onClick={() => setActiveTab("review")}>리뷰보기</button>
+                  <button
+                    className={`detailTab ${activeTab === "review" ? "active" : ""}`}
+                    onClick={() => setActiveTab("review")}
+                  >
+                    리뷰보기
+                  </button>
                 </div>
 
                 {activeTab === "review" && (
@@ -132,7 +221,11 @@ export default function Detail() {
 
       <ReviewModal
         isOpen={isReviewModalOpen}
-        onClose={() => { setIsReviewModalOpen(false); setNewReview(""); setNewReviewRating(0); }}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          setNewReview("");
+          setNewReviewRating(0);
+        }}
         onSubmit={handleReviewSubmit}
         rating={newReviewRating}
         setRating={setNewReviewRating}
