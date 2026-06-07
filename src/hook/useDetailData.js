@@ -7,12 +7,14 @@ const keywordMap = {
     "선재 업고 튀어": { keyword: "내일의 으뜸", exact: false },
     "내일의 으뜸": { keyword: "선재 업고 튀어", exact: false },
     "유미의 세포들": { keyword: "유미의 세포들", exact: false },
-    "핑거스미스": { keyword: "아가씨", exact: true },
-    "아가씨": { keyword: "핑거스미스", exact: true },
+    "핑거스미스": { keyword: "아가씨", exact: false },
+    "아가씨": { keyword: "핑거스미스", exact: false },
     "무빙": { keyword: "무빙", exact: true },
     "이제 곧 죽습니다": { keyword: "이재 곧 죽습니다", exact: false },
     "이재, 곧 죽습니다": { keyword: "이제 곧 죽습니다", exact: false },
     "군체": { keyword: "인사이드 더 플레이: 군체 [서울 신대방]", exact: false },
+    "참교육": { keyword: "참교육", exact: true },
+    "원더풀스": { keyword: "원더풀스", exact: true },
 };
 
 const normalize = (str) =>

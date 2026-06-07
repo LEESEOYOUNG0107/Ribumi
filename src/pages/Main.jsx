@@ -23,7 +23,7 @@ function PlatformCard({ item }) {
   });
 
   const handleWishClick = (e) => {
-    e.stopPropagation(); // 💡 카드 클릭(상세페이지 이동) 방지
+    e.stopPropagation(); // 버튼 클릭이 카드 클릭으로 이어지는 것을 방지
 
     const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
     if (isWished) {
@@ -98,6 +98,8 @@ export default function Main() {
     if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
   };
 
+  // 영화와 드라마 인기작을 동시에 가져와서 합친 뒤, 인기순으로 정렬해 저장
+  // 처음 랜더링될 때 실행. 매번 랜더링 ㄴㄴ
   useEffect(() => {
     const fetchTrendingWorks = async () => {
       setLoading(true);
@@ -209,7 +211,7 @@ export default function Main() {
               <p className="bannerDescrip">
                 {isBannerExpanded
                   ? currentBannerWork.overview : currentBannerWork.overview.length > 70
-                  ? currentBannerWork.overview.slice(0, 70) + "..." : currentBannerWork.overview}
+                    ? currentBannerWork.overview.slice(0, 70) + "..." : currentBannerWork.overview}
               </p>
             )}
             <div className="bannerBtn">

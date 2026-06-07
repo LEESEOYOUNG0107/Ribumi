@@ -37,7 +37,6 @@
 .avatarCircle img {
   width: 100%;
   height: 100%;
-  /* border: none; */
   object-fit: cover;
   background-color: transparent;
 }
@@ -81,7 +80,6 @@
   font-size: 20px;
   font-weight: 500;
   color: #fff;
-  border-bottom: 1px solid #1e1e1e;
   padding-bottom: 12px;
 }
 
@@ -267,3 +265,178 @@
 
 .mypageReviewBtn:hover { border-color: #555; color: #aaa; }
 .mypageReviewBtn.delete:hover { border-color: #ef4444; color: #ef4444; }
+/* ── 찜 기반 추천 섹션 ── */
+.recSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+}
+
+.recSectionTitle {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.recBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.recTypePill {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid #2563eb;
+  color: #6b9fff;
+  background: rgba(37, 99, 235, 0.08);
+  font-family: 'Paperlogy', sans-serif;
+}
+
+.recBadgeDesc {
+  font-size: 11px;
+  color: #555;
+  margin-left: 2px;
+}
+
+/* ── 추천 카드 그리드 ── */
+.recGrid {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.recCard {
+  width: 120px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.25s ease;
+}
+
+.recCard:hover {
+  transform: translateY(-4px);
+}
+
+.recPoster {
+  width: 120px;
+  height: 176px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+}
+
+.recPoster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.recCard:hover .recPoster img {
+  transform: scale(1.05);
+}
+
+.recNoPoster {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #444;
+}
+
+
+.recMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.recTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.recYear {
+  font-size: 11px;
+  color: #666;
+}
+
+/* ── 스켈레톤 로딩 ── */
+.recLoadingRow {
+  display: flex;
+  gap: 14px;
+}
+
+.recSkeletonCard {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recSkeletonPoster {
+  width: 120px;
+  height: 176px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: recShimmer 1.4s ease infinite;
+}
+
+.recSkeletonLine {
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: recShimmer 1.4s ease infinite;
+}
+
+.recSkeletonLineShort {
+  height: 10px;
+  width: 60%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: recShimmer 1.4s ease infinite 0.2s;
+}
+
+@keyframes recShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── 다른 추천 보기 버튼 ── */
+.recRefreshBtn {
+  margin-top: 4px;
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #777;
+  padding: 7px 18px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'Paperlogy', sans-serif;
+  transition: border-color 0.2s, color 0.2s;
+  align-self: flex-start;
+}
+
+.recRefreshBtn:hover {
+  border-color: #2563eb;
+  color: #6b9fff;
+}

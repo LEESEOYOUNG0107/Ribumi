@@ -77,6 +77,7 @@ export default function Book() {
   const scrollRef2 = useRef(null);
   const navigate = useNavigate();
 
+  //특정 키워드로 검색해서 배너에 띄우기 (원작) - 검색 결과가 없으면 배너 안 띄우기
   const searchAladinBooks = async (keyword) => {
     const url = `/aladin/ttb/api/ItemSearch.aspx?ttbkey=${ALADIN_KEY}&Query=${encodeURIComponent(keyword)}&QueryType=Keyword&MaxResults=20&start=1&SearchTarget=Book&output=js&Version=20131101&Sort=Accuracy`;
     try {
@@ -84,10 +85,12 @@ export default function Book() {
       const data = await response.json();
       return data.item || [];
     } catch (error) {
-      return error;
+      console.error(`Keyword: ${keyword} 데이터를 불러오는데 실패했습니다.`, error);
+      return [];
     }
   };
 
+  // 특정 카테고리의 책들을 불러오는 함수 (최신작, 베스트셀러)
   const fetchAladinBooks = async (queryType) => {
     const url = `/aladin/ttb/api/ItemList.aspx?ttbkey=${ALADIN_KEY}&QueryType=${queryType}&MaxResults=15&start=1&SearchTarget=Book&output=js&Version=20131101`;
     try {
