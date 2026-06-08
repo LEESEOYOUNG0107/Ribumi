@@ -17,27 +17,17 @@ const StarRating = ({ rating, size = 14 }) => (
   </span>
 );
 
-
 // ── 추천 카드 컴포넌트 ──
 function RecommendCard({ item }) {
   const navigate = useNavigate();
   return (
-    <div
-      className="recCard"
-      onClick={() => navigate(`/detail/${item._type}/${item.id}`)}
-    >
+    <div className="recCard" onClick={() => navigate(`/detail/${item._type}/${item.id}`)}>
       <div className="recPoster">
-        {item.poster ? (
-          <img src={item.poster} alt={item.title} />
-        ) : (
-          <div className="recNoPoster">No Image</div>
-        )}
+        {item.poster ? <img src={item.poster} alt={item.title} /> : <div className="recNoPoster">No Image</div>}
       </div>
       <div className="recMeta">
         <span className="recTitle">{item.title}</span>
-        {item.releaseDate && (
-          <span className="recYear">{item.releaseDate.slice(0, 4)}</span>
-        )}
+        {item.releaseDate && <span className="recYear">{item.releaseDate.slice(0, 4)}</span>}
       </div>
     </div>
   );
@@ -57,17 +47,12 @@ export default function MyPage() {
   const [topGenres, setTopGenres] = useState([]);
 
   const filteredReviews =
-    reviewTab === "book"
-      ? reviews.filter((r) => r.type === "book")
-      : reviews.filter((r) => r.type !== "book");
+    reviewTab === "book" ? reviews.filter((r) => r.type === "book") : reviews.filter((r) => r.type !== "book");
 
   // ── 리뷰 fetch ──
   useEffect(() => {
     const fetchReviews = async () => {
-      const { data, error } = await supabase
-        .from("reviews")
-        .select("*")
-        .eq("user_id", userId);
+      const { data, error } = await supabase.from("reviews").select("*").eq("user_id", userId);
       if (!error) setReviews(data || []);
     };
     fetchReviews();
@@ -76,10 +61,7 @@ export default function MyPage() {
   // ── 찜 fetch ──
   useEffect(() => {
     const fetchWishlist = async () => {
-      const { data, error } = await supabase
-        .from("wishlist")
-        .select("*")
-        .eq("user_id", userId);
+      const { data, error } = await supabase.from("wishlist").select("*").eq("user_id", userId);
       if (!error) setWished(data || []);
     };
     fetchWishlist();
@@ -92,20 +74,21 @@ export default function MyPage() {
   }, [wished]);
 
   // ── 추천 로직: 찜 목록의 장르를 집계해서 상위 장르로 추천 ──
-  const fetchRecommendations = async (wishlist) => {
+  const fetchRecommendations = async (wishlist, page) => {
     setRecLoading(true);
 
-    // ── 1단계: 찜 목록 전체에서 장르 빈도 집계 ──
-    // wishlist 각 항목의 genre 컬럼은 "스릴러", "액션|범죄", "로맨스" 등 문자열로 저장 가정
+    // ── 1단계: 장르 빈도 집계 ──
     const genreCount = {};
     wishlist.forEach((w) => {
       if (!w.genre) return;
-      // "|", "/", "·", "," 구분자로 분리해서 각 장르를 개별 카운트
-      w.genre.split(/[|/·,]/).map((g) => g.trim()).filter(Boolean).forEach((g) => {
-        genreCount[g] = (genreCount[g] || 0) + 1;
-      });
+      w.genre
+        .split(/[·|/,]/)
+        .map((g) => g.trim())
+        .filter(Boolean)
+        .forEach((g) => {
+          genreCount[g] = (genreCount[g] || 0) + 1;
+        });
     });
-
     // 빈도 내림차순 정렬 → 상위 2개 장르 선택
     const sorted = Object.entries(genreCount).sort((a, b) => b[1] - a[1]);
     const top2 = sorted.slice(0, 2).map(([genre]) => genre);
@@ -118,93 +101,155 @@ export default function MyPage() {
       return;
     }
 
-    // ── TMDB 장르명 → ID 매핑 ──
+    // ── TMDB 장르 매핑 (한/영 통합) ──
     const TMDB_GENRE_MAP = {
-      "액션": 28, "모험": 12, "애니메이션": 16, "코미디": 35, "범죄": 80,
-      "다큐멘터리": 99, "드라마": 18, "가족": 10751, "판타지": 14, "역사": 36,
-      "공포": 27, "음악": 10402, "미스터리": 9648, "로맨스": 10749, "SF": 878,
-      "스릴러": 53, "전쟁": 10752, "서부": 37,
-      "액션·모험": 10759, "SF·판타지": 10765,
+      // 한글
+      액션: 28,
+      모험: 12,
+      애니메이션: 16,
+      코미디: 35,
+      범죄: 80,
+      다큐멘터리: 99,
+      드라마: 18,
+      가족: 10751,
+      판타지: 14,
+      역사: 36,
+      공포: 27,
+      음악: 10402,
+      미스터리: 9648,
+      로맨스: 10749,
+      SF: 878,
+      스릴러: 53,
+      전쟁: 10752,
+      서부: 37,
+      // 영어 (API에서 받은 그대로)
+      Action: 28,
+      Adventure: 12,
+      Animation: 16,
+      Comedy: 35,
+      Crime: 80,
+      Documentary: 99,
+      Drama: 18,
+      Family: 10751,
+      Fantasy: 14,
+      History: 36,
+      Horror: 27,
+      Music: 10402,
+      Mystery: 9648,
+      Romance: 10749,
+      "Science Fiction": 878,
+      Thriller: 53,
+      War: 10752,
+      Western: 37,
+      // 복합 장르 (TV용)
+      "Action & Adventure": 10759,
+      "Sci-Fi & Fantasy": 10765,
+      "War & Politics": 10768,
+      Kids: 10762,
+      News: 10763,
+      Reality: 10764,
+      Soap: 10766,
+      Talk: 10767,
     };
 
-    // ── KOPIS 장르명 → 코드 매핑 ──
     const KOPIS_GENRE_MAP = {
-      "뮤지컬": "GGGA", "연극": "GGGA", "클래식": "CCCA", "오페라": "CCCA",
-      "무용": "BBBC", "콘서트": "CCCD", "서커스": "EEEB", "마술": "EEEB",
+      뮤지컬: "GGGA",
+      연극: "GGGA",
+      클래식: "CCCA",
+      오페라: "CCCA",
+      무용: "BBBC",
+      콘서트: "CCCD",
+      서커스: "EEEB",
+      마술: "EEEB",
     };
 
-    // ── 2단계: 상위 장르로 각 API 병렬 호출 ──
-    const genreQuery = top2.join(" "); // Aladin/KOPIS용 키워드
+    // ── 장르 → ID 변환 ──
     const tmdbGenreIds = top2
       .map((g) => TMDB_GENRE_MAP[g])
       .filter(Boolean)
       .join(",");
+
     const kopisGenreCode = top2.map((g) => KOPIS_GENRE_MAP[g]).find(Boolean) || "";
+    const genreQuery = top2
+      .map(
+        (g) =>
+          // 영어 장르면 한글 키로 역매핑 시도, 없으면 그대로
+          Object.entries(TMDB_GENRE_MAP).find(([k, v]) => k === g)?.[0] ?? g,
+      )
+      .join(" ");
 
     const wishedIds = new Set(wishlist.map((w) => String(w.content_id)));
     const hasType = (type) => wishlist.some((w) => w.type === type);
 
-    // 영화 (TMDB discover, 장르 ID 기반)
+    // 랜덤 페이지 (1~5) — "다른 추천 보기" 누를 때마다 달라짐
+    const randomPage = page ?? Math.ceil(Math.random() * 5);
+
     const fetchMovieByGenre = async () => {
       if (!hasType("movie") || !tmdbGenreIds) return [];
       try {
         const res = await fetch(
-          `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&sort_by=popularity.desc&with_genres=${tmdbGenreIds}`
+          `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&sort_by=popularity.desc&with_genres=${tmdbGenreIds}&page=${randomPage}`,
         );
         const data = await res.json();
         return (data.results || [])
           .filter((r) => r.poster_path && !wishedIds.has(String(r.id)))
           .slice(0, 4)
           .map((r) => ({
-            id: String(r.id), _type: "movie",
+            id: String(r.id),
+            _type: "movie",
             title: r.title,
             poster: `https://image.tmdb.org/t/p/w300${r.poster_path}`,
             releaseDate: r.release_date || "",
           }));
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     };
 
-    // 드라마 (TMDB discover, 장르 ID 기반)
     const fetchTvByGenre = async () => {
       if (!hasType("tv") || !tmdbGenreIds) return [];
       try {
         const res = await fetch(
-          `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&sort_by=popularity.desc&with_genres=${tmdbGenreIds}`
+          `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&sort_by=popularity.desc&with_genres=${tmdbGenreIds}&page=${randomPage}`,
         );
         const data = await res.json();
         return (data.results || [])
           .filter((r) => r.poster_path && !wishedIds.has(String(r.id)))
           .slice(0, 4)
           .map((r) => ({
-            id: String(r.id), _type: "tv",
+            id: String(r.id),
+            _type: "tv",
             title: r.name,
             poster: `https://image.tmdb.org/t/p/w300${r.poster_path}`,
             releaseDate: r.first_air_date || "",
           }));
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     };
 
-    // 도서 (Aladin 장르 키워드 검색)
     const fetchBookByGenre = async () => {
       if (!hasType("book")) return [];
       try {
         const res = await fetch(
-          `/aladin/ttb/api/ItemSearch.aspx?ttbkey=${ALADIN_KEY}&Query=${encodeURIComponent(genreQuery)}&QueryType=Keyword&MaxResults=8&start=1&SearchTarget=Book&output=js&Version=20131101`
+          `/aladin/ttb/api/ItemSearch.aspx?ttbkey=${ALADIN_KEY}&Query=${encodeURIComponent(genreQuery)}&QueryType=Keyword&MaxResults=8&start=${randomPage}&SearchTarget=Book&output=js&Version=20131101`,
         );
         const data = await res.json();
         return (data.item || [])
           .filter((b) => !wishedIds.has(String(b.isbn13)))
           .slice(0, 4)
           .map((b) => ({
-            id: String(b.isbn13), _type: "book",
+            id: String(b.isbn13),
+            _type: "book",
             title: b.title,
             poster: b.cover?.replace("/coversum/", "/cover500/") || null,
             releaseDate: b.pubDate || "",
           }));
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     };
 
-    // 공연 (KOPIS 장르코드 or 키워드 검색)
     const fetchPerfByGenre = async () => {
       if (!hasType("performance")) return [];
       try {
@@ -212,10 +257,9 @@ export default function MyPage() {
         const after6mo = new Date();
         after6mo.setMonth(today.getMonth() + 6);
         const fmt = (d) => d.toISOString().slice(0, 10).replace(/-/g, "");
-
         const categoryParam = kopisGenreCode ? `&shcate=${kopisGenreCode}` : "";
         const res = await fetch(
-          `/kopis/openApi/restful/pblprfr?service=${KOPIS_KEY}&stdate=${fmt(today)}&eddate=${fmt(after6mo)}&cpage=1&rows=8${categoryParam}&shprfnm=${encodeURIComponent(top2[0] || "")}`
+          `/kopis/openApi/restful/pblprfr?service=${KOPIS_KEY}&stdate=${fmt(today)}&eddate=${fmt(after6mo)}&cpage=${randomPage}&rows=8${categoryParam}&shprfnm=${encodeURIComponent(top2[0] || "")}`,
         );
         const text = await res.text();
         const xml = new DOMParser().parseFromString(text, "text/xml");
@@ -229,7 +273,9 @@ export default function MyPage() {
             poster: node.querySelector("poster")?.textContent?.replace("http://", "https://") || null,
             releaseDate: node.querySelector("prfpdfrom")?.textContent || "",
           }));
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     };
 
     try {
@@ -241,14 +287,9 @@ export default function MyPage() {
       ]);
 
       const merged = [...movieItems, ...tvItems, ...bookItems, ...perfItems];
-
-      // id+타입 기준 중복 제거
       const unique = merged.filter(
-        (item, idx, arr) =>
-          item.id &&
-          arr.findIndex((x) => x.id === item.id && x._type === item._type) === idx
+        (item, idx, arr) => item.id && arr.findIndex((x) => x.id === item.id && x._type === item._type) === idx,
       );
-
       setRecommendations(unique.slice(0, 12));
     } catch (err) {
       console.error("추천 데이터 로딩 실패:", err);
@@ -305,21 +346,15 @@ export default function MyPage() {
                 <div
                   key={item.id}
                   className="wishedCard"
-                  onClick={() =>
-                    navigate(`/detail/${item.type}/${item.content_id}`)
-                  }
+                  onClick={() => navigate(`/detail/${item.type}/${item.content_id}`)}
                 >
                   <div
                     className="wishedPoster"
                     style={{
-                      backgroundImage: item.poster
-                        ? `url(${item.poster})`
-                        : "none",
+                      backgroundImage: item.poster ? `url(${item.poster})` : "none",
                     }}
                   >
-                    {!item.poster && (
-                      <span className="wishedNoImg">No Image</span>
-                    )}
+                    {!item.poster && <span className="wishedNoImg">No Image</span>}
                     <button
                       className="wishedRemoveBtn"
                       onClick={(e) => {
@@ -332,9 +367,7 @@ export default function MyPage() {
                   </div>
                   <div className="wishedMeta">
                     <span className="wishedTitle">{item.title}</span>
-                    <span className="wishedInfo">
-                      {item.year}
-                    </span>
+                    <span className="wishedInfo">{item.year}</span>
                   </div>
                 </div>
               ))}
@@ -349,11 +382,11 @@ export default function MyPage() {
               <h3 className="mypageSectionTitle recSectionTitle"> 취향 저격 추천작 </h3>
               <div className="recBadgeRow">
                 {topGenres.map((g) => (
-                  <span key={g} className="recTypePill">{g}</span>
+                  <span key={g} className="recTypePill">
+                    {g}
+                  </span>
                 ))}
-                {topGenres.length > 0 && (
-                  <span className="recBadgeDesc">장르 기반 추천</span>
-                )}
+                {topGenres.length > 0 && <span className="recBadgeDesc">장르 기반 추천</span>}
               </div>
             </div>
 
@@ -377,10 +410,7 @@ export default function MyPage() {
                   ))}
                 </div>
                 {/* 백엔드 연동 후 이 버튼이 API 재호출로 이어집니다 */}
-                <button
-                  className="recRefreshBtn"
-                  onClick={() => fetchRecommendations(wished)}
-                >
+                <button className="recRefreshBtn" onClick={() => fetchRecommendations(wished)}>
                   ↻ 다른 추천 보기
                 </button>
               </>
@@ -414,30 +444,20 @@ export default function MyPage() {
                 <div className="mypageReviewHeader">
                   <div className="mypageReviewLeft">
                     <span className="mypageReviewType">
-                      {review.type === "book"
-                        ? "도서"
-                        : review.type === "movie"
-                        ? "영화"
-                        : "드라마"}
+                      {review.type === "book" ? "도서" : review.type === "movie" ? "영화" : "드라마"}
                     </span>
                     <span className="mypageReviewTitle">{review.title}</span>
                     <span className="mypageReviewDate">{review.date}</span>
                   </div>
                   <div className="mypageReviewRight">
                     <StarRating rating={review.rating} />
-                    <span className="mypageReviewRatingNum">
-                      {" "}
-                      / {review.rating * 2}.0점
-                    </span>
+                    <span className="mypageReviewRatingNum"> / {review.rating * 2}.0점</span>
                   </div>
                 </div>
                 <p className="mypageReviewContent">{review.content}</p>
                 <div className="mypageReviewFooter">
                   <button className="mypageReviewBtn">수정하기</button>
-                  <button
-                    className="mypageReviewBtn delete"
-                    onClick={() => handleDeleteReview(review.id)}
-                  >
+                  <button className="mypageReviewBtn delete" onClick={() => handleDeleteReview(review.id)}>
                     삭제하기
                   </button>
                 </div>

@@ -3,41 +3,60 @@ import { useNavigate } from "react-router-dom";
 import "./Book.css";
 import Nav from "../components/Navi";
 import Footer from "../components/Footer";
+import { supabase } from "../lib/supabase";
 
 const ALADIN_KEY = import.meta.env.VITE_ALADIN_KEY;
 
 function BookCard({ item }) {
   const navigate = useNavigate();
-  const [isWished, setIsWished] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("wishList") || "[]");
-    return saved.some(wish => String(wish.id) === String(item.isbn13));
-  });
+  const [isWished, setIsWished] = useState(false);
+  useEffect(() => {
+    const checkWish = async () => {
+      const userId = localStorage.getItem("userId");
 
-  const handleWishClick = (e) => {
+      const { data } = await supabase.from("wishlist").select("id").eq("user_id", userId).eq("content_id", item.isbn13);
+
+      setIsWished(data && data.length > 0);
+    };
+    checkWish();
+  }, [item.isbn13]);
+  const handleWishClick = async (e) => {
+    alert("북페이지 하트");
     e.stopPropagation();
-    const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
+    const userId = localStorage.getItem("userId");
 
     if (isWished) {
-      const updated = currentList.filter(wish => String(wish.id) !== String(item.isbn13));
-      localStorage.setItem("wishList", JSON.stringify(updated));
+      const { error } = await supabase.from("wishlist").delete().eq("user_id", userId).eq("content_id", item.isbn13);
+
+      if (!error) {
+        setIsWished(false);
+      }
     } else {
-      const newItem = {
-        id: item.isbn13,
-        type: "book",
+      console.log("genre:", item.categoryName);
+
+      const { error } = await supabase.from("wishlist").insert({
+        user_id: userId,
+        content_id: item.isbn13,
         title: item.title,
         poster: item.cover,
         year: item.pubDate ? item.pubDate.substring(0, 4) : "",
-        rating: 0 // 도서는 별점 데이터 형태에 따라 조정
-      };
-      localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
+        rating: 0,
+        type: "book",
+        genre: item.categoryName ? item.categoryName.split(">").pop().trim() : "",
+      });
+
+      console.log("insert error:", error);
+
+      if (!error) {
+        setIsWished(true);
+      }
     }
-    setIsWished(!isWished);
   };
 
   if (!item) return null;
   let imgUrl = item.cover;
   if (imgUrl) {
-    imgUrl = imgUrl.replace('/coversum/', '/cover500/');
+    imgUrl = imgUrl.replace("/coversum/", "/cover500/");
   } else {
     imgUrl = "https://placehold.co/180x250?text=No+Image";
   }
@@ -45,13 +64,20 @@ function BookCard({ item }) {
   const authors = item.author ? item.author.split("(지은이)")[0].trim() : "작자 미상";
 
   return (
-    <div className="platformCard" style={{ width: '180px', flexShrink: 0 }} onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
-      <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+    <div
+      className="platformCard"
+      style={{ width: "180px", flexShrink: 0 }}
+      onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}
+    >
+      <div
+        className="cardImage"
+        style={{ backgroundImage: `url(${imgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
+      ></div>
       <div className="cardMeta">
         <span className="cardTitle">{item.title}</span>
         <div className="authGenre">
           <span className="cardGenre">{authors}</span>
-          <span className="cardGenre">{item.categoryName ? item.categoryName.split('>').pop() : ""}</span>
+          <span className="cardGenre">{item.categoryName ? item.categoryName.split(">").pop() : ""}</span>
         </div>
       </div>
       <div className="cardRatingGroup">
@@ -60,7 +86,9 @@ function BookCard({ item }) {
           <button className={`cardHeart ${isWished ? "wished" : ""}`} onClick={handleWishClick}>
             {isWished ? "♥" : "♡"}
           </button>
-          <span className="ratingScore">⭐{item.customerReviewRank ? (item.customerReviewRank / 2).toFixed(1) : "0.0"}</span>
+          <span className="ratingScore">
+            ⭐{item.customerReviewRank ? (item.customerReviewRank / 2).toFixed(1) : "0.0"}
+          </span>
         </div>
       </div>
     </div>
@@ -106,9 +134,9 @@ export default function Book() {
   useEffect(() => {
     const loadBooks = async () => {
       setLoading(true);
-      fetchAladinBooks("ItemNewSpecial").then(res => setNewBooks(res));
-      fetchAladinBooks("Bestseller").then(res => setPopularBooks(res));
-      searchAladinBooks("원작").then(res => {
+      fetchAladinBooks("ItemNewSpecial").then((res) => setNewBooks(res));
+      fetchAladinBooks("Bestseller").then((res) => setPopularBooks(res));
+      searchAladinBooks("원작").then((res) => {
         if (res && res.length > 0) setBannerBooks(res);
         setLoading(false);
       });
@@ -141,9 +169,13 @@ export default function Book() {
           <div className="bannerTrackWrapper">
             <div className="bannerTrack">
               {[...bannerBooks, ...bannerBooks].map((item, idx) => (
-                <div className="bannerItem" key={idx} onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}>
+                <div
+                  className="bannerItem"
+                  key={idx}
+                  onClick={() => navigate(`/detail/book/${item.isbn13}`, { state: { item } })}
+                >
                   <img
-                    src={item.cover.replace('/coversum/', '/cover500/')}
+                    src={item.cover.replace("/coversum/", "/cover500/")}
                     alt={item.title}
                     className="bannerPosterImage"
                   />
@@ -161,22 +193,46 @@ export default function Book() {
           <section className="scrollSection">
             <h3 className="sectionTitle">2026 최신작</h3>
             <div className="sliderWrapper">
-              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}> &lt; </button>
-              <div className="platformScroll" ref={scrollRef1} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
-                {newBooks.map((item, idx) => (<BookCard key={item.isbn || idx} item={item} />))}
+              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef1)}>
+                {" "}
+                &lt;{" "}
+              </button>
+              <div
+                className="platformScroll"
+                ref={scrollRef1}
+                style={{ display: "flex", gap: "20px", overflowX: "auto" }}
+              >
+                {newBooks.map((item, idx) => (
+                  <BookCard key={item.isbn || idx} item={item} />
+                ))}
               </div>
-              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}> &gt; </button>
+              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef1)}>
+                {" "}
+                &gt;{" "}
+              </button>
             </div>
           </section>
 
-          <section className="scrollSection" style={{ marginTop: '50px' }}>
+          <section className="scrollSection" style={{ marginTop: "50px" }}>
             <h3 className="sectionTitle">최근 인기 도서</h3>
             <div className="sliderWrapper">
-              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}> &lt; </button>
-              <div className="platformScroll" ref={scrollRef2} style={{ display: 'flex', gap: '20px', overflowX: 'auto' }}>
-                {popularBooks.map((item, idx) => (<BookCard key={item.isbn || idx} item={item} />))}
+              <button className="sliderBtn leftBtn" onClick={() => scrollLeft(scrollRef2)}>
+                {" "}
+                &lt;{" "}
+              </button>
+              <div
+                className="platformScroll"
+                ref={scrollRef2}
+                style={{ display: "flex", gap: "20px", overflowX: "auto" }}
+              >
+                {popularBooks.map((item, idx) => (
+                  <BookCard key={item.isbn || idx} item={item} />
+                ))}
               </div>
-              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}> &gt; </button>
+              <button className="sliderBtn rightBtn" onClick={() => scrollRight(scrollRef2)}>
+                {" "}
+                &gt;{" "}
+              </button>
             </div>
           </section>
         </>

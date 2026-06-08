@@ -118,6 +118,7 @@ export default function Detail() {
       }
       setWishList(wishList.filter((w) => String(w.content_id) !== String(item.id)));
     } else {
+      console.log("저장 genre:", item.genre);
       const { data, error } = await supabase
         .from("wishlist")
         .insert({
@@ -126,8 +127,13 @@ export default function Detail() {
           title: item.title,
           poster: item.poster,
           type: item._type,
+
+          genre: item.genre || null,
+          rating: item.rating ? parseFloat(item.rating) : null,
+          year: item.releaseDate ? item.releaseDate.substring(0, 4) : null,
         })
         .select();
+      console.log("insert error:", error);
       if (error) {
         console.error(error);
         return;
