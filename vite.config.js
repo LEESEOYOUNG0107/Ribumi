@@ -4,21 +4,22 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    // 빌드 결과물이 dist 폴더로 명확히 뽑히도록 지정
     outDir: 'dist',
+    // 빌드 시 정적 자산들이 올바르게 맵핑되도록 설정
+    assetsDir: 'assets',
   },
   server: {
     proxy: {
-      '/aladin' : {
+      '/aladin': {
         target: 'https://www.aladin.co.kr',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/aladin/, '')
       },
-      'auth':{
+      '/auth': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      '/kopis': {                     
+      '/kopis': { 
         target: 'https://kopis.or.kr',
         changeOrigin: true,
         secure: false,
