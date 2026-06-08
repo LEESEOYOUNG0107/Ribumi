@@ -16,4 +16,4 @@
 - Supabase
 - TMDB Open API
 - 알라딘 Open API
-- KOPIS Open API
+- KOPIS Open API.
