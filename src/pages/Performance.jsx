@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import "./Main.css";
 import "./Book.css";
 import "./Performance.css";
@@ -11,30 +12,62 @@ const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 function PerformanceCard({ item }) {
   const navigate = useNavigate();
 
-  const [isWished, setIsWished] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("wishList") || "[]");
-    return saved.some(wish => String(wish.id) === String(item.id));
-  });
+  const [isWished, setIsWished] = useState(false);
 
-  const handleWishClick = (e) => {
+  useEffect(() => {
+    const checkWish = async () => {
+      const userId = localStorage.getItem("userId");
+
+      const { data } = await supabase
+        .from("wishlist")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("content_id", item.id);
+
+      setIsWished(data && data.length > 0);
+    };
+
+    checkWish();
+  }, [item.id]);
+
+  const handleWishClick = async (e) => {
     e.stopPropagation();
-    const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
 
     if (isWished) {
-      const updated = currentList.filter(wish => String(wish.id) !== String(item.id));
-      localStorage.setItem("wishList", JSON.stringify(updated));
+      const { error } = await supabase
+        .from("wishlist")
+        .delete()
+        .eq("user_id", userId)
+        .eq("content_id", item.id);
+
+      if (!error) {
+        setIsWished(false);
+      }
     } else {
-      const newItem = {
-        id: item.id,
-        type: "performance",
-        title: item.title,
-        poster: item.poster,
-        year: item.startDate ? item.startDate.substring(0, 4) : "",
-        rating: 0
-      };
-      localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
+      const { error } = await supabase
+        .from("wishlist")
+        .insert({
+          user_id: userId,
+          content_id: item.id,
+          title: item.title,
+          poster: item.poster,
+          year: item.startDate?.substring(0, 4) || "",
+          rating: 0,
+          type: "performance",
+          genre: item.genre
+        });
+
+      if (!error) {
+        setIsWished(true);
+      }
     }
-    setIsWished(!isWished);
   };
 
   if (!item) return null;
@@ -43,7 +76,7 @@ function PerformanceCard({ item }) {
   return (
     <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })} style={{ position: "relative" }}>
       {/* 💡 순위 뱃지 렌더링 부분을 깔끔하게 삭제했습니다. */}
-      
+
       <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})` }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
@@ -52,11 +85,11 @@ function PerformanceCard({ item }) {
         <div className="cardGenre" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
           {item.genre} {item.place ? `| ${item.place}` : ''}
         </div>
-        
+
         {(item.startDate || item.endDate) && (
-           <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
-             {item.startDate} ~ {item.endDate}
-           </div>
+          <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
+            {item.startDate} ~ {item.endDate}
+          </div>
         )}
 
         <button className={`cardHeart ${isWished ? "wished" : ""}`} onClick={handleWishClick}>
@@ -73,7 +106,7 @@ export default function PerformancePage() {
   const [bannerPerfs, setBannerPerfs] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  
+
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
 

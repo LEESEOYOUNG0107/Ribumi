@@ -21,7 +21,6 @@ function BookCard({ item }) {
     checkWish();
   }, [item.isbn13]);
   const handleWishClick = async (e) => {
-    alert("북페이지 하트");
     e.stopPropagation();
     const userId = localStorage.getItem("userId");
 
