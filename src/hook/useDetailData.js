@@ -15,6 +15,7 @@ const keywordMap = {
     "군체": { keyword: "인사이드 더 플레이: 군체 [서울 신대방]", exact: false },
     "참교육": { keyword: "참교육", exact: true },
     "원더풀스": { keyword: "원더풀스", exact: true },
+    "멋진 신세계": { keyword: "멋진 신세계", exact: true },
 };
 
 const normalize = (str) =>
@@ -23,8 +24,7 @@ const normalize = (str) =>
 async function fetchTmdbDetail(itemId, mediaType) {
     const [detailRes, creditsRes] = await Promise.all([
         fetch(`https://api.themoviedb.org/3/${mediaType}/${itemId}?api_key=${TMDB_KEY}&language=ko-KR`),
-        fetch(`https://api.themoviedb.org/3/${mediaType}/${itemId}/credits?api_key=${TMDB_KEY}&language=ko-KR`)
-
+        fetch(`https://api.themoviedb.org/3/${mediaType}/${itemId}/credits?api_key=${TMDB_KEY}&language=ko-KR`),
     ]);
 
     const detailData = await detailRes.json();
@@ -53,8 +53,8 @@ async function fetchBookDetail(itemId) {
 
     const data = await res.json();
     const book = data.item?.[0];
-
     if (!book) return null;
+
     const formattedAuthor = book.author
         ? book.author.replaceAll("(지은이)", "지음").replaceAll("(옮긴이)", "옮김") : "";
 
@@ -106,7 +106,6 @@ async function fetchMediaRelatedWorks(queryTitle, currentId, mainItem) {
         const cleanQuery = normalize(searchKeyword);
 
         if (cleanTitle === cleanQuery) return true;
-        // 2. "무빙 1", "무빙 세트", "무빙 시즌2", "무빙 권" 처럼 번호나 시리즈 명칭이 붙은 경우 허용
         const regex = new RegExp(`^${cleanQuery}\\s+([0-9]|세트|시즌|파트|권|부|vol|part).*`, "i");
         return regex.test(cleanTitle);
     };
@@ -126,7 +125,6 @@ async function fetchMediaRelatedWorks(queryTitle, currentId, mainItem) {
                     r.poster_path &&
                     isMatch(r.title || r.name)
                 )
-
                 .map(r => ({
                     id: String(r.id), _type: r.media_type,
                     title: r.title || r.name,
@@ -142,19 +140,17 @@ async function fetchMediaRelatedWorks(queryTitle, currentId, mainItem) {
                 .filter(b => {
                     if (!isMatch(b.title)) return false;
 
-                    // 알라딘 도서 검색 시 "무빙 1" 같은 변형작의 경우 작가 이름(강풀)이 교차 검증되는지 확인
                     if (exactMatch && mainItem) {
                         const combinedMainCreators = `${mainItem.extra?.author || ""} ${mainItem.writer || ""} ${mainItem.director || ""}`.toLowerCase();
                         const cleanBAuthor = (b.author || "").replace(/지음|옮김|\(지은이\)|\(옮긴이\)/g, "").toLowerCase();
 
-                        if (normalize(b.title) === normalize(searchKeyword)) return true; // 완전 일치는 프리패스
+                        if (normalize(b.title) === normalize(searchKeyword)) return true;
 
                         const names = cleanBAuthor.split(/[,\s·]+/).filter(n => n.length >= 2);
                         return names.some(name => combinedMainCreators.includes(name));
                     }
                     return true;
                 })
-
                 .map(b => ({
                     id: String(b.isbn13 || b.itemId), _type: "book",
                     title: b.title,
@@ -209,54 +205,55 @@ export default function useDetailData(type, id) {
                         if (seen.has(work.id)) return false;
                         seen.add(work.id);
                         return true;
-                    });
+                    }).slice(0, 5);
 
-                    const detailedRelated = await Promise.all(
-                        deduped.slice(0, 5).map(async (work) => {
-                            try {
-                                if (work._type === "movie" || work._type === "tv")
-                                    return await fetchTmdbDetail(work.id, work._type);
-                                else if (work._type === "book")
-                                    return await fetchBookDetail(work.id);
-                                else if (work._type === "performance")
-                                    return await fetchPerformanceDetail(work.id);
-                            } catch {
-                                return work;
-                            }
-                        })
-                    );
+                    // ✅ exact: true인 경우만 제작진 교차검증을 위해 상세 재조회
+                    // exact: false이거나 keywordMap에 없는 작품은 교차검색 결과를 그대로 사용
+                    const mapped = keywordMap[cleanTitle];
+                    const exactMatch = mapped ? mapped.exact : false;
 
-                    const finalRelated = detailedRelated.filter(Boolean).filter(work => {
-                        const mapped = keywordMap[cleanTitle];
-                        const exactMatch = mapped ? mapped.exact : false;
+                    let finalRelated;
 
-                        if (exactMatch) {
-                            // 1. 현재 메인 상세 페이지 작품의 전체 제작진 추출
-                            const mainCreators = [
-                                ...(mainItem.extra?.author ? mainItem.extra.author.replace(/지음|옮김|\(지은이\)|\(옮긴이\)/g, "").split(/[,\s·]+/) : []),
-                                ...(mainItem.director ? mainItem.director.split(/[,\s·]+/) : []),
-                                ...(mainItem.writer ? mainItem.writer.split(/[,\s·]+/) : [])
-                            ].filter(Boolean).map(n => n.toLowerCase().trim());
+                    if (exactMatch) {
+                        // exact: true → 상세 재조회 후 제작진 교차검증
+                        const detailedRelated = await Promise.all(
+                            deduped.map(async (work) => {
+                                try {
+                                    if (work._type === "movie" || work._type === "tv")
+                                        return await fetchTmdbDetail(work.id, work._type);
+                                    else if (work._type === "book")
+                                        return await fetchBookDetail(work.id);
+                                    else if (work._type === "performance")
+                                        return await fetchPerformanceDetail(work.id);
+                                } catch {
+                                    return work;
+                                }
+                            })
+                        );
 
-                            // 2. 검색되어 올라온 연관 작품의 전체 제작진 추출
+                        const mainCreators = [
+                            ...(mainItem.extra?.author ? mainItem.extra.author.replace(/지음|옮김|\(지은이\)|\(옮긴이\)/g, "").split(/[,\s·]+/) : []),
+                            ...(mainItem.director ? mainItem.director.split(/[,\s·]+/) : []),
+                            ...(mainItem.writer ? mainItem.writer.split(/[,\s·]+/) : [])
+                        ].filter(Boolean).map(n => n.toLowerCase().trim());
+
+                        finalRelated = detailedRelated.filter(Boolean).filter(work => {
+                            if (normalize(work.title) === normalize(cleanTitle)) return true;
+
                             const workCreators = [
                                 ...(work.extra?.author ? work.extra.author.replace(/지음|옮김|\(지은이\)|\(옮긴이\)/g, "").split(/[,\s·]+/) : []),
                                 ...(work.director ? work.director.split(/[,\s·]+/) : []),
                                 ...(work.writer ? work.writer.split(/[,\s·]+/) : [])
                             ].filter(Boolean).map(n => n.toLowerCase().trim());
 
-                            // 제목 원본 자체가 완전 일치하면 무조건 통과
-                            if (normalize(work.title) === normalize(cleanTitle)) return true;
-
-                            // "군체 1권", "무빙 세트"처럼 가공된 제목의 경우, 양측 스태프 이름 중 단 하나라도 교차 매칭되어야 최종 합격
-                            const hasOverlap = mainCreators.some(name =>
+                            return mainCreators.some(name =>
                                 workCreators.some(wName => wName.includes(name) || name.includes(wName))
                             );
-
-                            return hasOverlap;
-                        }
-                        return true;
-                    });
+                        });
+                    } else {
+                        // exact: false 또는 keywordMap에 없는 작품 → 재조회 없이 바로 사용
+                        finalRelated = deduped;
+                    }
 
                     setRelatedWorks(finalRelated);
                 }
