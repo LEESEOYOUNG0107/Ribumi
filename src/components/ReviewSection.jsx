@@ -126,7 +126,7 @@ export default function ReviewSection({ itemReviews, onEditSave, onDelete, onRep
                         <span style={{ fontSize: "12px", fontWeight: "600", color: "#ddd" }}>{reply.user}</span>
                         <span style={{ fontSize: "10px", color: "#666" }}>{reply.date}</span>
                       </div>
-                      <p style={{ margin: 0, fontSize: "12px", color: "#aaa", lineHeight: "1.5" }}>{reply.text}</p>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#aaa", lineHeight: "1.5", whiteSpace: "pre-wrap" }}>{reply.text}</p>
                     </div>
                   ))}
                 </div>
