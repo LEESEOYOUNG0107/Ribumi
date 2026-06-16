@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import "./Main.css";
 import Nav from "../components/Navi";
 import Footer from "../components/Footer";
@@ -17,37 +18,69 @@ const genreMap = {
 
 function PlatformCard({ item }) {
   const navigate = useNavigate();
-  const [isWished, setIsWished] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("wishList") || "[]");
-    return saved.some(wish => String(wish.id) === String(item?.id));
-  });
 
-  const handleWishClick = (e) => {
-    e.stopPropagation(); // 버튼 클릭이 카드 클릭으로 이어지는 것을 방지
+  const posterUrl = item?.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : " ";
+  const year = (item?.release_date || item?.first_air_date || "").substring(0, 4);
 
-    const currentList = JSON.parse(localStorage.getItem("wishList") || "[]");
-    if (isWished) {
-      // 찜 삭제
-      const updated = currentList.filter(wish => String(wish.id) !== String(item.id));
-      localStorage.setItem("wishList", JSON.stringify(updated));
-    } else {
-      // 찜 추가
-      const newItem = {
-        id: item.id,
-        type: item.first_air_date ? "tv" : "movie",
-        title: item.title || item.name,
-        poster: posterUrl,
-        year: year,
-        rating: item.vote_average
-      };
-      localStorage.setItem("wishList", JSON.stringify([newItem, ...currentList]));
+  const [isWished, setIsWished] = useState(false);
+
+  useEffect(() => {
+    const checkWish = async () => {
+      const userId = localStorage.getItem("userId");
+
+      const { data } = await supabase
+        .from("wishlist")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("content_id", item.id);
+
+      setIsWished(data && data.length > 0);
+    };
+
+    checkWish();
+  }, [item.id]);
+
+  const handleWishClick = async (e) => {
+    e.stopPropagation();
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      return;
     }
-    setIsWished(!isWished); // 하트 색깔 반전
+
+    if (isWished) {
+      const { error } = await supabase
+        .from("wishlist")
+        .delete()
+        .eq("user_id", userId)
+        .eq("content_id", item.id);
+
+      if (!error) {
+        setIsWished(false);
+      }
+    } else {
+      const { error } = await supabase
+        .from("wishlist")
+        .insert({
+          user_id: userId,
+          content_id: item.id,
+          title: item.title || item.name,
+          poster: posterUrl,
+          year: year,
+          rating: item.vote_average,
+          type: item.first_air_date ? "tv" : "movie",
+          genre: genreText
+        });
+
+      if (!error) {
+        setIsWished(true);
+      }
+    }
   };
 
   if (!item) return null;
-  const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : " ";
-  const year = (item.release_date || item.first_air_date || "").substring(0, 4);
 
   let genreText = "기타";
   if (item.genre_ids && item.genre_ids.length > 0) {
