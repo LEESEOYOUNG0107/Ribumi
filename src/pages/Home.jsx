@@ -21,18 +21,21 @@ export default function Home() {
     try {
       // 소설(818)이나 만화(9715) 원작 키워드를 가진 인기 영화와 드라마를 가져오기
       const [movieRes, tvRes] = await Promise.all([
-        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715`),
-        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715`),
+        fetch(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715`,
+        ),
+        fetch(
+          `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715`,
+        ),
       ]);
 
       const movieData = await movieRes.json();
       const tvData = await tvRes.json();
 
-
       const combined = [...(movieData.results || []), ...(tvData.results || [])]
         .filter((item) => item.poster_path) // 포스터가 있는 작품만
         .sort((a, b) => b.popularity - a.popularity) // 인기순으로 내림차순 정렬
-        .slice(0, 9) // 상위 6개 작품만
+        .slice(0, 9); // 상위 6개 작품만
 
       const results = combined.map((item) => ({
         id: item.id,
@@ -61,17 +64,43 @@ export default function Home() {
   return (
     <div className="main-container">
       <div className="main-background">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1920 822" fill="none" preserveAspectRatio="none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          viewBox="0 0 1920 822"
+          fill="none"
+          preserveAspectRatio="none"
+        >
           <g filter="url(#filter0_f_206_2168)">
-            <path d="M354.763 248.695C165.545 266.812 -38 144.237 -38 144.237V742H1998L1998 157.731C1998 157.731 1760.35 441.92 1516.07 412.13C1290.8 384.659 1200.27 98.5914 969.388 81.2615C738.511 63.9315 543.982 230.578 354.763 248.695Z" fill="url(#paint0_linear_206_2168)" fillOpacity="0.82" />
+            <path
+              d="M354.763 248.695C165.545 266.812 -38 144.237 -38 144.237V742H1998L1998 157.731C1998 157.731 1760.35 441.92 1516.07 412.13C1290.8 384.659 1200.27 98.5914 969.388 81.2615C738.511 63.9315 543.982 230.578 354.763 248.695Z"
+              fill="url(#paint0_linear_206_2168)"
+              fillOpacity="0.82"
+            />
           </g>
           <defs>
-            <filter id="filter0_f_206_2168" x="-118" y="0" width="2196" height="822" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <filter
+              id="filter0_f_206_2168"
+              x="-118"
+              y="0"
+              width="2196"
+              height="822"
+              filterUnits="userSpaceOnUse"
+              colorInterpolationFilters="sRGB"
+            >
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
               <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
               <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_206_2168" />
             </filter>
-            <linearGradient id="paint0_linear_206_2168" x1="973.056" y1="89.6251" x2="973.056" y2="741.999" gradientUnits="userSpaceOnUse">
+            <linearGradient
+              id="paint0_linear_206_2168"
+              x1="973.056"
+              y1="89.6251"
+              x2="973.056"
+              y2="741.999"
+              gradientUnits="userSpaceOnUse"
+            >
               <stop stopColor="#1E2A78" />
               <stop offset="1" />
             </linearGradient>
@@ -99,16 +128,38 @@ export default function Home() {
         <div className="popular-works-bg">
           <svg xmlns="http://www.w3.org/2000/svg" width="1619" height="1084" viewBox="0 0 1619 1084" fill="none">
             <g filter="url(#filter0_f_206_2166)">
-              <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" fill="url(#paint0_linear_206_2166)" fillOpacity="0.82" />
-              <path d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z" stroke="black" />
+              <path
+                d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z"
+                fill="url(#paint0_linear_206_2166)"
+                fillOpacity="0.82"
+              />
+              <path
+                d="M271 87.8384C122.733 60.9599 -38 144.322 -38 144.322V1000.84H1536V479.517C1536 479.517 1489.77 277.273 1391.57 266.441C1293.36 255.608 1336.82 482.8 1226.62 519.522C1068.2 572.311 1076.27 227.889 924.208 210.856C772.146 193.822 732.237 426.039 580.767 404.14C389.623 376.505 419.267 114.717 271 87.8384Z"
+                stroke="black"
+              />
             </g>
             <defs>
-              <filter id="filter0_f_206_2166" x="-120.5" y="0" width="1739" height="1083.34" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+              <filter
+                id="filter0_f_206_2166"
+                x="-120.5"
+                y="0"
+                width="1739"
+                height="1083.34"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
                 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
                 <feGaussianBlur stdDeviation="41" result="effect1_foregroundBlur_206_2166" />
               </filter>
-              <linearGradient id="paint0_linear_206_2166" x1="749" y1="-24.1615" x2="749" y2="1000.84" gradientUnits="userSpaceOnUse">
+              <linearGradient
+                id="paint0_linear_206_2166"
+                x1="749"
+                y1="-24.1615"
+                x2="749"
+                y2="1000.84"
+                gradientUnits="userSpaceOnUse"
+              >
                 <stop stopColor="#1E2A78" />
                 <stop offset="1" />
               </linearGradient>
@@ -118,7 +169,6 @@ export default function Home() {
 
         {/* 사진처럼 좌우로 나누기 위한 wrapper 추가 */}
         <div className="popular-works-container">
-
           {/* 왼쪽: 타이틀 & 설명 */}
           <div className="works-title-text">
             <div className="works-title-heading">
@@ -130,8 +180,8 @@ export default function Home() {
             </div>
             <div className="works-title-subtitle">
               <p>
-                2023년 ~ 2024년에 출시 및 개봉되었던 인기있는 작품들입니다. <br />
-                이 작품들은 원작을 기반으로 한 2차 창작물로 대중들에게 큰 인기를 얻었습니다.
+                2023년 ~ 2024년에 출시 및 개봉되었던 인기있는 작품들입니다. <br />이 작품들은 원작을 기반으로 한 2차
+                창작물로 대중들에게 큰 인기를 얻었습니다.
               </p>
             </div>
           </div>
