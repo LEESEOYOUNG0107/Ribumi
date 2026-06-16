@@ -212,9 +212,8 @@
   display: flex;
   gap: 8px;
   margin-left: 200px;
-  bottom: 20%;
+  margin-top: 12px;
   align-items: center;
-  position: fixed;
 }
 
 .posterDot {

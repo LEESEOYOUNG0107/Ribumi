@@ -44,7 +44,6 @@ export default function Detail() {
   const [newReview, setNewReview] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(0);
 
-  const currentUser = "나";
   const displayItems = details ? [details, ...relatedWorks] : [];
   const currentItem = displayItems[currentIndex];
 
@@ -90,10 +89,10 @@ export default function Detail() {
 
   const handleReplySubmit = (reviewId, replyText) => {
     if (!replyText.trim()) return alert("답글 내용을 입력해주세요.");
-    const newReply = { id: Date.now(), user: currentUser, text: replyText, date: new Date().toLocaleDateString() };
+    const newReply = { id: Date.now(), user: userId, text: replyText, date: new Date().toLocaleDateString() };
     updateReviews(
       allReviews.map((r) =>
-        r.id === reviewId ? { ...r, comments: r.comments + 1, replies: [...(r.replies || []), newReply] } : r,
+        r.id === reviewId ? { ...r, comments: (r.comments || 0) + 1, replies: [...(r.replies || []), newReply] } : r,
       ),
     );
   };
@@ -101,7 +100,7 @@ export default function Detail() {
   const handleLikeToggle = (reviewId) => {
     updateReviews(
       allReviews.map((r) =>
-        r.id === reviewId ? { ...r, isLiked: !r.isLiked, likes: r.isLiked ? r.likes - 1 : r.likes + 1 } : r,
+        r.id === reviewId ? { ...r, isLiked: !r.isLiked, likes: r.isLiked ? (r.likes || 1) - 1 : (r.likes || 0) + 1 } : r,
       ),
     );
   };
