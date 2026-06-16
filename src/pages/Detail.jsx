@@ -152,141 +152,141 @@ export default function Detail() {
       );
     }
 
+    const handleWishToggle = async (item) => {
+      const isWished = wishList.some((w) => String(w.content_id) === String(item.id));
 
-  const handleWishToggle = async (item) => {
-    const isWished = wishList.some((w) => String(w.content_id) === String(item.id));
+      if (isWished) {
+        const { error } = await supabase.from("wishlist").delete().eq("user_id", userId).eq("content_id", item.id);
 
-    if (isWished) {
-      const { error } = await supabase.from("wishlist").delete().eq("user_id", userId).eq("content_id", item.id);
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setWishList(wishList.filter((w) => String(w.content_id) !== String(item.id)));
+      } else {
+        console.log("저장 genre:", item.genre);
+        const { data, error } = await supabase
+          .from("wishlist")
+          .insert({
+            user_id: userId,
+            content_id: item.id,
+            title: item.title,
+            poster: item.poster,
+            type: item._type,
 
-      if (error) {
-        console.error(error);
-        return;
+            genre: item.genre || null,
+            rating: item.rating ? parseFloat(item.rating) : null,
+            year: item.releaseDate ? item.releaseDate.substring(0, 4) : null,
+          })
+          .select();
+        console.log("insert error:", error);
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setWishList([data[0], ...wishList]);
       }
-      setWishList(wishList.filter((w) => String(w.content_id) !== String(item.id)));
-    } else {
-      console.log("저장 genre:", item.genre);
-      const { data, error } = await supabase
-        .from("wishlist")
-        .insert({
-          user_id: userId,
-          content_id: item.id,
-          title: item.title,
-          poster: item.poster,
-          type: item._type,
+    };
 
-          genre: item.genre || null,
-          rating: item.rating ? parseFloat(item.rating) : null,
-          year: item.releaseDate ? item.releaseDate.substring(0, 4) : null,
-        })
-        .select();
-      console.log("insert error:", error);
-      if (error) {
-        console.error(error);
-        return;
-      }
-      setWishList([data[0], ...wishList]);
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="detailWrapper">
-        <Nav />
-        <div className="detailLoading">불러오는 중...🍿</div>
-      </div>
-    );
-  if (!details)
-    return (
-      <div className="detailWrapper">
-        <Nav />
-        <div className="detailLoading">작품 정보를 찾을 수 없습니다.</div>
-      </div>
-    );
-
-  return (
-    <div className="detailWrapper">
-      <Nav />
-
-      <div className="superSliderContainer">
-        <button
-          className="slideNavBtn left"
-          onClick={() => setCurrentIndex((i) => i - 1)}
-          disabled={currentIndex === 0}
-        >
-          ❮
-        </button>
-        <button
-          className="slideNavBtn right"
-          onClick={() => setCurrentIndex((i) => i + 1)}
-          disabled={currentIndex === displayItems.length - 1}
-        >
-          ❯
-        </button>
-
-        <div className="superSliderTrack" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-          {displayItems.map((item, index) => {
-            const itemReviews = allReviews.filter((r) => String(r.content_id) === String(item.id));
-            const isItemWished = wishList.some((w) => String(w.content_id) === String(item.id));
-
-            return (
-              <div key={item.id + index} className="superSlide">
-                <DetailInfo
-                  item={item}
-                  isWished={isItemWished}
-                  onWishToggle={handleWishToggle}
-                  displayItems={displayItems}
-                  currentIndex={currentIndex}
-                  onSelect={(idx) => {
-                    setCurrentIndex(idx);
-                    setActiveTab("review");
-                  }}
-                />
-
-                <div className="detailTabWrapper">
-                  <button
-                    className={`detailTab ${activeTab === "review" ? "active" : ""}`}
-                    onClick={() => setActiveTab("review")}
-                  >
-                    리뷰보기
-                  </button>
-                </div>
-
-                {activeTab === "review" && (
-                  <ReviewSection
-                    itemReviews={itemReviews}
-                    onOpenModal={() => setIsReviewModalOpen(true)}
-                    onEditSave={handleEditSave}
-                    onDelete={handleDeleteReview}
-                    onReplySubmit={handleReplySubmit}
-                    onLikeToggle={handleLikeToggle}
-                  />
-                )}
-              </div>
-            );
-          })}
+    if (loading)
+      return (
+        <div className="detailWrapper">
+          <Nav />
+          <div className="detailLoading">불러오는 중...🍿</div>
         </div>
+      );
+    if (!details)
+      return (
+        <div className="detailWrapper">
+          <Nav />
+          <div className="detailLoading">작품 정보를 찾을 수 없습니다.</div>
+        </div>
+      );
+
+    return (
+      <div className="detailWrapper">
+        <Nav />
+
+        <div className="superSliderContainer">
+          <button
+            className="slideNavBtn left"
+            onClick={() => setCurrentIndex((i) => i - 1)}
+            disabled={currentIndex === 0}
+          >
+            ❮
+          </button>
+          <button
+            className="slideNavBtn right"
+            onClick={() => setCurrentIndex((i) => i + 1)}
+            disabled={currentIndex === displayItems.length - 1}
+          >
+            ❯
+          </button>
+
+          <div className="superSliderTrack" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+            {displayItems.map((item, index) => {
+              const itemReviews = allReviews.filter((r) => String(r.content_id) === String(item.id));
+              const isItemWished = wishList.some((w) => String(w.content_id) === String(item.id));
+
+              return (
+                <div key={item.id + index} className="superSlide">
+                  <DetailInfo
+                    item={item}
+                    isWished={isItemWished}
+                    onWishToggle={handleWishToggle}
+                    displayItems={displayItems}
+                    currentIndex={currentIndex}
+                    onSelect={(idx) => {
+                      setCurrentIndex(idx);
+                      setActiveTab("review");
+                    }}
+                  />
+
+                  <div className="detailTabWrapper">
+                    <button
+                      className={`detailTab ${activeTab === "review" ? "active" : ""}`}
+                      onClick={() => setActiveTab("review")}
+                    >
+                      리뷰보기
+                    </button>
+                  </div>
+
+                  {activeTab === "review" && (
+                    <ReviewSection
+                      itemReviews={itemReviews}
+                      onOpenModal={() => setIsReviewModalOpen(true)}
+                      onEditSave={handleEditSave}
+                      onDelete={handleDeleteReview}
+                      onReplySubmit={handleReplySubmit}
+                      onLikeToggle={handleLikeToggle}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <button className="writeReviewBtn" onClick={() => setIsReviewModalOpen(true)}>
+          <img src={write} alt="write" className="writeReviewIcon" /> 리뷰쓰기
+        </button>
+
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={() => {
+            setIsReviewModalOpen(false);
+            setNewReview("");
+            setNewReviewRating(0);
+          }}
+          onSubmit={handleReviewSubmit}
+          rating={newReviewRating}
+          setRating={setNewReviewRating}
+          content={newReview}
+          setContent={setNewReview}
+          currentItem={currentItem}
+        />
+        <Footer />
       </div>
-
-      <button className="writeReviewBtn" onClick={() => setIsReviewModalOpen(true)}>
-        <img src={write} alt="write" className="writeReviewIcon" /> 리뷰쓰기
-      </button>
-
-      <ReviewModal
-        isOpen={isReviewModalOpen}
-        onClose={() => {
-          setIsReviewModalOpen(false);
-          setNewReview("");
-          setNewReviewRating(0);
-        }}
-        onSubmit={handleReviewSubmit}
-        rating={newReviewRating}
-        setRating={setNewReviewRating}
-        content={newReview}
-        setContent={setNewReview}
-        currentItem={currentItem}
-      />
-      <Footer />
-    </div>
-  );
+    );
+  };
 }
