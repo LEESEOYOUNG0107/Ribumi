@@ -1,14 +1,13 @@
-import { useState } from "react";   // Detail 페이지에서 작품의 상세 정보를 보여주는 컴포넌트입니다.
+import { useState } from "react"; // Detail 페이지에서 작품의 상세 정보를 보여주는 컴포넌트입니다.
 
 const StarRating = ({ rating, size = 16 }) => (
   <span style={{ color: "#FFD700", fontSize: size }}>
-    {"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}
+    {"★".repeat(Math.round(rating))}
+    {"☆".repeat(5 - Math.round(rating))}
   </span>
 );
 
-const typeLabel = (t) =>
-  ({ movie: "영화", tv: "드라마", book: "도서", performance: "공연" }[t] || t);
-
+const typeLabel = (t) => ({ movie: "영화", tv: "드라마", book: "도서", performance: "공연" })[t] || t;
 
 export default function DetailInfo({ item, isWished, onWishToggle, displayItems, currentIndex, onSelect }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -23,9 +22,7 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
           <div className="detailTopMeta">
             {item._type === "book" ? (
               <>
-                <div className="important">
-                  {item.extra?.author && <span>{item.extra.author}</span>}
-                </div>
+                <div className="important">{item.extra?.author && <span>{item.extra.author}</span>}</div>
                 <div className="detailExtraInfo">
                   {item.extra?.publisher && <div>출판사: {item.extra.publisher}</div>}
                   {item.releaseDate && <div>{item.releaseDate} 출간</div>}
@@ -34,7 +31,7 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
             ) : (
               <>
                 <div className="important">
-                  {item.director && <span>크리에이터  {item.director}</span>} 
+                  {item.director && <span>크리에이터 {item.director}</span>}
                   {item.cast && <span>출연 {item.cast}</span>}
                 </div>
                 <div>{item.releaseDate && <span>{item.releaseDate.slice(0, 4)}년</span>}</div>
@@ -84,13 +81,8 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
                     className={`posterSlideItem ${isCurrent ? "current" : isSecondNext ? "next2" : "next1"}`}
                     onClick={() => !isCurrent && onSelect(globalIndex)}
                   >
-                    <img
-                      src={work.poster || "https://placehold.co/260x390?text=No+Image"}
-                      alt={work.title}
-                    />
-                    {isCurrent && (
-                      <span className="posterTypeBadge">{typeLabel(work._type)}</span>
-                    )}
+                    <img src={work.poster || "https://placehold.co/260x390?text=No+Image"} alt={work.title} />
+                    {isCurrent && <span className="posterTypeBadge">{typeLabel(work._type)}</span>}
                     {!isCurrent && (
                       <div className="posterNextOverlay">
                         <span className="posterNextLabel">{typeLabel(work._type)}</span>
@@ -115,7 +107,6 @@ export default function DetailInfo({ item, isWished, onWishToggle, displayItems,
               ))}
             </div>
           )}
-
         </div>
       </div>
     </>

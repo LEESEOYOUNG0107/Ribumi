@@ -21,10 +21,21 @@ export default function Detail() {
   const [allReviews, setAllReviews] = useState([]);
   useEffect(() => {
     const fetchReviews = async () => {
-      const { data, error } = await supabase.from("reviews").select("*");
+      const { data, error } = await supabase.from("reviews").select(`
+    *,
+    review_likes (
+      user_id
+    )
+  `);
 
       if (!error) {
-        setAllReviews(data || []);
+        const reviewsWithLikes = data.map((review) => ({
+          ...review,
+          likes: review.review_likes?.length || 0,
+          isLiked: review.review_likes?.some((like) => like.user_id === userId),
+        }));
+
+        setAllReviews(reviewsWithLikes);
       }
     };
     fetchReviews();
@@ -61,7 +72,7 @@ export default function Detail() {
         content: newReview,
         rating: newReviewRating,
         type: currentItem._type,
-        date: new Date().toLocaleDateString(),
+        date: new Date().toISOString().split("T")[0],
         user_id: userId,
         content_id: currentItem.id,
       })
@@ -97,12 +108,49 @@ export default function Detail() {
     );
   };
 
-  const handleLikeToggle = (reviewId) => {
-    updateReviews(
-      allReviews.map((r) =>
-        r.id === reviewId ? { ...r, isLiked: !r.isLiked, likes: r.isLiked ? (r.likes || 1) - 1 : (r.likes || 0) + 1 } : r,
-      ),
-    );
+  const handleLikeToggle = async (reviewId) => {
+    // 내가 이미 좋아요 눌렀는지 확인
+    const { data: existingLike } = await supabase
+      .from("review_likes")
+      .select("*")
+      .eq("review_id", reviewId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    // 이미 누른 경우 → 취소
+    if (existingLike) {
+      await supabase.from("review_likes").delete().eq("id", existingLike.id);
+
+      setAllReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? {
+                ...r,
+                likes: Math.max((r.likes || 0) - 1, 0),
+                isLiked: false,
+              }
+            : r,
+        ),
+      );
+    } else {
+      // 안 누른 경우 → 추가
+      await supabase.from("review_likes").insert({
+        review_id: reviewId,
+        user_id: userId,
+      });
+
+      setAllReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? {
+                ...r,
+                likes: (r.likes || 0) + 1,
+                isLiked: true,
+              }
+            : r,
+        ),
+      );
+    }
   };
 
   const handleWishToggle = async (item) => {
