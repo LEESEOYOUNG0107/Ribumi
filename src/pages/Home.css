@@ -118,15 +118,18 @@
 
 .works-poster-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3열로 배치 */
-  grid-auto-rows: 150px; /* 기본 높이 단위 */
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 2%;
+  row-gap: 10%;
 }
 
 .poster-card {
   border-radius: 8px;
   overflow: hidden;
   position: relative;
+  cursor: pointer;
+  animation: fadeInUp 0.5s ease both;
+  aspect-ratio: 2 / 3;  /* 추가 */
 }
 
 /* 사진처럼 들쑥날쑥하게 배치하기 위해 높이 다양화 */
@@ -192,22 +195,6 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* ─── Poster Grid ─── */
-.works-poster-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.poster-card {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  animation: fadeInUp 0.5s ease both;
-  aspect-ratio: 2 / 3;
 }
 
 .poster-card--tall {
