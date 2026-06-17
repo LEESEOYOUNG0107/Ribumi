@@ -31,9 +31,9 @@
 /* ─── Logo Main (Background Logo) ─── */
 .logo-main-wrapper {
   position: absolute;
-  left: 420px;
+  left: 50%;
   top: 272px;
-  position: absolute;
+  transform: translateX(-50%);
   z-index: 1;
 }
 
