@@ -72,7 +72,7 @@ export default function Detail() {
         content: newReview,
         rating: newReviewRating,
         type: currentItem._type,
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toLocaleDateString("sv-SE"),
         user_id: userId,
         content_id: currentItem.id,
       })
