@@ -120,7 +120,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   column-gap: 2%;
-  row-gap: 10%;
+  row-gap: 9%;
 }
 
 .poster-card {
