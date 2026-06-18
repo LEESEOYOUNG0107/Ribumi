@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), cloudflare()],
   build: {
     outDir: 'dist',
     // 빌드 시 정적 자산들이 올바르게 맵핑되도록 설정
