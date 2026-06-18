@@ -245,17 +245,16 @@
 
 .cardRatingGroup {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   color: #797979;
   font-size: 14px;
-  width: 180px;
 }
 
 .cardRating {
   display: flex;
   gap: 6px;
   align-items: center;
+  margin-left: 10px;
 }
 
 .cardHeart {
