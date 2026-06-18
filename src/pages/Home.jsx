@@ -22,10 +22,10 @@ export default function Home() {
       // 소설(818)이나 만화(9715) 원작 키워드를 가진 인기 영화와 드라마를 가져오기
       const [movieRes, tvRes] = await Promise.all([
         fetch(
-          `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715`,
+          `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715&include_adult=false`,
         ),
         fetch(
-          `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715`,
+          `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&sort_by=popularity.desc&with_original_language=ko&with_keywords=818|9715&include_adult=false`,
         ),
       ]);
 
@@ -33,9 +33,9 @@ export default function Home() {
       const tvData = await tvRes.json();
 
       const combined = [...(movieData.results || []), ...(tvData.results || [])]
-        .filter((item) => item.poster_path) // 포스터가 있는 작품만
-        .sort((a, b) => b.popularity - a.popularity) // 인기순으로 내림차순 정렬
-        .slice(0, 9); // 상위 6개 작품만
+        .filter((item) => item.poster_path && !item.adult)
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 9);
 
       const results = combined.map((item) => ({
         id: item.id,
@@ -43,7 +43,7 @@ export default function Home() {
         thumbnail: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
         contents: item.overview,
         authors: ["원작 기반 콘텐츠"],
-        mediaType: item.title ? "movie" : "tv", // title 속성이 있으면 영화, 없으면 TV
+        mediaType: item.title ? "movie" : "tv",
         vote_average: item.vote_average,
       }));
 
@@ -198,7 +198,7 @@ export default function Home() {
                 {popularWorks.map((work, index) => (
                   <div
                     key={work.id}
-                    className={`poster-card card-type-${index % 9}`} // 타입을 9가지로 세분화
+                    className={`poster-card card-type-${index % 9}`}
                     onClick={() => handleWorkClick(work)}
                   >
                     <div className="poster-img-wrap">

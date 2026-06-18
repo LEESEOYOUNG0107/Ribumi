@@ -187,7 +187,8 @@
 
 /* ─── Cards ─── */
 .platformCard {
-  flex: 0 0 calc((100% - 400px) / 6); 
+  flex: 0 0 180px;
+  width: 180px;
   scroll-snap-align: start; 
   display: flex;
   flex-direction: column;
@@ -213,6 +214,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 180px;
 }
 
 .cardTitleSection {
@@ -226,12 +228,19 @@
   font-weight: 500;
   color: #ffffff;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
 }
 
 .cardGenre {
   font-size: 10px;
   color: #797979;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
 }
 
 .cardRatingGroup {
@@ -240,6 +249,7 @@
   align-items: center;
   color: #797979;
   font-size: 14px;
+  width: 180px;
 }
 
 .cardRating {

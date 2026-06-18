@@ -9,6 +9,9 @@ import Footer from "../components/Footer";
 
 const KOPIS_KEY = import.meta.env.VITE_KOPIS_KEY;
 
+// KOPIS에 성인 전용 필터 파라미터가 없으므로 장르명으로 후처리 필터링
+const ADULT_GENRES = ["서커스·마술", "복합"];
+
 function PerformanceCard({ item }) {
   const navigate = useNavigate();
 
@@ -75,8 +78,6 @@ function PerformanceCard({ item }) {
 
   return (
     <div className="platformCard" onClick={() => navigate(`/detail/performance/${item.id}`, { state: { item } })} style={{ position: "relative" }}>
-      {/* 💡 순위 뱃지 렌더링 부분을 깔끔하게 삭제했습니다. */}
-
       <div className="cardImage" style={{ backgroundImage: `url(${imgUrl})` }}></div>
       <div className="cardMeta">
         <div className="cardTitleSection">
@@ -135,7 +136,7 @@ export default function PerformancePage() {
         startDate: node.querySelector("prfpdfrom")?.textContent,
         endDate: node.querySelector("prfpdto")?.textContent,
         place: node.querySelector("fcltynm")?.textContent,
-      }));
+      })).filter(item => !ADULT_GENRES.includes(item.genre));
     } catch (error) {
       console.error("KOPIS 일반 데이터 실패", error);
       return [];
@@ -157,7 +158,7 @@ export default function PerformancePage() {
         genre: node.querySelector("cate")?.textContent,
         rank: node.querySelector("rnum")?.textContent,
         place: node.querySelector("prfplcnm")?.textContent,
-      }));
+      })).filter(item => !ADULT_GENRES.includes(item.genre));
     } catch (error) {
       console.error("박스오피스 데이터 실패", error);
       return [];
@@ -176,7 +177,6 @@ export default function PerformancePage() {
       const nextMonthStr = nextMonth.toISOString().slice(0, 10).replace(/-/g, "");
 
       try {
-        // 여러 API 호출을 병렬로 처리
         const [newRes, popularRes, bannerRes] = await Promise.all([
           fetchKopisData(todayStr, nextMonthStr, "", 1, 15),
           fetchBoxOffice(),

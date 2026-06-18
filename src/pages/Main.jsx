@@ -112,7 +112,7 @@ function PlatformCard({ item }) {
 }
 
 export default function Main() {
-  // const [activeTab, setActiveTab] = useState("movie");
+  // const [activeTab] = useState("movie");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [trendingWorks, setTrendingWorks] = useState([]);
@@ -131,19 +131,18 @@ export default function Main() {
     if (ref.current) ref.current.scrollBy({ left: ref.current.clientWidth, behavior: "smooth" });
   };
 
-  // 영화와 드라마 인기작을 동시에 가져와서 합친 뒤, 인기순으로 정렬해 저장
-  // 처음 랜더링될 때 실행. 매번 랜더링 ㄴㄴ
   useEffect(() => {
     const fetchTrendingWorks = async () => {
       setLoading(true);
       try {
         const [movieRes, tvRes] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc`),
-          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc&without_genres=10764,10767,10763,10766`)
+          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc&include_adult=false&vote_average.gte=7.9&vote_count.gte=100`),
+          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&watch_region=KR&with_origin_country=KR&sort_by=popularity.desc&without_genres=10764,10767,10763,10766&include_adult=false&vote_average.gte=7.9&vote_count.gte=100`)
         ]);
         const movieData = await movieRes.json();
         const tvData = await tvRes.json();
         const combinedTrending = [...(movieData.results || []), ...(tvData.results || [])]
+          .filter(item => !item.adult && item.vote_average >= 7.9)
           .sort((a, b) => b.popularity - a.popularity);
         setTrendingWorks(combinedTrending);
       } catch (error) {
@@ -156,12 +155,13 @@ export default function Main() {
     const fetchOriginalWorks = async () => {
       try {
         const [movieRes, tvRes] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc`),
-          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc&without_genres=10764,10767,10763,10766`)
+          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc&include_adult=false&vote_average.gte=7.9&vote_count.gte=100`),
+          fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=ko-KR&with_origin_country=KR&with_keywords=818|9715&sort_by=popularity.desc&without_genres=10764,10767,10763,10766&include_adult=false&vote_average.gte=7.9&vote_count.gte=100`)
         ]);
         const movieData = await movieRes.json();
         const tvData = await tvRes.json();
         const combinedOriginals = [...(movieData.results || []), ...(tvData.results || [])]
+          .filter(item => !item.adult && item.vote_average >= 7.9)
           .sort((a, b) => b.popularity - a.popularity);
         setOriginalWorks(combinedOriginals);
       } catch (error) {
@@ -184,10 +184,9 @@ export default function Main() {
 
   const currentBannerWork = originalWorks[CurrentBannerIndex];
   useEffect(() => {
-    setIsBannerExpanded(false); // 배너가 다음 슬라이드로 넘어가면 글을 다시 접습니다.
+    setIsBannerExpanded(false);
   }, [CurrentBannerIndex]);
 
-  //원작 정보 보기 버튼 클릭 시 상세페이지로 이동
   const handleGoToDetail = () => {
     if (!currentBannerWork) return;
     const mediaType = currentBannerWork.first_air_date ? "tv" : "movie";
